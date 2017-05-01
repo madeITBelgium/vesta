@@ -1,0 +1,11 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t vestacp -f Dockerfile .
+
+script:
+  - docker run --cap-add=NET_ADMIN vestacp /bin/bash -c "/vesta/docker/startup-ubuntu.sh; sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
+  - docker run --cap-add=NET_ADMIN vestacp /bin/bash -c "/vesta/docker/startup-ubuntu.sh; sudo su -; /usr/local/vesta/test/test_json_listing.sh;  (exit \$?)"
