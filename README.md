@@ -1,7 +1,7 @@
 [Vesta Control Panel](http://vestacp.com/)
 ==================================================
 
-[![Join the chat at https://gitter.im/vesta-cp/Lobby](https://badges.gitter.im/vesta-cp/Lobby.svg)](https://gitter.im/vesta-cp/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/madeITBelgium/vesta.svg?branch=vestacp-master)](https://travis-ci.org/madeITBelgium/vesta)
 
 * Vesta is an open source hosting control panel.
 * Vesta has a clean and focused interface without the clutter.
@@ -30,6 +30,23 @@ ssh root@your.server
 Download the installation script:
 ```bash
 curl -O http://vestacp.com/pub/vst-install.sh
+```
+Then run it:
+```bash
+bash vst-install.sh
+```
+
+Nightly builds - Updated every hour
+----------------------------
+
+Connect to your server as root via SSH
+```bash
+ssh root@your.server
+```
+
+Download the installation script:
+```bash
+curl -O http://c.vesta.tpweb.org/vst-install.sh
 ```
 Then run it:
 ```bash
