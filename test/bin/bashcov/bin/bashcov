@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+lib = File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require "bashcov"
+
+Bashcov.parse_options! ARGV
+
+runner = Bashcov::Runner.new Bashcov.command
+status = runner.run
+coverage = runner.result
+
+require "simplecov"
+
+SimpleCov.command_name Bashcov.fullname
+SimpleCov.root Bashcov.root_directory
+SimpleCov::Result.new(coverage).format!
+
+exit status.exitstatus
