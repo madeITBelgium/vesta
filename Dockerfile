@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:16.04
 
 EXPOSE 22 80 8083 3306 443 25 993 110 53 54
 
