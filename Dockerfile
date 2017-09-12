@@ -9,18 +9,18 @@ RUN apt-get update -y
 RUN apt-get install -y wget lsb-release curl
 
 
-RUN \curl -L https://get.rvm.io | bash -s stable
-RUN /bin/bash -l -c "rvm requirements"
-RUN /bin/bash -l -c "rvm install 2.4"
-RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
-RUN /bin/bash -l -c "source /etc/profile.d/rvm.sh"
-RUN /bin/bash -l -c "bundle config --global frozen 1"
-RUN /bin/bash -l -c "bundle config --global silence_root_warning 1"
-RUN /bin/bash -l -c "export LANG=en_US.UTF-8; export LANGUAGE=en_US.UTF-8; export LC_ALL=en_US.UTF-8"
+#RUN \curl -L https://get.rvm.io | bash -s stable
+#RUN /bin/bash -l -c "rvm requirements"
+#RUN /bin/bash -l -c "rvm install 2.4"
+#RUN /bin/bash -l -c "gem install bundler --no-ri --no-rdoc"
+#RUN /bin/bash -l -c "source /etc/profile.d/rvm.sh"
+#RUN /bin/bash -l -c "bundle config --global frozen 1"
+#RUN /bin/bash -l -c "bundle config --global silence_root_warning 1"
+#RUN /bin/bash -l -c "export LANG=en_US.UTF-8; export LANGUAGE=en_US.UTF-8; export LC_ALL=en_US.UTF-8"
 
-ENV PATH="/usr/local/rvm/rubies/default/bin:${PATH}"
-ENV GEM_HOME="/usr/local/rvm/gems/ruby-2.4.0"
-ENV GEM_PATH="/usr/local/rvm/gems/ruby-2.4.0:/usr/local/rvm/gems/ruby-2.4.0@global"
+#ENV PATH="/usr/local/rvm/rubies/default/bin:${PATH}"
+#ENV GEM_HOME="/usr/local/rvm/gems/ruby-2.4.0"
+#ENV GEM_PATH="/usr/local/rvm/gems/ruby-2.4.0:/usr/local/rvm/gems/ruby-2.4.0@global"
 ENV VESTA /usr/local/vesta
 
 ADD bin /vesta/bin
