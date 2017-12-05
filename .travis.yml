@@ -32,5 +32,4 @@ before_install:
  - sudo /usr/local/vesta/bin/v-list-sys-ips
  
 script:
-  - sudo /usr/local/vesta/test/test_actions.sh
-  - sudo /usr/local/vesta/test/test_json_listing.sh
+  - sudo bash /usr/local/vesta/test/start-test.sh
