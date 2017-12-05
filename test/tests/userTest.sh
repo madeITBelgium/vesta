@@ -61,31 +61,36 @@ tmpfile=$(mktemp -p /tmp )
 testAddUser() {
     cmd="v-add-user $user $user $user@vestacp.com default Super Test"
     $cmd > $tmpfile 2>&1
-    assertTrue "USER: Adding new user $user >> $cmd >>> $(cat $tmpfile)" "[$? -eq 0]"
+    result=$?
+    assertTrue "USER: Adding new user $user >> $cmd >>> $(cat $tmpfile)" "[$result -eq 0]"
 }
 
 testChangePassword() {
     cmd="v-change-user-password $user t3st_p4ssw0rd"
     $cmd > $tmpfile 2>&1
-    assertTrue "USER: Changing password >> $cmd >>> $(cat $tmpfile)" "[$? -eq 0]"
+    result=$?
+    assertTrue "USER: Changing password >> $cmd >>> $(cat $tmpfile)" "[$result -eq 0]"
 }
 
 testChangeContact() {
     cmd="v-change-user-contact $user tester@vestacp.com"
     $cmd > $tmpfile 2>&1
-    assertTrue "USER: Changing email >> $cmd >>> $(cat $tmpfile)" "[$? -eq 0]"
+    result=$?
+    assertTrue "USER: Changing email >> $cmd >>> $(cat $tmpfile)" "[$result -eq 0]"
 }
 
 testChangeSystemShell() {
     cmd="v-change-user-shell $user bash"
     $cmd > $tmpfile 2>&1
-    assertTrue "USER: Changing system shell to /bin/bash >> $cmd >>> $(cat $tmpfile)" "[$? -eq 0]"
+    result=$?
+    assertTrue "USER: Changing system shell to /bin/bash >> $cmd >>> $(cat $tmpfile)" "[$result -eq 0]"
 }
 
 testChangeNameServers() {
     cmd="v-change-user-ns $user ns0.com ns1.com ns2.com ns3.com"
     $cmd > $tmpfile 2>&1
-    assertTrue "USER: Changing nameservers >> $cmd >>> $(cat $tmpfile)" "[$? -eq 0]"
+    result=$?
+    assertTrue "USER: Changing nameservers >> $cmd >>> $(cat $tmpfile)" "[$result -eq 0]"
 }
 
 
