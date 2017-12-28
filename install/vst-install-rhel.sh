@@ -103,6 +103,20 @@ set_default_value() {
     fi
 }
 
+# Define function to set default language value
+set_default_lang() {
+    if [ -z "$lang" ]; then
+        eval lang=$1
+    fi
+    lang_list="
+        ar cz el fa hu ja no pt se ua
+        bs da en fi id ka pl ro tr vi
+        cn de es fr it nl pt-BR ru tw
+        "
+    if !(echo $lang_list | grep -w $lang 1>&2>/dev/null); then
+        eval lang=$1
+    fi
+}
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -199,8 +213,8 @@ set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
 set_default_value 'remi' 'yes'
 set_default_value 'quota' 'no'
-set_default_value 'lang' 'en'
 set_default_value 'interactive' 'yes'
+set_default_lang 'en'
 
 # Checking software conflicts
 if [ "$phpfpm" = 'yes' ]; then
@@ -852,6 +866,11 @@ if [ "$nginx" = 'yes' ]; then
     wget $vestacp/logrotate/nginx -O /etc/logrotate.d/nginx
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/nginx.service.d/
+        echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
+        echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
+    fi
     chkconfig nginx on
     service nginx start
     check_result $? "nginx start failed"
@@ -890,6 +909,11 @@ if [ "$apache" = 'yes'  ]; then
     chmod a+x /var/log/httpd
     mkdir -p /var/log/httpd/domains
     chmod 751 /var/log/httpd/domains
+    if [ "$release" -eq 7 ]; then
+        mkdir /etc/systemd/system/httpd.service.d/
+        echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
+        echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
+    fi
     chkconfig httpd on
     service httpd start
     check_result $? "httpd start failed"
