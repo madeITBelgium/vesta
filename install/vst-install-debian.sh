@@ -29,7 +29,8 @@ if [ "$release" -eq 8 ]; then
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl unrar-free"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
+        unrar-free vim-common vesta-ioncube vesta-softaculous"
 else
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -41,7 +42,8 @@ else
         mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free"
+        bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free
+        vim-common vesta-ioncube vesta-softaculous"
 fi
 
 # Defining help function
@@ -62,6 +64,7 @@ help() {
   -t, --spamassassin      Install SpamAssassin  [yes|no]  default: yes
   -i, --iptables          Install Iptables      [yes|no]  default: yes
   -b, --fail2ban          Install Fail2ban      [yes|no]  default: yes
+  -o, --softaculous       Install Softaculous   [yes|no]  default: yes
   -q, --quota             Filesystem Quota      [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install   [yes|no]  default: yes
@@ -115,11 +118,12 @@ set_default_lang() {
         ar cz el fa hu ja no pt se ua
         bs da en fi id ka pl ro tr vi
         cn de es fr it nl pt-BR ru tw
-        "
-    if !(echo $lang_list | grep -w $lang 1>&2>/dev/null); then
+        bg ko sr th ur"
+    if !(echo $lang_list |grep -w $lang 1>&2>/dev/null); then
         eval lang=$1
     fi
 }
+
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -148,6 +152,7 @@ for arg; do
         --iptables)             args="${args}-i " ;;
         --fail2ban)             args="${args}-b " ;;
         --remi)                 args="${args}-r " ;;
+        --softaculous)          args="${args}-o " ;;
         --quota)                args="${args}-q " ;;
         --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
@@ -163,7 +168,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -181,6 +186,7 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:q:l:y:s:e:p:fh" Option; do
         i) iptables=$OPTARG ;;          # Iptables
         b) fail2ban=$OPTARG ;;          # Fail2ban
         r) remi=$OPTARG ;;              # Remi repo
+        o) softaculous=$OPTARG ;;       # Softaculous plugin
         q) quota=$OPTARG ;;             # FS Quota
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
@@ -214,6 +220,7 @@ else
 fi
 set_default_value 'iptables' 'yes'
 set_default_value 'fail2ban' 'yes'
+set_default_value 'softaculous' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'interactive' 'yes'
 set_default_lang 'en'
@@ -355,6 +362,11 @@ if [ "$vsftpd" = 'yes' ]; then
 fi
 if [ "$proftpd" = 'yes' ]; then
     echo '   - ProFTPD FTP Server'
+fi
+
+# Softaculous
+if [ "$softaculous" = 'yes' ]; then
+    echo -n '   - Softaculous Plugin'
 fi
 
 # Firewall stack
@@ -588,6 +600,9 @@ if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/postgresql//')
     software=$(echo "$software" | sed -e 's/php5-pgsql//')
     software=$(echo "$software" | sed -e 's/phppgadmin//')
+fi
+if [ "$softaculous" = 'no' ]; then
+    software=$(echo "$software" | sed -e 's/vesta-softaculous//')
 fi
 if [ "$iptables" = 'no' ] || [ "$fail2ban" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/fail2ban//')
@@ -966,11 +981,12 @@ fi
 if [ "$postgresql" = 'yes' ]; then
     wget $vestacp/postgresql/pg_hba.conf -O /etc/postgresql/*/main/pg_hba.conf
     service postgresql restart
-    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'" 2>/dev/null
+    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$vpass'"
 
     # Configuring phpPgAdmin
     if [ "$apache" = 'yes' ]; then
-        wget $vestacp/pga/phppgadmin.conf -O /etc/apache2/conf.d/phppgadmin.conf
+        wget $vestacp/pga/phppgadmin.conf \
+            -O /etc/apache2/conf.d/phppgadmin.conf
     fi
     wget $vestacp/pga/config.inc.php -O /etc/phppgadmin/config.inc.php
 fi
@@ -1064,13 +1080,13 @@ if [ "$clamd" = 'yes' ]; then
         mkdir /var/run/clamav
     fi
     chown -R clamav:clamav /var/run/clamav
-    if [ -f "/lib/systemd/system/clamav-daemon.service" ]; then
-        file="/lib/systemd/system/clamav-daemon.service"
-        if [ $( grep -ic "mkdir" $file ) -eq 0 ]; then
-            sed -i "s/\[Service\]/\[Service\]\nExecStartPre = \/bin\/mkdir -p \/var\/run\/clamav\nExecStartPre = \/bin\/chown -R clamav:clamav \/var\/run\/clamav/g" $file
-        fi
+    if [ -e "/lib/systemd/system/clamav-daemon.service" ]; then
+        exec_pre1='ExecStartPre=/bin/mkdir -p /var/run/clamav'
+        exec_pre2='ExecStartPre=/bin/chown -R clamav:clamav /var/run/clamav'
+        sed -i "s|\[Service\]/|[Service]\n$exec_pre1\n$exec_pre2|g" \
+            /lib/systemd/system/clamav-daemon.service
+        systemctl daemon-reload
     fi
-
     service clamav-daemon start
     check_result $? "clamav-daeom start failed"
 fi
@@ -1085,7 +1101,8 @@ if [ "$spamd" = 'yes' ]; then
     sed -i "s/ENABLED=0/ENABLED=1/" /etc/default/spamassassin
     service spamassassin start
     check_result $? "spamassassin start failed"
-    if [[ $(systemctl list-unit-files | grep spamassassin) =~ "disabled" ]]; then
+    unit_files="$(systemctl list-unit-files |grep spamassassin)"
+    if [[ "$unit_files" =~ "disabled" ]]; then
         systemctl enable spamassassin
     fi
 fi
@@ -1112,9 +1129,11 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
         /etc/roundcube/plugins/password/config.inc.php
     r="$(gen_pass)"
     mysql -e "CREATE DATABASE roundcube"
-    mysql -e "GRANT ALL ON roundcube.* TO roundcube@localhost IDENTIFIED BY '$r'"
+    mysql -e "GRANT ALL ON roundcube.* 
+        TO roundcube@localhost IDENTIFIED BY '$r'"
     sed -i "s/%password%/$r/g" /etc/roundcube/db.inc.php
-    sed -i "s/localhost/$servername/g" /etc/roundcube/plugins/password/config.inc.php
+    sed -i "s/localhost/$servername/g" \
+        /etc/roundcube/plugins/password/config.inc.php
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
     chmod a+r /etc/roundcube/main.inc.php
     if [ "$release" -eq 8 ]; then
@@ -1133,13 +1152,15 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
         if [[ -L "$tinymceFolder" && -d "$tinymceFolder" ]]; then
             if [ -f "$tinymceBadJS" ]; then
                 wget $tinymceFixArchiveURL -O $tinymceFixArchive
-                if [[ -f "$tinymceFixArchive" && -s "$tinymceFixArchive" ]]; then
+                if [[ -f "$tinymceFixArchive" && -s "$tinymceFixArchive" ]]
+                then
                     rm $tinymceFolder
                     tar -xzf $tinymceFixArchive -C $tinymceParentFolder
                     rm $tinymceFixArchive
                     chown -R root:root $tinymceFolder
                 else
-                    echo "File roundcube-tinymce.tar.gz is not downloaded, RoundCube tinyMCE fix is not applied"
+                    echo -n "File roundcube-tinymce.tar.gz is not downloaded,"
+                    echo "RoundCube tinyMCE fix is not applied"
                     rm $tinymceFixArchive
                 fi
             fi
@@ -1209,7 +1230,7 @@ $VESTA/bin/v-update-sys-ip
 
 # Get main ip
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
-copy_of_ip=$ip
+local_ip=$ip
 
 # Firewall configuration
 if [ "$iptables" = 'yes' ]; then
@@ -1226,19 +1247,19 @@ fi
 
 # Configuring libapache2-mod-remoteip
 if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
-    copy_of_pub_ip=$pub_ip
-    echo "<IfModule mod_remoteip.c>" > /etc/apache2/mods-available/remoteip.conf
-    echo "  RemoteIPHeader X-Real-IP" >> /etc/apache2/mods-available/remoteip.conf
-    if [ "$copy_of_ip" != "127.0.0.1" ] && [ "$copy_of_pub_ip" != "127.0.0.1" ]; then
-        echo "  RemoteIPInternalProxy 127.0.0.1" >> /etc/apache2/mods-available/remoteip.conf
+    cd /etc/apache2/mods-available
+    echo "<IfModule mod_remoteip.c>" > remoteip.conf
+    echo "  RemoteIPHeader X-Real-IP" >> remoteip.conf
+    if [ "$local_ip" != "127.0.0.1" ] && [ "$pub_ip" != "127.0.0.1" ]; then
+        echo "  RemoteIPInternalProxy 127.0.0.1" >> remoteip.conf
     fi
-    if [ ! -z "$copy_of_ip" ] && [ "$copy_of_ip" != "$copy_of_pub_ip" ]; then
-        echo "  RemoteIPInternalProxy $copy_of_ip" >> /etc/apache2/mods-available/remoteip.conf
+    if [ ! -z "$local_ip" ] && [ "$local_ip" != "$pub_ip" ]; then
+        echo "  RemoteIPInternalProxy $local_ip" >> remoteip.conf
     fi
-    if [ ! -z "$copy_of_pub_ip" ]; then
-        echo "  RemoteIPInternalProxy $copy_of_pub_ip" >> /etc/apache2/mods-available/remoteip.conf
+    if [ ! -z "$pub_ip" ]; then
+        echo "  RemoteIPInternalProxy $pub_ip" >> remoteip.conf
     fi
-    echo "</IfModule>" >> /etc/apache2/mods-available/remoteip.conf
+    echo "</IfModule>" >> remoteip.conf
     sed -i "s/LogFormat \"%h/LogFormat \"%a/g" /etc/apache2/apache2.conf
     a2enmod remoteip
     service apache2 restart
@@ -1283,6 +1304,11 @@ $VESTA/bin/v-update-sys-rrd
 # Enabling file system quota
 if [ "$quota" = 'yes' ]; then
     $VESTA/bin/v-add-sys-quota
+fi
+
+# Enabling softaculous plugin
+if [ "$softaculous" = 'yes' ]; then
+    $VESTA/bin/v-add-vesta-softaculous
 fi
 
 # Starting vesta service
