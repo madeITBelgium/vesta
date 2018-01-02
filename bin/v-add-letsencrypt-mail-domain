@@ -36,7 +36,7 @@ is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
-is_object_value_empty 'mail' 'DOMAIN' "$domain_idn" '$SSL'
+#is_object_value_empty 'mail' 'DOMAIN' "$domain_idn" '$SSL'
 
 
 #----------------------------------------------------------#

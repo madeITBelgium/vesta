@@ -127,7 +127,9 @@ fi
 #                       Vesta                              #
 #----------------------------------------------------------#
 
-# Restarting web
+# Restarting
+$BIN/v-restart-mail $restart
+$BIN/v-restart-service dovecot $restart
 if [ "$restart" != "no" ]; then
     $BIN/v-restart-service vesta
     if [ "$?" -ne 0  ]; then
