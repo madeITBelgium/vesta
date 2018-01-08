@@ -18,7 +18,19 @@ release=$(cat /etc/debian_version|grep -o [0-9]|head -n1)
 codename="$(cat /etc/os-release |grep VERSION= |cut -f 2 -d \(|cut -f 1 -d \))"
 vestacp="http://$CHOST/$VERSION/$release"
 
-if [ "$release" -eq 8 ]; then
+if [ "$release" -eq 9 ]; then
+    software="nginx apache2 apache2-utils apache2-suexec-custom
+        libapache2-mod-ruid2 libapache2-mod-fcgid libapache2-mod-php php
+        php-common php-cgi php-mysql php-curl php-fpm php-pgsql awstats
+        webalizer vsftpd proftpd-basic bind9 exim4 exim4-daemon-heavy
+        clamav-daemon spamassassin dovecot-imapd dovecot-pop3d roundcube-core
+        roundcube-mysql roundcube-plugins mysql-server mysql-common
+        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
+        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
+        e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
+        bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
+elif [ "$release" -eq 8 ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
         libapache2-mod-fcgid libapache2-mod-php5 php5 php5-common php5-cgi
@@ -30,7 +42,7 @@ if [ "$release" -eq 8 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous s3cmd"
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
 else
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -43,7 +55,7 @@ else
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free
-        vim-common vesta-ioncube vesta-softaculous s3cmd"
+        vim-common vesta-ioncube vesta-softaculous net-tools"
 fi
 
 # Defining help function
@@ -366,7 +378,7 @@ fi
 
 # Softaculous
 if [ "$softaculous" = 'yes' ]; then
-    echo -n '   - Softaculous Plugin'
+    echo '   - Softaculous Plugin'
 fi
 
 # Firewall stack
@@ -474,7 +486,7 @@ apt-key add deb_signing.key
 # Creating backup directory tree
 mkdir -p $vst_backups
 cd $vst_backups
-mkdir nginx apache2 php5 php5-fpm vsftpd proftpd bind exim4 dovecot clamd
+mkdir nginx apache2 php php5 php5-fpm vsftpd proftpd bind exim4 dovecot clamd
 mkdir spamassassin mysql postgresql mongodb vesta
 
 # Backing up Nginx configuration
@@ -555,9 +567,11 @@ if [ "$apache" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/libapache2-mod-ruid2//")
     software=$(echo "$software" | sed -e "s/libapache2-mod-fcgid//")
     software=$(echo "$software" | sed -e "s/libapache2-mod-php5//")
+    software=$(echo "$software" | sed -e "s/libapache2-mod-php//")
 fi
 if [ "$phpfpm" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/php5-fpm//")
+    software=$(echo "$software" | sed -e "s/php-fpm//")
 fi
 if [ "$vsftpd" = 'no' ]; then
     software=$(echo "$software" | sed -e "s/vsftpd//")
@@ -593,12 +607,14 @@ if [ "$mysql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/mysql-client//')
     software=$(echo "$software" | sed -e 's/mysql-common//')
     software=$(echo "$software" | sed -e 's/php5-mysql//')
+    software=$(echo "$software" | sed -e 's/php-mysql//')
     software=$(echo "$software" | sed -e 's/phpMyAdmin//')
 fi
 if [ "$postgresql" = 'no' ]; then
     software=$(echo "$software" | sed -e 's/postgresql-contrib//')
     software=$(echo "$software" | sed -e 's/postgresql//')
     software=$(echo "$software" | sed -e 's/php5-pgsql//')
+    software=$(echo "$software" | sed -e 's/php-pgsql//')
     software=$(echo "$software" | sed -e 's/phppgadmin//')
 fi
 if [ "$softaculous" = 'no' ]; then
@@ -728,8 +744,14 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     echo "WEB_PORT='80'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL='openssl'"  >> $VESTA/conf/vesta.conf
-    if [ "$phpfpm" = 'yes' ]; then
-        echo "WEB_BACKEND='php5-fpm'" >> $VESTA/conf/vesta.conf
+    if [ "$release" -eq 9 ]; then
+        if [ "$phpfpm" = 'yes' ]; then
+            echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
+        fi
+    else
+        if [ "$phpfpm" = 'yes' ]; then
+            echo "WEB_BACKEND='php5-fpm'" >> $VESTA/conf/vesta.conf
+        fi
     fi
     echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
 fi
@@ -891,10 +913,17 @@ fi
 #----------------------------------------------------------#
 
 if [ "$phpfpm" = 'yes' ]; then
-    wget $vestacp/php5-fpm/www.conf -O /etc/php5/fpm/pool.d/www.conf
-    update-rc.d php5-fpm defaults
-    service php5-fpm start
-    check_result $? "php-fpm start failed"
+    if [ "$release" -eq 9 ]; then
+        wget $vestacp/php-fpm/www.conf -O /etc/php/7.0/fpm/pool.d/www.conf
+        update-rc.d php7.0-fpm defaults
+        service php7.0-fpm start
+        check_result $? "php-fpm start failed"
+    else
+        wget $vestacp/php5-fpm/www.conf -O /etc/php5/fpm/pool.d/www.conf
+        update-rc.d php5-fpm defaults
+        service php5-fpm start
+        check_result $? "php-fpm start failed"
+    fi
 fi
 
 
@@ -1141,13 +1170,15 @@ if [ "$exim" = 'yes' ] && [ "$mysql" = 'yes' ]; then
         /etc/roundcube/plugins/password/config.inc.php
     mysql roundcube < /usr/share/dbconfig-common/data/roundcube/install/mysql
     chmod a+r /etc/roundcube/main.inc.php
-    if [ "$release" -eq 8 ]; then
+    if [ "$release" -eq 8 ] || [ "$release" -eq 9 ]; then
         mv -f /etc/roundcube/main.inc.php /etc/roundcube/config.inc.php
         mv -f /etc/roundcube/db.inc.php /etc/roundcube/debian-db-roundcube.php
         chmod 640 /etc/roundcube/debian-db-roundcube.php
         chmod 640 /etc/roundcube/config.inc.php
         chown root:www-data /etc/roundcube/debian-db-roundcube.php
         chown root:www-data /etc/roundcube/config.inc.php
+    fi
+    if [ "$release" -eq 8 ]; then
         # RoundCube tinyMCE fix
         tinymceFixArchiveURL=$vestacp/roundcube/roundcube-tinymce.tar.gz
         tinymceParentFolder=/usr/share/roundcube/program/js
