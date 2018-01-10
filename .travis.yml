@@ -6,15 +6,14 @@ env:
     - secure: HYMYDZsRN5V7PigvsfC8s2N2/bRFrH2bqnNg0tQ0AoUUYFJ4im/ClQzN9DBBTF8HTEpBqwvTnEnVoozjAZ7RHwJmTpCOpu0Ew6mZg/rhUZ2xhxmwjWCgUuDg4xf81JGNX3lI0u/+SkptdDomLQP7SBRWvCD2Cjuj3elL/jItYIL5rKQDPDdv0pOKqwsQ9de2dCNXIUqwwt2YWwIXUsX5UMVPJ92ehwClZ9kTKx+nK98aYV+tQAd+cfpt0OaHnOY0iH+nO2rSOeF6Eii/Q9Ua2WWPSaxgtwh7J/oY+hU6sVuelydZ4dqOODYk47v45UxyH0Jfu+SX7N6I62IBAKEjBmzxEEA4GDATuH901xHTT45LGC2Ll9cD0ZXOUZQSwsYuFSf/14Nipm9Pc3r7dnWVj6g+KwQbrVhgxr4Ou426wdYA1aWRjNSjSuWSZ6d8AP+KY+z7/oYkxcqlI+XV5gKftwsTXKG+BsmFgpTZbmkpb2Jczc/BnL15oMRpE6tUxZ3cR/hOlHTlCRfSv0o+gigAYa+9WUunGRtGqond8JrgaQMx18ZsjazveKHwuT9WV2GwU0YLCUaj/PA/+jDrm994wsDSY4KKeUvh9cOiPEf7Fis6oQ+JnUF/pzb51G5JgzFVe8JqwcJfaYUkxZLbMxBiXQI3XNKx+PlN/Sh4dx9I7K8=
       
   matrix:
-    - OS=ubuntu-14-04-x64
+    - OS=ubuntu-14-04-x32
 
 
-before_install:
-  - test/setup-server.sh $TOKEN $OS
+#before_install:
+#  - test/setup-server.sh $TOKEN $OS
  
 script:
-  - docker exec tpwebcp /bin/bash -c "sudo su -; /usr/local/vesta/test/test_actions.sh; (exit \$?)"
-  - docker exec tpwebcp /bin/bash -c "sudo su -; /usr/local/vesta/test/test_json_listing.sh; (exit \$?)"
+  - test/setup-server.sh $TOKEN $OS
   
-  after_script:
-  - echo "Delete droplet"
+#  after_script:
+#  - echo "Delete droplet"
