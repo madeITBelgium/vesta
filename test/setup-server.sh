@@ -8,7 +8,7 @@ HOSTNAME="vesta.ci.madeit.be"
 REGION="ams3"
 SIZE="512mb"
 
-if [ -z ${1} ]; then
+if [ "$1" = "" ]; then
     TOKEN=""
     IMAGE="ubuntu-14-04-x64"
 fi
