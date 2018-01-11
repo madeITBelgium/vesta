@@ -14,7 +14,6 @@ generate_password() {
 }
 
 rPassword=$(generate_password)
-echo $rPassword
 THISDIR=$(dirname $0)
 
 HOSTNAME="vesta.ci.madeit.be"
@@ -26,7 +25,6 @@ if [ "$1" = "" ]; then
     IMAGE="ubuntu-14-04-x64"
 fi
 
-#dropletId=78416344
 if [ -z ${dropletId} ]; then
     result=$(curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"name":"'$HOSTNAME'","region":"'$REGION'","size":"'$SIZE'","image":"'$IMAGE'","ssh_keys":["35:af:b0:92:27:40:a0:6b:95:a5:b7:11:6e:28:af:d5"],"backups":false,"ipv6":true,"user_data":null,"private_networking":null,"volumes": null,"tags":["CI-vesta-madeit"]}' "https://api.digitalocean.com/v2/droplets" 2>/dev/null)
     dropletId=$(echo [$result] | jq -r '.[].droplet.id')
