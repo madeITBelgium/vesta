@@ -18,6 +18,8 @@ env:
 #  - test/setup-server.sh $TOKEN $OS
  
 script:
+ - echo $TOKEN
+ - echo $API_TOKEN
   - test/setup-server.sh $API_TOKEN $OS
   
 #  after_script:
