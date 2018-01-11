@@ -14,12 +14,11 @@ env:
     - OS=ubuntu-14-04-x64
 
 
-#before_install:
-#  - test/setup-server.sh $TOKEN $OS
+before_install:
+  - test/setup-server.sh $API_TOKEN $OS
  
 script:
-  - ls -la
-  - test/setup-server.sh $API_TOKEN $OS
+  - test/test-server.sh
   
-#  after_script:
-#  - echo "Delete droplet"
+after_script:
+  - test/delete-server.sh

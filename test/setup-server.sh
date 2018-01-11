@@ -22,7 +22,7 @@ REGION="ams3"
 SIZE="512mb"
 
 if [ "$1" = "" ]; then
-    TOKEN=""
+    TOKEN=$(cat $TOKEN/token)
     IMAGE="ubuntu-14-04-x64"
 fi
 
@@ -61,6 +61,7 @@ do
 done
 
 echo "Add ssh key"
+chmod 600 $THISDIR/sshkey.txt
 ssh-keyscan -H $dropletIpv4 >> ~/.ssh/known_hosts
 
 echo "Install VestaCP by Made I.T."
@@ -80,8 +81,5 @@ ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "source /etc/profile.d/vesta.sh"
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart-service vesta"
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash /usr/local/vesta/upd/add_plugin.sh"
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash /usr/local/vesta/upd/afterUpdate.sh"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash /usr/local/vesta/test/test_actions.sh"
-exitcode=$?
 
-echo $rPassword
-exit $exitcode
+echo $dropletIpv4 > $THISDIR/ip_address

@@ -11,5 +11,6 @@ ssl
 log
 web/rrd
 test/dropletId
+test/token
 .vscode
 .DS_Store
