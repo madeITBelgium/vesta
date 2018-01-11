@@ -1,6 +1,6 @@
 #!/bin/bash
-TOKEN=$0
-IMAGE=$1
+TOKEN=$1
+IMAGE=$2
 
 generate_password() {
     matrix=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
