@@ -28,7 +28,7 @@ v-list-user-ns admin json
 v-list-user-packages json
 v-list-users json
 v-list-web-domains admin json
-v-list-web-domain admin example.com json
+v-list-web-domain admin vesta.ci.madeit.be json
 v-list-web-templates json
 v-list-web-templates-proxy json'
 

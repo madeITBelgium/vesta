@@ -10,5 +10,6 @@ nginx
 ssl
 log
 web/rrd
+test/dropletId
 .vscode
 .DS_Store

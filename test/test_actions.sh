@@ -170,6 +170,11 @@ cmd="v-add-sys-ip 198.18.0.125 255.255.255.255 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP: Adding ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
 
+# Add ip address
+cmd="v-add-sys-ip 198.18.0.126 255.255.255.255 $interface $user"
+$cmd > $tmpfile 2>&1
+echo_result "IP: Adding ip 198.18.0.126" "$?" "$tmpfile" "$cmd"
+
 #----------------------------------------------------------#
 #                         WEB                              #
 #----------------------------------------------------------#
@@ -284,7 +289,7 @@ $cmd > $tmpfile 2>&1
 echo_result "DNS: Changing expiriation date" "$?" "$tmpfile" "$cmd"
 
 # Change ip
-cmd="v-change-dns-domain-ip $user $domain 127.0.0.1"
+cmd="v-change-dns-domain-ip $user $domain 198.18.0.126"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Changing domain ip" "$?" "$tmpfile" "$cmd"
 
@@ -334,7 +339,7 @@ echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
 cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a116 64 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP6: Adding ipv6 2001:1620:28:1:b6f:8bca:93:a116" "$?" "$tmpfile" "$cmd"
-/usr/nginx/sbin/nginx -t -c /etc/nginx/nginx.conf
+#/usr/nginx/sbin/nginx -t -c /etc/nginx/nginx.conf
 # Add duplicate ipv6
 $cmd > $tmpfile 2>&1
 if [ "$?" -eq 4 ]; then
@@ -354,13 +359,18 @@ cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a111 64 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
 
+cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a112 64 $interface $user"
+$cmd > $tmpfile 2>&1
+echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a112" "$?" "$tmpfile" "$cmd"
+
+
 #----------------------------------------------------------#
 #                         WEB                              #
 #----------------------------------------------------------#
 
 # Add web domain
 domain="test-$(random 4).vestacp.com"
-cmd="v-add-web-domain $user $domain '198.18.0.125' 2001:1620:28:1:b6f:8bca:93:a111"
+cmd="v-add-web-domain $user $domain 198.18.0.125 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "WEB: Adding domain $domain on 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
 
@@ -425,7 +435,7 @@ echo_result "WEB: rebuilding web domains" "$?" "$tmpfile" "$cmd"
 #----------------------------------------------------------#
 
 # Add dns domain
-cmd="v-add-dns-domain $user $domain '198.18.0.125' 2001:1620:28:1:b6f:8bca:93:a111"
+cmd="v-add-dns-domain $user $domain 198.18.0.125 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Adding dns domain $domain" "$?" "$tmpfile" "$cmd"
 
@@ -439,7 +449,7 @@ fi
 echo_result "DNS: Duplicate domain check" "$retval" "$tmpfile" "$cmd"
 
 # Add dns domain record
-cmd="v-add-dns-record $user $domain test AAAA \"2001:1620:28:1:b6f:8bca:93:a111\" \"\" 20"
+cmd="v-add-dns-record $user $domain test AAAA 2001:1620:28:1:b6f:8bca:93:a111 \"\" 20"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Adding dns record" "$?" "$tmpfile" "$cmd"
 
@@ -463,7 +473,7 @@ $cmd > $tmpfile 2>&1
 echo_result "DNS: Changing expiriation date" "$?" "$tmpfile" "$cmd"
 
 # Change ip
-cmd="v-change-dns-domain-ipv6 $user $domain ::1"
+cmd="v-change-dns-domain-ipv6 $user $domain 2001:1620:28:1:b6f:8bca:93:a112"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Changing domain ip" "$?" "$tmpfile" "$cmd"
 
@@ -499,8 +509,13 @@ $cmd > $tmpfile 2>&1
 echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
 
 # Delete ip address
-cmd="v-delete-sys-ip 2001:1620:28:1:b6f:8bca:93:a111"
+cmd="v-delete-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "Deleting ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
+
+# Delete ip address
+cmd="v-delete-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a112"
+$cmd > $tmpfile 2>&1
+echo_result "Deleting ip 2001:1620:28:1:b6f:8bca:93:a112" "$?" "$tmpfile" "$cmd"
 
 exit $OUTPUT
