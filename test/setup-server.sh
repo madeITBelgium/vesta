@@ -81,4 +81,5 @@ sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/upd/add_plugin.sh"
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/upd/afterUpdate.sh"
 
+echo $rPassword > $THISDIR/password
 echo $dropletIpv4 > $THISDIR/ip_address

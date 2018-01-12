@@ -449,7 +449,7 @@ fi
 echo_result "DNS: Duplicate domain check" "$retval" "$tmpfile" "$cmd"
 
 # Add dns domain record
-cmd="v-add-dns-record $user $domain test AAAA 2001:1620:28:1:b6f:8bca:93:a111 \"\" 20"
+cmd="v-add-dns-record $user $domain test AAAA 2001:1620:28:1:b6f:8bca:93:a111 \"\" 25"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Adding dns record" "$?" "$tmpfile" "$cmd"
 
@@ -463,7 +463,7 @@ fi
 echo_result "DNS: Duplicate record check" "$retval" "$tmpfile" "$cmd"
 
 # Delete dns domain record
-cmd="v-delete-dns-record $user $domain 20"
+cmd="v-delete-dns-record $user $domain 25"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Deleteing dns domain record" "$?" "$tmpfile" "$cmd"
 
