@@ -12,5 +12,7 @@ log
 web/rrd
 test/dropletId
 test/token
+test/password
+test/ip_address
 .vscode
 .DS_Store

@@ -21,8 +21,8 @@ REGION="ams3"
 SIZE="512mb"
 
 if [ "$1" = "" ]; then
-    TOKEN=$(cat $TOKEN/token)
-    IMAGE="ubuntu-14-04-x64"
+    TOKEN=$(cat $THISDIR/token)
+    IMAGE="centos-7-x64"
 fi
 
 if [ -z ${dropletId} ]; then
@@ -58,26 +58,27 @@ do
     fi
 done
 
-echo "Add ssh key"
 chmod 600 $THISDIR/sshkey.txt
 ssh-keyscan -H $dropletIpv4 >> ~/.ssh/known_hosts
 
+echo "Host $dropletIpv4" >> ~/.ssh/config
+echo "User root" >> ~/.ssh/config
+echo "Port 22" >> ~/.ssh/config
+echo "IdentityFile $THISDIR/sshkey.txt" >> ~/.ssh/config
+ 
 echo "Install VestaCP by Made I.T."
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "curl -O http://cp.madeit.be/vst-install.sh"
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install.sh --force --nginx yes --apache yes --phpfpm no --named yes --remi yes --vsftpd yes --proftpd no --iptables yes --fail2ban yes --quota no --exim yes --dovecot yes --spamassassin yes --clamav yes --mysql yes --postgresql no --hostname vesta.ci.madeit.be --email info@madeit.be --password admin -y no"
 
 #Add Hosts below 
-echo "Change password"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 'echo "root:'$rPassword'" | /usr/sbin/chpasswd'
+ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "echo \"root:$rPassword\" | /usr/sbin/chpasswd"
 
-echo "Rsync"
 sshpass -p $rPassword rsync -azP --exclude .git --exclude conf --exclude data --exclude log --exclude nginx --exclude php --exclude ssl $THISDIR/../ root@$dropletIpv4:/usr/local/vesta
 sshpass -p $rPassword rsync -azP $THISDIR/../test/ root@$dropletIpv4:/usr/local/vesta/test
 
-echo "Execute testing"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "source /etc/profile.d/vesta.sh"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart-service vesta"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash /usr/local/vesta/upd/add_plugin.sh"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash /usr/local/vesta/upd/afterUpdate.sh"
+sshpass -p $rPassword ssh root@$dropletIpv4 "source /etc/profile.d/vesta.sh"
+sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart-service vesta"
+sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/upd/add_plugin.sh"
+sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/upd/afterUpdate.sh"
 
 echo $dropletIpv4 > $THISDIR/ip_address
