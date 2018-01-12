@@ -74,7 +74,7 @@ ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install.sh --force --ngin
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "echo \"root:$rPassword\" | /usr/sbin/chpasswd"
 
 sshpass -p $rPassword rsync -azP --exclude .git --exclude conf --exclude data --exclude log --exclude nginx --exclude php --exclude ssl $THISDIR/../../ root@$dropletIpv4:/usr/local/vesta
-sshpass -p $rPassword rsync -azP $THISDIR/../test/ root@$dropletIpv4:/usr/local/vesta/test
+sshpass -p $rPassword rsync -azP $THISDIR/../ root@$dropletIpv4:/usr/local/vesta/test
 
 sshpass -p $rPassword ssh root@$dropletIpv4 "source /etc/profile.d/vesta.sh"
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart-service vesta"
