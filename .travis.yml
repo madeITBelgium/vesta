@@ -21,4 +21,4 @@ script:
   - test/test-server.sh
   
 after_script:
-  - test/delete-server.sh
+  - test/delete-server.sh $API_TOKEN
