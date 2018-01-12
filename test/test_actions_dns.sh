@@ -11,16 +11,6 @@ V_TEST="$VESTA/test"
 OUTPUT=0
 
 # Define functions
-random() {
-    MATRIX='0123456789'
-    LENGTH=$1
-    while [ ${n:=1} -le $LENGTH ]; do
-        rand="$rand${MATRIX:$(($RANDOM%${#MATRIX})):1}"
-        let n+=1
-    done
-    echo "$rand"
-}
-
 echo_result() {
     echo -ne  "$1"
     #echo -en '\033[60G'
@@ -44,11 +34,8 @@ echo_result() {
     fi
 }
 
-# Create random username
-user="testu_$(random 4)"
-while [ ! -z "$(grep "^$user:" /etc/passwd)" ]; do
-    user="tmp_$(random 4)"
-done
+# Create username
+user="testu_123"
 
 # Create random tmpfile
 tmpfile=$(mktemp -p /tmp )
@@ -58,7 +45,7 @@ tmpfile=$(mktemp -p /tmp )
 #                         User                             #
 #----------------------------------------------------------#
 # Add user
-cmd="v-add-user $user $user $user@vestacp.com default Super Test"
+cmd="v-add-user $user $user $user@example.com default Super Test"
 $cmd > $tmpfile 2>&1
 echo_result "USER: Adding new user $user" "$?" "$tmpfile" "$cmd"
 
@@ -68,7 +55,7 @@ $cmd > $tmpfile 2>&1
 echo_result "USER: Changing password" "$?" "$tmpfile" "$cmd"
 
 # Change user contact
-cmd="v-change-user-contact $user tester@vestacp.com"
+cmd="v-change-user-contact $user tester@example.com"
 $cmd > $tmpfile 2>&1
 echo_result "USER: Changing email" "$?" "$tmpfile" "$cmd"
 
@@ -180,7 +167,7 @@ echo_result "IP: Adding ip 198.18.0.126" "$?" "$tmpfile" "$cmd"
 #----------------------------------------------------------#
 
 # Add web domain
-domain="test-$(random 4).vestacp.com"
+domain="test-123.example.com"
 cmd="v-add-web-domain $user $domain 198.18.0.125"
 $cmd > $tmpfile 2>&1
 echo_result "WEB: Adding domain $domain on 198.18.0.125" "$?" "$tmpfile" "$cmd"
@@ -315,13 +302,13 @@ $cmd > $tmpfile 2>&1
 echo_result "Adding mail domain $domain" "$?" "$tmpfile" "$cmd"
 
 # Add mysql database
-database=d$(random 4)
+database=d123
 cmd="v-add-database $user $database $database dbp4ssw0rd mysql"
 $cmd > $tmpfile 2>&1
 echo_result "Adding mysql database $database" "$?" "$tmpfile" "$cmd"
 
 # Add pgsql database
-#database=d$(random 4)
+#database=d123
 #cmd="v-add-database $user $database $database dbp4ssw0rd pgsql"
 #$cmd > $tmpfile 2>&1
 #echo_result "Adding pgsql database $database" "$?" "$tmpfile" "$cmd"
@@ -369,7 +356,7 @@ echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a112" "$?" "$tmpfile" "$c
 #----------------------------------------------------------#
 
 # Add web domain
-domain="test-$(random 4).vestacp.com"
+domain="test-abcd.example.com"
 cmd="v-add-web-domain $user $domain 198.18.0.125 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "WEB: Adding domain $domain on 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"

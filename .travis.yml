@@ -15,10 +15,18 @@ env:
 
 
 before_install:
-  - test/setup-server.sh $API_TOKEN $OS
+  - test/setup/setup-server.sh $API_TOKEN $OS
  
 script:
-  - test/test-server.sh
+  - test/setup/test-server.sh test_action_user
+  - test/setup/test-server.sh test_action_cron
+  - test/setup/test-server.sh test_action_ip
+  - test/setup/test-server.sh test_action_web
+  - test/setup/test-server.sh test_action_dns
+  - test/setup/test-server.sh test_action_ipv6
+  - test/setup/test-server.sh test_action_web_ipv6
+  - test/setup/test-server.sh test_action_dns_ipv6
+  - test/setup/test-server.sh test_action_delete
   
 after_script:
-  - test/delete-server.sh $API_TOKEN
+  - test/setup/delete-server.sh $API_TOKEN

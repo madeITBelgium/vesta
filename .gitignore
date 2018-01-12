@@ -10,9 +10,9 @@ nginx
 ssl
 log
 web/rrd
-test/dropletId
-test/token
-test/password
-test/ip_address
+test/setup/dropletId
+test/setup/token
+test/setup/password
+test/setup/ip_address
 .vscode
 .DS_Store
