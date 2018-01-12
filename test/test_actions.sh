@@ -171,7 +171,7 @@ $cmd > $tmpfile 2>&1
 echo_result "IP: Adding ip 198.18.0.125" "$?" "$tmpfile" "$cmd"
 
 # Add ip address
-cmd="v-add-sys-ip 198.18.0.126 255.255.255.255 $interface $user"
+cmd="v-add-sys-ip 198.18.0.126 255.255.255.255 $interface"
 $cmd > $tmpfile 2>&1
 echo_result "IP: Adding ip 198.18.0.126" "$?" "$tmpfile" "$cmd"
 
