@@ -874,7 +874,7 @@ is_name_format_valid() {
 
 # Object validator
 is_object_format_valid() {
-    if ! [[ "$1" =~ ^[a-zA-Z0-9][-|\.|_[:alnum:]]{0,28}[[:alnum:]]$ ]]; then
+    if ! [[ "$1" =~ ^[a-zA-Z0-9][-|\.|_[:alnum:]]{0,35}[[:alnum:]]$ ]]; then
         check_result $E_INVALID "invalid $2 format :: $1"
     fi
 }
