@@ -71,7 +71,7 @@ fi
 #----------------------------------------------------------#
 
 # Updating config
-update_object_value 'web' 'DOMAIN' "$domain_idn" '$PROXY' "$PROXY"
+update_object_value 'web' 'DOMAIN' "$domain_idn" '$PROXY' "$template"
 update_object_value 'web' 'DOMAIN' "$domain_idn" '$PROXY_EXT' "$extentions"
 
 # Restarting proxy
