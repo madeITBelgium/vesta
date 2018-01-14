@@ -305,6 +305,7 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
 
     # Restoring web domain
     for domain in $domains; do
+        domain_idn=""
         format_domain_idn
         echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
 
@@ -476,6 +477,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
 
     # Restoring dns domain
     for domain in $domains; do
+        domain_idn=""
         format_domain_idn
         echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
 
@@ -583,6 +585,7 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
 
     # Restoring dns domain
     for domain in $domains; do
+        domain_idn=""
         format_domain_idn
         echo -e "$(date "+%F %T") $domain" |tee -a $tmpdir/restore.log
 
