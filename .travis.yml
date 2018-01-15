@@ -18,15 +18,15 @@ before_install:
   - test/setup/setup-server.sh $API_TOKEN $OS
  
 script:
-  - test/setup/test-server.sh test_action_user
-  - test/setup/test-server.sh test_action_cron
-  - test/setup/test-server.sh test_action_ip
-  - test/setup/test-server.sh test_action_web
-  - test/setup/test-server.sh test_action_dns
-  - test/setup/test-server.sh test_action_ipv6
-  - test/setup/test-server.sh test_action_web_ipv6
-  - test/setup/test-server.sh test_action_dns_ipv6
-  - test/setup/test-server.sh test_action_delete
+  - test/setup/test-server.sh test_actions_user
+  - test/setup/test-server.sh test_actions_cron
+  - test/setup/test-server.sh test_actions_ip
+  - test/setup/test-server.sh test_actions_web
+  - test/setup/test-server.sh test_actions_dns
+  - test/setup/test-server.sh test_actions_ipv6
+  - test/setup/test-server.sh test_actions_web_ipv6
+  - test/setup/test-server.sh test_actions_dns_ipv6
+  - test/setup/test-server.sh test_actions_delete
   
 after_script:
   - test/setup/delete-server.sh $API_TOKEN
