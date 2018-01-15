@@ -68,7 +68,7 @@ echo "IdentityFile $THISDIR/sshkey.txt" >> ~/.ssh/config
  
 echo "Install VestaCP by Made I.T."
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "curl -O http://cp.madeit.be/vst-install.sh"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install.sh --force --nginx yes --apache yes --phpfpm no --named yes --remi yes --vsftpd yes --proftpd no --iptables yes --fail2ban yes --quota no --exim yes --dovecot yes --spamassassin yes --clamav yes --mysql yes --postgresql no --hostname vesta.ci.madeit.be --email info@madeit.be --password admin -y no"
+ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install.sh --nginx yes --apache yes --phpfpm no --named yes --remi yes --vsftpd yes --proftpd no --iptables yes --fail2ban yes --quota no --exim yes --dovecot yes --spamassassin yes --clamav yes --mysql yes --postgresql no --hostname vesta.ci.madeit.be --email info@madeit.be --password admin -y no --force"
 
 #Add Hosts below 
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "echo \"root:$rPassword\" | /usr/sbin/chpasswd"
@@ -76,7 +76,6 @@ ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "echo \"root:$rPassword\" | /usr/sb
 sshpass -p $rPassword rsync -azP --exclude .git --exclude conf --exclude data --exclude log --exclude nginx --exclude php --exclude ssl $THISDIR/../../ root@$dropletIpv4:/usr/local/vesta
 sshpass -p $rPassword rsync -azP $THISDIR/../ root@$dropletIpv4:/usr/local/vesta/test
 
-sshpass -p $rPassword ssh root@$dropletIpv4 "ls -la /etc/profile.d/"
 sshpass -p $rPassword ssh root@$dropletIpv4 "source ~/.bash_profile"
 sshpass -p $rPassword ssh root@$dropletIpv4 "source /etc/profile.d/vesta.sh"
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart-service vesta"
