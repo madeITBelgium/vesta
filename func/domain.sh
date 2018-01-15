@@ -329,9 +329,9 @@ del_web_config() {
     if [[ "$2" =~ stpl$ ]]; then
         conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.conf"
     fi
-
+    
+    sed -i "\|$conf|d" /etc/$1/conf.d/vesta.conf
     if [ -e "$conf" ]; then
-        sed -i "\|$conf|d" /etc/$1/conf.d/vesta.conf
         rm -f $conf
     else
         # fallback to old style configs
@@ -339,14 +339,17 @@ del_web_config() {
         if [[ "$2" =~ stpl$ ]]; then
             conf="$HOMEDIR/$user/conf/web/s$1.conf"
         fi
-        old=$IP
-        get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
-        sed -i "$top_line,$bottom_line d" $conf
+        
+        if [ -e "$conf" ]; then
+            old=$IP
+            get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+            sed -i "$top_line,$bottom_line d" $conf
 
-        web_domain=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
-        if [ "$web_domain" -eq '0' ]; then
-            sed -i "/.*\/$user\/.*$1.conf/d" /etc/$1/conf.d/vesta.conf
-            rm -f $conf
+            web_domain=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
+            if [ "$web_domain" -eq '0' ]; then
+                sed -i "/.*\/$user\/.*$1.conf/d" /etc/$1/conf.d/vesta.conf
+                rm -f $conf
+            fi
         fi
     fi
     
@@ -355,8 +358,8 @@ del_web_config() {
         conf="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
     fi
 
+    sed -i "\|$conf|d" /etc/$1/conf.d/vesta.conf
     if [ -e "$conf" ]; then
-        sed -i "\|$conf|d" /etc/$1/conf.d/vesta.conf
         rm -f $conf
     else
         # fallback to old style configs
@@ -364,14 +367,17 @@ del_web_config() {
         if [[ "$2" =~ stpl$ ]]; then
             conf="$HOMEDIR/$user/conf/web/s$1.conf"
         fi
-        old=$IP6
-        get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
-        sed -i "$top_line,$bottom_line d" $conf
+        
+        if [ -e "$conf" ]; then
+            old=$IP6
+            get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
+            sed -i "$top_line,$bottom_line d" $conf
 
-        web_domain=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
-        if [ "$web_domain" -eq '0' ]; then
-            sed -i "/.*\/$user\/.*$1.conf/d" /etc/$1/conf.d/vesta.conf
-            rm -f $conf
+            web_domain=$(grep DOMAIN $USER_DATA/web.conf |wc -l)
+            if [ "$web_domain" -eq '0' ]; then
+                sed -i "/.*\/$user\/.*$1.conf/d" /etc/$1/conf.d/vesta.conf
+                rm -f $conf
+            fi
         fi
     fi
 }
