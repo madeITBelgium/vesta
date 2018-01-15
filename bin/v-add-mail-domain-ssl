@@ -1,5 +1,5 @@
 #!/bin/bash
-# info: adding ssl for ${domain_idn}
+# info: adding ssl for $domain
 # options: USER DOMAIN SSL_DIR [RESTART]
 #
 # The function turns on SSL support for a domain. Parameter ssl_dir is a path
@@ -18,15 +18,18 @@ ssl_dir=$3
 restart="$3"
 
 # Additional argument formatting
-if [[ "${domain_idn}" =~ [[:upper:]] ]]; then
-    domain=$(echo "${domain_idn}" |tr '[:upper:]' '[:lower:]')
+if [[ "$domain" =~ [[:upper:]] ]]; then
+    domain=$(echo "$domain" |tr '[:upper:]' '[:lower:]')
 fi
-if [[ "${domain_idn}" =~ ^www\..* ]]; then
-    domain=$(echo "${domain_idn}" |sed -e "s/^www.//")
+if [[ "$domain" =~ ^www\..* ]]; then
+    domain=$(echo "$domain" |sed -e "s/^www.//")
 fi
-if [[ "${domain_idn}" =~ .*\.$ ]]; then
-    domain=$(echo "${domain_idn}" |sed -e "s/\.$//")
+if [[ "$domain" =~ .*\.$ ]]; then
+    domain=$(echo "$domain" |sed -e "s/\.$//")
 fi
+
+domain=$(idn -t --quiet -u "$domain" )
+domain_idn=$(idn -t --quiet -a "$domain")
 
 # Includes
 source $VESTA/func/main.sh
@@ -49,11 +52,11 @@ is_format_valid 'user' 'domain' 'ssl_dir'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain_idn"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
-is_object_value_empty 'mail' 'DOMAIN' "$domain_idn" '$SSL'
-is_object_valid 'web' 'DOMAIN' "$domain_idn"
-is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+is_object_value_empty 'mail' 'DOMAIN' "$domain" '$SSL'
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
 is_web_domain_cert_valid
 
 #----------------------------------------------------------#
@@ -64,36 +67,36 @@ if [ ! -d "$USER_DATA/mail-ssl" ]; then
     chmod 750 $USER_DATA/mail-ssl
 fi
 # Adding certificate to user data directory
-cp -f $ssl_dir/${domain_idn}.crt $USER_DATA/mail-ssl/${domain_idn}.crt
-cp -f $ssl_dir/${domain_idn}.key $USER_DATA/mail-ssl/${domain_idn}.key
-cp -f $ssl_dir/${domain_idn}.crt $USER_DATA/mail-ssl/${domain_idn}.pem
-if [ -e "$ssl_dir/${domain_idn}.ca" ]; then
-    cp -f $ssl_dir/${domain_idn}.ca $USER_DATA/mail-ssl/${domain_idn}.ca
-    echo >> $USER_DATA/mail-ssl/${domain_idn}.pem
-    cat $USER_DATA/ssl/${domain_idn}.ca >> $USER_DATA/mail-ssl/${domain_idn}.pem
+cp -f $ssl_dir/$domain.crt $USER_DATA/mail-ssl/$domain.crt
+cp -f $ssl_dir/$domain.key $USER_DATA/mail-ssl/$domain.key
+cp -f $ssl_dir/$domain.crt $USER_DATA/mail-ssl/$domain.pem
+if [ -e "$ssl_dir/$domain.ca" ]; then
+    cp -f $ssl_dir/$domain.ca $USER_DATA/mail-ssl/$domain.ca
+    echo >> $USER_DATA/mail-ssl/$domain.pem
+    cat $USER_DATA/ssl/$domain.ca >> $USER_DATA/mail-ssl/$domain.pem
 fi
-chmod 660 $USER_DATA/mail-ssl/${domain_idn}.*
+chmod 660 $USER_DATA/mail-ssl/$domain.*
 
 # Adding certificate to user dir
-cp -f $USER_DATA/mail-ssl/${domain_idn}.crt $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.crt
-cp -f $USER_DATA/mail-ssl/${domain_idn}.key $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.key
-cp -f $USER_DATA/mail-ssl/${domain_idn}.pem $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.pem
-if [ -e "$USER_DATA/mail-ssl/${domain_idn}.ca" ]; then
-    cp -f $USER_DATA/mail-ssl/${domain_idn}.ca $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.ca
+cp -f $USER_DATA/mail-ssl/$domain.crt $HOMEDIR/$user/conf/mail/ssl.$domain.crt
+cp -f $USER_DATA/mail-ssl/$domain.key $HOMEDIR/$user/conf/mail/ssl.$domain.key
+cp -f $USER_DATA/mail-ssl/$domain.pem $HOMEDIR/$user/conf/mail/ssl.$domain.pem
+if [ -e "$USER_DATA/mail-ssl/$domain.ca" ]; then
+    cp -f $USER_DATA/mail-ssl/$domain.ca $HOMEDIR/$user/conf/mail/ssl.$domain.ca
 fi
 
 # Adding domain to the dovecot config
 echo "" >> /etc/dovecot/conf.d/10-ssl.conf
-echo "local_name ${domain_idn} {" >> /etc/dovecot/conf.d/10-ssl.conf
-echo "  ssl_cert = <$HOMEDIR/$user/conf/mail/ssl.${domain_idn}.pem" >> /etc/dovecot/conf.d/10-ssl.conf
-echo "  ssl_key = <$HOMEDIR/$user/conf/mail/ssl.${domain_idn}.key" >> /etc/dovecot/conf.d/10-ssl.conf
+echo "local_name $domain {" >> /etc/dovecot/conf.d/10-ssl.conf
+echo "  ssl_cert = <$HOMEDIR/$user/conf/mail/ssl.$domain.pem" >> /etc/dovecot/conf.d/10-ssl.conf
+echo "  ssl_key = <$HOMEDIR/$user/conf/mail/ssl.$domain.key" >> /etc/dovecot/conf.d/10-ssl.conf
 echo "}" >> /etc/dovecot/conf.d/10-ssl.conf
 
-rm -f /usr/local/vesta/ssl/exim.key.$domain_idn
-rm -f /usr/local/vesta/ssl/exim.cert.$domain_idn
+rm -f /usr/local/vesta/ssl/exim.key.$domain
+rm -f /usr/local/vesta/ssl/exim.cert.$domain
 
-ln -s $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.key /usr/local/vesta/ssl/exim.key.$domain_idn
-ln -s $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.pem /usr/local/vesta/ssl/exim.cert.$domain_idn
+ln -s $HOMEDIR/$user/conf/mail/ssl.$domain.key /usr/local/vesta/ssl/exim.key.$domain
+ln -s $HOMEDIR/$user/conf/mail/ssl.$domain.pem /usr/local/vesta/ssl/exim.cert.$domain
 
 
 #----------------------------------------------------------#
@@ -104,7 +107,7 @@ ln -s $HOMEDIR/$user/conf/mail/ssl.${domain_idn}.pem /usr/local/vesta/ssl/exim.c
 increase_user_value "$user" '$U_MAIL_SSL'
 
 # Adding ssl values
-update_object_value 'mail' 'DOMAIN' "$domain_idn" '$SSL' "yes"
+update_object_value 'mail' 'DOMAIN' "$domain" '$SSL' "yes"
 
 # Restarting mail server
 $BIN/v-restart-mail $restart

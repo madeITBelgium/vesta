@@ -40,7 +40,7 @@ is_object_unsuspended 'user' 'USER' "$user"
 for domain in $(search_objects 'web' 'SUSPENDED' "no" 'DOMAIN'); do
     get_domain_values 'web'
     if [ ! -z "$STATS" ] && [ "$STATS" != 'no' ]; then
-        $BIN/v-update-web-domain-stat "$user" "$domain_idn"
+        $BIN/v-update-web-domain-stat "$user" "$domain"
     fi
 done
 

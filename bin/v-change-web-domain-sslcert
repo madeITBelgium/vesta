@@ -25,8 +25,6 @@ source $VESTA/conf/vesta.conf
 # Additional argument formatting
 format_domain
 format_domain_idn
-# TODO: $domain_idn not used in this script - maybe $domain should be converted to $doman_idn ?
-
 
 #----------------------------------------------------------#
 #                    Verifications                         #
@@ -37,9 +35,9 @@ is_format_valid 'user' 'domain' 'ssl_dir'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain_idn"
-is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
-is_object_value_exist 'web' 'DOMAIN' "$domain_idn" '$SSL'
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
+is_object_value_exist 'web' 'DOMAIN' "$domain" '$SSL'
 is_web_domain_cert_valid
 
 
@@ -61,7 +59,7 @@ if [ -e "$ssl_dir/$domain.ca" ]; then
     cp -f $ssl_dir/$domain.ca $USER_DATA/ssl/$domain.ca
     cat $USER_DATA/ssl/$domain.ca >> $USER_DATA/ssl/$domain.pem
 fi
-chmod 660 $USER_DATA/ssl/${domain_idn}.*
+chmod 660 $USER_DATA/ssl/$domain.*
 
 # Adding new certificate to user dir
 cp -f $USER_DATA/ssl/$domain.crt $HOMEDIR/$user/conf/web/ssl.$domain.crt

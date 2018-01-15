@@ -16,11 +16,6 @@ domain=$1
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
-# Additional argument formatting
-format_domain
-format_domain_idn
-
-
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
@@ -39,15 +34,15 @@ hostname $domain
 if [ -e "/etc/redhat-release" ]; then
     touch /etc/sysconfig/network
     if [ -z "$(grep HOSTNAME /etc/sysconfig/network)" ]; then
-        echo "HOSTNAME='$domain_idn'" >> /etc/sysconfig/network
+        echo "HOSTNAME='$domain'" >> /etc/sysconfig/network
     else
-        sed -i "s/HOSTNAME=.*/HOSTNAME='$domain_idn'/" /etc/sysconfig/network
+        sed -i "s/HOSTNAME=.*/HOSTNAME='$domain'/" /etc/sysconfig/network
     fi
 fi
 
 # Debian/Ubuntu
 if [ ! -e "/etc/redhat-release" ]; then
-    echo "$domain_idn" > /etc/hostname
+    echo "$domain" > /etc/hostname
 fi
 
 
