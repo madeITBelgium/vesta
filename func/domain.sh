@@ -339,6 +339,7 @@ del_web_config() {
         if [[ "$2" =~ stpl$ ]]; then
             conf="$HOMEDIR/$user/conf/web/s$1.conf"
         fi
+        old=$IP
         get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
         sed -i "$top_line,$bottom_line d" $conf
 
@@ -363,6 +364,7 @@ del_web_config() {
         if [[ "$2" =~ stpl$ ]]; then
             conf="$HOMEDIR/$user/conf/web/s$1.conf"
         fi
+        old=$IP6
         get_web_config_lines $WEBTPL/$1/$WEB_BACKEND/$2 $conf
         sed -i "$top_line,$bottom_line d" $conf
 

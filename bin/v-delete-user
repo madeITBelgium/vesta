@@ -68,9 +68,9 @@ if [ ! -z "$DB_SYSTEM" ] && [ "$DB_SYSTEM" != 'no' ]; then
 fi
 
 # Releasing user ips
-$BIN/v-delete-user-ips "$user"
+$BIN/v-delete-user-ips $user
 check_result "$?" "user ip release failed"
-$BIN/v-delete-user-ipv6s "$user"
+$BIN/v-delete-user-ipv6s $user
 check_result "$?" "user ipv6 release failed"
 
 # Deleteing user pipes
