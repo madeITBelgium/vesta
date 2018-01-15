@@ -62,6 +62,7 @@ echo_result "DNS: Rebuilding domain" "$?" "$tmpfile" "$cmd"
 
 
 # Add mail domain
+domain="test-123mail.example.com"
 cmd="v-add-mail-domain $user $domain"
 $cmd > $tmpfile 2>&1
 echo_result "Adding mail domain $domain" "$?" "$tmpfile" "$cmd"

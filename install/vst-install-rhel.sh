@@ -887,16 +887,9 @@ if [ "$nginx" = 'yes' ]; then
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
     if [ "$release" -eq 7 ]; then
-<<<<<<< HEAD
         mkdir /etc/systemd/system/nginx.service.d/
         echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
         echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
-=======
-        mkdir /etc/systemd/system/nginx.service.d
-        cd /etc/systemd/system/nginx.service.d
-        echo "[Service]" > limits.conf
-        echo "LimitNOFILE=500000" >> limits.conf
->>>>>>> 713e1f67953952597464e0a0beaa09f84b01ff64
     fi
     chkconfig nginx on
     service nginx start
@@ -937,16 +930,9 @@ if [ "$apache" = 'yes'  ]; then
     mkdir -p /var/log/httpd/domains
     chmod 751 /var/log/httpd/domains
     if [ "$release" -eq 7 ]; then
-<<<<<<< HEAD
         mkdir /etc/systemd/system/httpd.service.d/
         echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
         echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
-=======
-        mkdir /etc/systemd/system/httpd.service.d
-        cd /etc/systemd/system/httpd.service.d
-        echo "[Service]" > limits.conf
-        echo "LimitNOFILE=500000" >> limits.conf
->>>>>>> 713e1f67953952597464e0a0beaa09f84b01ff64
     fi
     chkconfig httpd on
     service httpd start
@@ -1314,8 +1300,8 @@ $VESTA/bin/v-update-sys-ip
 # Get main ipv6
 ipv6=$(ip addr show | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -ve "^fe80" | tail -1)
 if [ ! -z "$ipv6" ] && [ "::1" != "$ipv6" ]; then
-    netmask="ip addr show | grep '$ipv6' | awk -F '/' '{print $2}' | awk '{print $1}'"
-    netmask=$(eval $netmask)
+    netmask=$("ip addr show | grep '$ipv6' | awk -F '/' '{print $2}' | awk '{print $1}'")
+    #netmask=$(eval $netmask)
     $VESTA/bin/v-add-sys-ipv6 $ipv6 $netmask
 fi
 
