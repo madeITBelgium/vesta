@@ -44,6 +44,15 @@ tmpfile=$(mktemp -p /tmp )
 #                          IPv6                            #
 #----------------------------------------------------------#
 
+# List network interfaces
+cmd="v-list-sys-interfaces plain"
+interface=$($cmd 2> $tmpfile | head -n 1)
+if [ -z "$interface" ]; then
+    echo_result "IP: Listing network interfaces" "1" "$tmpfile" "$cmd"
+else
+    echo_result "IP: Listing network interfaces" "0" "$tmpfile" "$cmd"
+fi
+
 # Add ipv6 address
 cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a116 64 $interface $user"
 $cmd > $tmpfile 2>&1

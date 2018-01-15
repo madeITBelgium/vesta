@@ -45,6 +45,7 @@ tmpfile=$(mktemp -p /tmp )
 #----------------------------------------------------------#
 
 # Suspend dns domain
+domain="test-123.example.com"
 cmd="v-suspend-dns-domain $user $domain"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Suspending domain" "$?" "$tmpfile" "$cmd"

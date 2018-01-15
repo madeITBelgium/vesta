@@ -45,6 +45,7 @@ tmpfile=$(mktemp -p /tmp )
 #----------------------------------------------------------#
 
 # Add dns domain
+domain="test-123.example.com"
 cmd="v-add-dns-domain $user $domain 198.18.0.125 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Adding dns domain $domain" "$?" "$tmpfile" "$cmd"
