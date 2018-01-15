@@ -44,3 +44,8 @@ if [ "$VERSION" = "0.0.4" ]; then
     
     bash /usr/local/vesta/upd/separate_web_conf.sh
 fi
+
+if [ "$VERSION" = "0.0.5" ]; then
+    VERSION="0.0.6"
+    sed -i "s/VERSION=.*/VERSION='0.0.6'/g" /usr/local/vesta/conf/vesta.conf
+fi
