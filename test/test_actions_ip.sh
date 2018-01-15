@@ -57,7 +57,7 @@ fi
 cmd="v-add-sys-ip 198.18.0.123 255.255.255.255 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP: Adding ip 198.18.0.123" "$?" "$tmpfile" "$cmd"
-
+/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
 # Add duplicate ip
 $cmd > $tmpfile 2>&1
 if [ "$?" -eq 4 ]; then
