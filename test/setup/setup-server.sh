@@ -67,8 +67,8 @@ echo "Port 22" >> ~/.ssh/config
 echo "IdentityFile $THISDIR/sshkey.txt" >> ~/.ssh/config
  
 echo "Install VestaCP by Made I.T."
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "curl -O http://cp.madeit.be/vst-install.sh"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install.sh --hostname vesta.ci.madeit.be --email info@madeit.be --password admin -y no --force"
+ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "curl -O http://cp.madeit.be/vst-install-rhel.sh"
+ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install-rhel.sh -s vesta.ci.madeit.be -e info@madeit.be -p admin -y no -f"
 
 #Add Hosts below 
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "echo \"root:$rPassword\" | /usr/sbin/chpasswd"
