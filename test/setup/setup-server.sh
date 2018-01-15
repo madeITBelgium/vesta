@@ -76,6 +76,8 @@ ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "echo \"root:$rPassword\" | /usr/sb
 sshpass -p $rPassword rsync -azP --exclude .git --exclude conf --exclude data --exclude log --exclude nginx --exclude php --exclude ssl $THISDIR/../../ root@$dropletIpv4:/usr/local/vesta
 sshpass -p $rPassword rsync -azP $THISDIR/../ root@$dropletIpv4:/usr/local/vesta/test
 
+sshpass -p $rPassword ssh root@$dropletIpv4 "ls -la /etc/profile.d/"
+sshpass -p $rPassword ssh root@$dropletIpv4 "source ~/.bash_profile"
 sshpass -p $rPassword ssh root@$dropletIpv4 "source /etc/profile.d/vesta.sh"
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart-service vesta"
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/upd/afterUpdate.sh"
