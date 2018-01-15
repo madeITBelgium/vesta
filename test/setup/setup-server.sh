@@ -68,7 +68,7 @@ echo "IdentityFile $THISDIR/sshkey.txt" >> ~/.ssh/config
  
 echo "Install VestaCP by Made I.T."
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "curl -O http://cp.madeit.be/vst-install.sh"
-ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install.sh --nginx yes --apache yes --phpfpm no --named yes --remi yes --vsftpd yes --proftpd no --iptables yes --fail2ban yes --quota no --exim yes --dovecot yes --spamassassin yes --clamav yes --mysql yes --postgresql no --hostname vesta.ci.madeit.be --email info@madeit.be --password admin -y no --force"
+ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "bash vst-install.sh --hostname vesta.ci.madeit.be --email info@madeit.be --password admin -y no --force"
 
 #Add Hosts below 
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "echo \"root:$rPassword\" | /usr/sbin/chpasswd"
