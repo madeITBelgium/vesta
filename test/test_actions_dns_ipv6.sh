@@ -45,7 +45,7 @@ tmpfile=$(mktemp -p /tmp )
 #----------------------------------------------------------#
 
 # Add dns domain
-domain="test-123.example.com"
+domain="test-1234.example.com"
 cmd="v-add-dns-domain $user $domain 198.18.0.125 2001:1620:28:1:b6f:8bca:93:a111"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Adding dns domain $domain" "$?" "$tmpfile" "$cmd"
@@ -87,46 +87,5 @@ echo_result "DNS: Changing expiriation date" "$?" "$tmpfile" "$cmd"
 cmd="v-change-dns-domain-ipv6 $user $domain 2001:1620:28:1:b6f:8bca:93:a112"
 $cmd > $tmpfile 2>&1
 echo_result "DNS: Changing domain ip" "$?" "$tmpfile" "$cmd"
-
-# Suspend dns domain
-cmd="v-suspend-dns-domain $user $domain"
-$cmd > $tmpfile 2>&1
-echo_result "DNS: Suspending domain" "$?" "$tmpfile" "$cmd"
-
-# Unuspend dns domain
-cmd="v-unsuspend-dns-domain $user $domain"
-$cmd > $tmpfile 2>&1
-echo_result "DNS: Unsuspending domain" "$?" "$tmpfile" "$cmd"
-
-# Rebuild dns domain
-cmd="v-rebuild-dns-domains $user"
-$cmd > $tmpfile 2>&1
-echo_result "DNS: Rebuilding domain" "$?" "$tmpfile" "$cmd"
-
-
-# Add mail domain
-cmd="v-add-mail-domain $user $domain"
-$cmd > $tmpfile 2>&1
-echo_result "Adding mail domain $domain" "$?" "$tmpfile" "$cmd"
-
-# Rebuild user configs
-cmd="v-rebuild-user $user yes"
-$cmd > $tmpfile 2>&1
-echo_result "Rebuilding user config" "$?" "$tmpfile" "$cmd"
-
-# Delete user
-cmd="v-delete-user $user"
-$cmd > $tmpfile 2>&1
-echo_result "Deleting user $user" "$?" "$tmpfile" "$cmd"
-
-# Delete ip address
-cmd="v-delete-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a111"
-$cmd > $tmpfile 2>&1
-echo_result "Deleting ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
-
-# Delete ip address
-cmd="v-delete-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a112"
-$cmd > $tmpfile 2>&1
-echo_result "Deleting ip 2001:1620:28:1:b6f:8bca:93:a112" "$?" "$tmpfile" "$cmd"
 
 exit $OUTPUT
