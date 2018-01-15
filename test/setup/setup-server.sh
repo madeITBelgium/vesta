@@ -79,6 +79,7 @@ sshpass -p $rPassword rsync -azP $THISDIR/../ root@$dropletIpv4:/usr/local/vesta
 sshpass -p $rPassword ssh root@$dropletIpv4 "source ~/.bash_profile"
 sshpass -p $rPassword ssh root@$dropletIpv4 "source /etc/profile.d/vesta.sh"
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/bin/v-restart-service vesta"
+sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/upd/afterInstall.sh"
 sshpass -p $rPassword ssh root@$dropletIpv4 "bash /usr/local/vesta/upd/afterUpdate.sh"
 
 echo $rPassword > $THISDIR/password
