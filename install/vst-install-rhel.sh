@@ -65,13 +65,11 @@ help() {
   -q, --quota             Filesystem Quota      [yes|no]  default: no
   -l, --lang              Default language                default: en
   -y, --interactive       Interactive install   [yes|no]  default: yes
-  -p7, --php7             Install PHP 7         [yes|no]  default: yes
   -s, --hostname          Set hostname
   -e, --email             Set admin email
   -p, --password          Set admin password
   -f, --force             Force installation
   -h, --help              Print this help
-
   Example: bash $0 -e demo@vestacp.com -p p4ssw0rd --apache no --phpfpm yes"
     exit 1
 }
@@ -133,17 +131,11 @@ for arg; do
     delim=""
     case "$arg" in
         --apache)               args="${args}-a " ;;
-        --fail2ban)             args="${args}-b " ;;
-        --clamav)               args="${args}-c " ;;
-        --mongodb)              args="${args}-d " ;;
-        --email)                args="${args}-e " ;;
-        --force)                args="${args}-f " ;;
-        --postgresql)           args="${args}-g " ;;
-        --help)                 args="${args}-h " ;;
-        --iptables)             args="${args}-i " ;;
+        --nginx)                args="${args}-n " ;;
+        --phpfpm)               args="${args}-w " ;;
+        --vsftpd)               args="${args}-v " ;;
         --proftpd)              args="${args}-j " ;;
         --named)                args="${args}-k " ;;
-        --lang)                 args="${args}-l " ;;
         --mysql)                args="${args}-m " ;;
         --postgresql)           args="${args}-g " ;;
         --mongodb)              args="${args}-d " ;;
@@ -156,14 +148,13 @@ for arg; do
         --remi)                 args="${args}-r " ;;
         --softaculous)          args="${args}-o " ;;
         --quota)                args="${args}-q " ;;
-        --remi)                 args="${args}-r " ;;
-        --hostname)             args="${args}-s " ;;
-        --spamassassin)         args="${args}-t " ;;
-        --vsftpd)               args="${args}-v " ;;
-        --phpfpm)               args="${args}-w " ;;
-        --exim)                 args="${args}-x " ;;
+        --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
-        --dovecot)              args="${args}-z " ;;
+        --hostname)             args="${args}-s " ;;
+        --email)                args="${args}-e " ;;
+        --password)             args="${args}-p " ;;
+        --force)                args="${args}-f " ;;
+        --help)                 args="${args}-h " ;;
         *)                      [[ "${arg:0:1}" == "-" ]] || delim="\""
                                 args="${args}${delim}${arg}${delim} ";;
     esac
