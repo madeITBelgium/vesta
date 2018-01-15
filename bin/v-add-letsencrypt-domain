@@ -27,7 +27,6 @@ source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
 # Additional argument formatting
-
 format_domain_idn
 
 #----------------------------------------------------------#
@@ -40,8 +39,8 @@ is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_system_enabled "$WEB_SSL" 'SSL_SUPPORT'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain_idn"
-is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
 
 
 #----------------------------------------------------------#
@@ -86,8 +85,8 @@ for alias in $(echo $domain,$aliases |tr ',' '\n' |sort -u); do
 done
 
 # Generating CSR
-ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "$email" "US" "California" \
-    "San Francisco" "Vesta" "IT" "$aliases" |tail -n1 |awk '{print $2}')
+ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "$email" "BE" "Antwerp" \
+    "Geel" "Made I.T." "IT" "$aliases" |tail -n1 |awk '{print $2}')
 
 # Signing CSR
 crt=$($BIN/v-sign-letsencrypt-csr $user $domain $ssl_dir)
@@ -131,9 +130,9 @@ fi
 
 # Updating letsencrypt key
 if [ -z "$LETSENCRYPT" ]; then
-    add_object_key "web" 'DOMAIN' "$domain_idn" 'LETSENCRYPT' 'FTP_USER'
+    add_object_key "web" 'DOMAIN' "$domain" 'LETSENCRYPT' 'FTP_USER'
 fi
-update_object_value 'web' 'DOMAIN' "$domain_idn" '$LETSENCRYPT' 'yes'
+update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'yes'
 
 
 #----------------------------------------------------------#
