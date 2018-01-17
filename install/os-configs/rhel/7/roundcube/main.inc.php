@@ -10,6 +10,11 @@ $config['smtp_user'] = '';
 $config['smtp_pass'] = '';
 $config['support_url'] = '';
 
+$config['smtp_port'] = 25;
+$config['smtp_user'] = '%u';
+$config['smtp_pass'] = '%p';
+$config['smtp_auth_type'] = 'LOGIN';
+
 $rcmail_config['log_dir'] = '/var/log/roundcubemail/';
 $rcmail_config['temp_dir'] = '/tmp';
 $rcmail_config['force_https'] = false;
