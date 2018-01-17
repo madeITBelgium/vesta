@@ -33,8 +33,6 @@ if [ "$VERSION" = "0.0.3" ]; then
     for user in $userlist; do
         $BIN/v-rebuild-user $user
     done
-    echo "PLUGIN='monitor-log' NAME='Log monitor' VERSION='1.0.0' BUILDNUMBER='1' LATEST_VERSION='1.0.0' LATEST_BUILDNUMBER='1' KEY='' ACTIVE='no' TIME='22:00:00' DATE='2017-10-29'" >> $VESTA/conf/plugin.conf 
-    echo "PLUGIN='monitor-log-dashboard' NAME='Log dashboard monitor' VERSION='1.0.0' BUILDNUMBER='1' LATEST_VERSION='1.0.0' LATEST_BUILDNUMBER='1' KEY='' ACTIVE='no' TIME='22:00:00' DATE='2017-10-29'" >> $VESTA/conf/plugin.conf 
 fi
 
 if [ "$VERSION" = "0.0.4" ]; then
@@ -49,3 +47,10 @@ if [ "$VERSION" = "0.0.5" ]; then
     VERSION="0.0.6"
     sed -i "s/VERSION=.*/VERSION='0.0.6'/g" /usr/local/vesta/conf/vesta.conf
 fi
+
+if [ "$VERSION" = "0.0.6" ]; then
+    VERSION="0.0.7"
+    sed -i "s/VERSION=.*/VERSION='0.0.7'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
+bash /usr/local/vesta/upd/add_default_plugins.sh
