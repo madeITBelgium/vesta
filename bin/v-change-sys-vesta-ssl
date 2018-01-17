@@ -12,6 +12,7 @@
 # Argument definition
 ssl_dir=$1
 restart={$2-yes}
+domain='certificate'
 
 # Includes
 source $VESTA/func/main.sh
@@ -45,7 +46,6 @@ if [ "$certificate_count" -gt 1 ]; then
     mv -f $ssl_dir/certificate.crt_full $ssl_dir/certificate.crt
     rm -f $ssl_dir/certificate.ca
 else
-    domain_idn='certificate'
     is_web_domain_cert_valid
 fi
 
@@ -56,7 +56,6 @@ mv $VESTA/ssl/certificate.key $VESTA/ssl/certificate.key.back
 # Adding new certificate
 cp -f $ssl_dir/certificate.crt $VESTA/ssl/certificate.crt
 cp -f $ssl_dir/certificate.key $VESTA/ssl/certificate.key
-echo "check b"
 
 #----------------------------------------------------------#
 #                       Vesta                              #
@@ -64,8 +63,9 @@ echo "check b"
 
 # Restarting web server
 if [ "$restart" != 'no' ]; then
-    kill -HUP $(cat /var/run/vesta-nginx.pid)
+    $BIN/v-restart-service vesta
     $BIN/v-restart-mail
+    $BIN/v-restart-service dovecot
     if [ ! -z "$IMAP_SYSTEM" ]; then
         v-restart-service "$IMAP_SYSTEM"
     fi

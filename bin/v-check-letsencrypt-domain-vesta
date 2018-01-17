@@ -2,7 +2,8 @@
 # info: check letsencrypt domain
 # options: USER DOMAIN
 #
-# The function check and validates domain with LetsEncript
+# The function check and validates domain with Let's Encrypt
+# The check/validation is started as the admin user.
 
 
 #----------------------------------------------------------#
@@ -10,8 +11,7 @@
 #----------------------------------------------------------#
 
 # Argument definition
-user=$1
-domain=$2
+domain=$1
 
 # Includes
 source $VESTA/func/main.sh
@@ -22,21 +22,52 @@ encode_base64() {
     cat |base64 |tr '+/' '-_' |tr -d '\r\n='
 }
 
+#delete domain alias
+delete_alias() {
+    if [ "$subdomaincreated" = true ]; then
+        $BIN/v-delete-web-domain-alias $user $parentdomain $domain
+    fi
+}
+
 # Additional argument formatting
 
 #format_domain
 format_domain_idn
 
+#search user
+user=$(egrep "'$domain'|'$domain,|,$domain,|,$domain'" $VESTA/data/users/*/web.conf | awk -F ":" '{print $1}' | head -1)
+user=$(echo $user | awk -F "/" '{print $7}')
+subdomaincreated=false
+parentdomain=""
+if [ -z $user ]; then
+    parentdomain=$(echo $domain | sed 's/mail.//')
+    user=$(egrep "'$parentdomain'|'$parentdomain,|,$parentdomain,|,$parentdomain'" $VESTA/data/users/*/web.conf | awk -F ":" '{print $1}' | head -1)
+    user=$(echo $user | awk -F "/" '{print $7}')
+    if [ -z $user ]; then
+        check_result $E_NOTEXIST "domain $domain doesn't exist"
+    fi
+    
+    subdomaincreated=true
+    $BIN/v-add-web-domain-alias $user $parentdomain $domain
+fi
+USER_DATA=$VESTA/data/users/$user
+USER_DATA_ADMIN=$VESTA/data/users/admin
+
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '2' "$#" 'USER DOMAIN'
+if [ "$subdomaincreated" = true ]; then
+    temp_domain=$domain
+    domain=$parentdomain
+fi
+
+check_args '1' "$#" 'DOMAIN'
 is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-if [ ! -e "$USER_DATA/ssl/le.conf" ]; then
+if [ ! -e "$USER_DATA_ADMIN/ssl/le.conf" ]; then
     check_result $E_NOTEXIST "LetsEncrypt key doesn't exist"
 fi
 rdomain=$(egrep "'$domain'|'$domain,|,$domain,|,$domain'" $USER_DATA/web.conf)
@@ -45,14 +76,18 @@ if [ -z "$rdomain" ]; then
 fi
 
 
+if [ "$subdomaincreated" = true ]; then
+    domain=$temp_domain
+fi
+
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
-source $USER_DATA/ssl/le.conf
+source $USER_DATA_ADMIN/ssl/le.conf
 api=$LETSENCRYPTAPI
 r_domain=$(echo "$rdomain" |cut -f 2 -d \')
-key="$USER_DATA/ssl/user.key"
+key="$USER_DATA_ADMIN/ssl/user.key"
 exponent="$EXPONENT"
 modulus="$MODULUS"
 thumb="$THUMB"
@@ -80,6 +115,7 @@ answer=$(curl -s -i -d "$data" "$api/acme/new-authz")
 # Checking http answer status
 status=$(echo "$answer" |grep HTTP/1.1 |tail -n1 |cut -f2 -d ' ')
 if [[ "$status" -ne "201" ]]; then
+    delete_alias
     check_result $E_CONNECT "LetsEncrypt challenge request $status"
 fi
 
@@ -114,10 +150,12 @@ fi
 # Restarting web server
 if [ -z "$PROXY_SYSTEM" ]; then
     $BIN/v-restart-web
+    delete_alias
     check_result $? "Proxy restart failed" >/dev/null
 else
     $BIN/v-restart-proxy
     $BIN/v-restart-web
+    delete_alias
     check_result $? "Web restart failed" >/dev/null
 fi
 
@@ -144,14 +182,17 @@ while [ "$status" = 'pending' ]; do
     sleep 1
     i=$((i + 1))
     if [ "$i" -gt 60 ]; then
+        delete_alias
         check_result $E_CONNECT "$detail"
     fi
 done
 if [ "$status" = 'invalid' ]; then
     detail="$(echo $answer |tr ',' '\n' |grep detail |cut -f 4 -d \")"
+    delete_alias
     check_result $E_CONNECT "$detail"
 fi
 
+delete_alias
 
 #----------------------------------------------------------#
 #                       Vesta                              #

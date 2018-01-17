@@ -30,34 +30,42 @@ for user in $users; do
     USER_DATA=$VESTA/data/users/$user
     # Checking user certificates
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
-
-        crt="$VESTA/data/users/$user/ssl/$domain.crt"
-        crt_data=$(openssl x509 -text -in "$crt")
-        expire=$(echo "$crt_data" |grep "Not After")
-        expire=$(echo "$expire" |cut -f 2,3,4 -d :)
-        expire=$(date -d "$expire" +%s)
-        now=$(date +%s)
-        expire=$((expire - now))
-        expire=$((expire / 86400))
-        domain=$(basename $crt |sed -e "s/.crt$//")
-        if [[ "$expire" -lt 31 ]]; then
-            aliases=$(echo "$crt_data" |grep DNS:)
-            aliases=$(echo "$aliases" |sed -e "s/DNS://g" -e "s/,//")
-            aliases=$(echo "$aliases" |tr ' ' '\n' |sed "/^$/d")
-            aliases=$(echo "$aliases" |grep -v "^$domain$")
-            if [ ! -z "$aliases" ]; then
-                aliases=$(echo "$aliases" |sed -e ':a;N;$!ba;s/\n/,/g')
-                msg=$($BIN/v-add-letsencrypt-domain $user $domain $aliases)
-                if [ $? -ne 0 ]; then
-                    echo "$domain $msg"
-                fi
+        spnd=$(is_object_unsuspended 'web' 'DOMAIN' "$domain")
+        if [ ! -z "$spnd" ]; then
+            echo "$3 is suspended"
+        else
+            crt="$VESTA/data/users/$user/ssl/$domain.crt"
+            if [ -e $crt ]; then
+                update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'no'
             else
-                msg==$($BIN/v-add-letsencrypt-domain $user $domain)
-                if [ $? -ne 0 ]; then
-                    echo "$domain $msg"
+                crt_data=$(openssl x509 -text -in "$crt")
+                expire=$(echo "$crt_data" |grep "Not After")
+                expire=$(echo "$expire" |cut -f 2,3,4 -d :)
+                expire=$(date -d "$expire" +%s)
+                now=$(date +%s)
+                expire=$((expire - now))
+                expire=$((expire / 86400))
+                domain=$(basename $crt |sed -e "s/.crt$//")
+                if [[ "$expire" -lt 31 ]]; then
+                    aliases=$(echo "$crt_data" |grep DNS:)
+                    aliases=$(echo "$aliases" |sed -e "s/DNS://g" -e "s/,//")
+                    aliases=$(echo "$aliases" |tr ' ' '\n' |sed "/^$/d")
+                    aliases=$(echo "$aliases" |grep -v "^$domain$")
+                    if [ ! -z "$aliases" ]; then
+                        aliases=$(echo "$aliases" |sed -e ':a;N;$!ba;s/\n/,/g')
+                        msg=$($BIN/v-add-letsencrypt-domain $user $domain $aliases)
+                        if [ $? -ne 0 ]; then
+                            echo "$domain $msg"
+                        fi
+                    else
+                        msg=$($BIN/v-add-letsencrypt-domain $user $domain)
+                        if [ $? -ne 0 ]; then
+                            echo "$domain $msg"
+                        fi
+                    fi
+                    sleep 10
                 fi
             fi
-            sleep 10
         fi
     done
     
@@ -108,23 +116,10 @@ for user in $users; do
         expire=$((expire / 86400))
         domain=$(basename $crt |sed -e "s/.crt$//")
         if [[ "$expire" -lt 31 ]]; then
-            aliases=$(echo "$crt_data" |grep DNS:)
-            aliases=$(echo "$aliases" |sed -e "s/DNS://g" -e "s/,//")
-            aliases=$(echo "$aliases" |tr ' ' '\n' |sed "/^$/d")
-            aliases=$(echo "$aliases" |grep -v "^$domain$")
-            if [ ! -z "$aliases" ]; then
-                aliases=$(echo "$aliases" |sed -e ':a;N;$!ba;s/\n/,/g')
-                msg=$($BIN/v-add-letsencrypt-vesta)
-                if [ $? -ne 0 ]; then
-                    echo "$domain $msg"
-                fi
-            else
-                msg==$($BIN/v-add-letsencrypt-vesta)
-                if [ $? -ne 0 ]; then
-                    echo "$domain $msg"
-                fi
+            msg=$($BIN/v-add-letsencrypt-vesta)
+            if [ $? -ne 0 ]; then
+                echo "$domain $msg"
             fi
-            sleep 10
         fi
     fi
 done

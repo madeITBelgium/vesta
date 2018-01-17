@@ -34,9 +34,9 @@ is_format_valid 'user' 'domain'
 is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'mail' 'DOMAIN' "$domain_idn"
-is_object_unsuspended 'mail' 'DOMAIN' "$domain_idn"
-#is_object_value_empty 'mail' 'DOMAIN' "$domain_idn" '$SSL'
+is_object_valid 'mail' 'DOMAIN' "$domain"
+is_object_unsuspended 'mail' 'DOMAIN' "$domain"
+#is_object_value_empty 'mail' 'DOMAIN' "$domain" '$SSL'
 
 
 #----------------------------------------------------------#
@@ -143,9 +143,9 @@ fi
 
 # Updating letsencrypt key
 if [ -z "$LETSENCRYPT" ]; then
-    add_object_key "mail" 'DOMAIN' "$domain_idn" 'LETSENCRYPT' 'SUSPENDED'
+    add_object_key "mail" 'DOMAIN' "$domain" 'LETSENCRYPT' 'SUSPENDED'
 fi
-update_object_value 'mail' 'DOMAIN' "$domain_idn" '$LETSENCRYPT' 'yes'
+update_object_value 'mail' 'DOMAIN' "$domain" '$LETSENCRYPT' 'yes'
 
 
 #Delete temp alias

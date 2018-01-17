@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: adding letsencrypt ssl cetificate for domain
-# options: USER DOMAIN [ALIASES] [RESTART] [NOTIFY]
+# options: [ALIASES]
 #
 # The function turns on SSL support for a domain. Parameter ssl_dir is a path
 # to directory where 2 or 3 ssl files can be found. Certificate file 
@@ -17,6 +17,7 @@
 # Argument definition
 user=admin
 domain=$(hostname)
+aliases=$1
 
 # Includes
 source $VESTA/func/main.sh
@@ -31,11 +32,11 @@ format_domain_idn
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '0' "$#" ''
+check_args '0' "$#" '[ALIASES]'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
-is_object_valid 'web' 'DOMAIN' "$domain_idn"
-is_object_unsuspended 'web' 'DOMAIN' "$domain_idn"
+is_object_valid 'web' 'DOMAIN' "$domain"
+is_object_unsuspended 'web' 'DOMAIN' "$domain"
 
 
 #----------------------------------------------------------#
@@ -67,9 +68,34 @@ if [ "$?" -ne 0 ]; then
     check_result $E_INVALID "LE domain validation" >/dev/null
 fi
 
+validatedAliasses=""
+OLD_IFS=$IFS
+IFS=$'\n'
+for domaindata in $(cat $VESTA/data/users/*/web.conf |grep -v "'$domain'"); do
+    eval $domaindata
+    $BIN/v-check-letsencrypt-domain-vesta $DOMAIN > /dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        touch $VESTA/data/queue/letsencrypt.pipe
+        sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
+    else
+        validatedAliasses="$validatedAliasses,$DOMAIN"
+    fi
+    
+    
+    $BIN/v-check-letsencrypt-domain-vesta mail.$DOMAIN > /dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        touch $VESTA/data/queue/letsencrypt.pipe
+        sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
+    else
+        validatedAliasses="$validatedAliasses,mail.$DOMAIN"
+    fi
+done
+IFS=$OLD_IFS
+validatedAliasses=$(echo $validatedAliasses | sed 's/^,//')
+
 # Generating CSR
-ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "$email" "US" "California" \
-    "San Francisco" "Vesta" "IT" "$aliases" |tail -n1 |awk '{print $2}')
+ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "$email" "BE" "Antwerp" \
+    "Geel" "Made I.T." "IT" "$validatedAliasses" |tail -n1 |awk '{print $2}')
 
 # Signing CSR
 crt=$($BIN/v-sign-letsencrypt-csr "$user" "$domain" "$ssl_dir")
