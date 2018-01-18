@@ -1025,3 +1025,31 @@ get_next_record_id() {
 	curr_str=$(grep "ID=" $CONF_FILE | cut -f 2 -d \' | sort -n|tail -n1)
 	id="$((curr_str +1))"
 }
+
+get_server_os() {
+    # Detect OS
+    case $(head -n1 /etc/issue | cut -f 1 -d ' ') in
+        Debian)     type="debian" ;;
+        Ubuntu)     type="ubuntu" ;;
+        *)          type="rhel" ;;
+    esac
+
+    # Fallback to Ubuntu
+    if [ ! -e "/etc/redhat-release" ]; then
+        type='ubuntu'
+    fi
+    echo $type;
+}
+
+get_server_os_version() {
+    os=$(get_server_os)
+    if [ "$os" = "rhel" ]; then
+        echo $(grep -o "[0-9]" /etc/redhat-release |head -n1)
+    fi
+    if [ "$os" = "ubuntu" ]; then
+        echo $(lsb_release -s -r)
+    fi
+    if [ "$os" = "debian" ]; then
+        echo $(cat /etc/debian_version|grep -o [0-9]|head -n1)
+    fi
+}

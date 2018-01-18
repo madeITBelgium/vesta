@@ -1,0 +1,89 @@
+#!/bin/bash
+# info: Rebuild system exim configurations
+# options: [RESTART]
+#
+# The function for changing service confguration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart=${1-no}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[RESTART]'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+os=$(get_server_os)
+version=$(get_server_os_version)
+vestacp="$VESTA/install/os-configs/$os/$version"
+
+service exim stop >/dev/null 2>&1
+
+gpasswd -a exim mail > /dev/null 2>&1
+cp -f $vestacp/exim/exim.conf /etc/exim/exim.conf
+cp -f $vestacp/exim/dnsbl.conf /etc/exim/dnsbl.conf
+cp -f $vestacp/exim/spam-blocks.conf /etc/exim/spam-blocks.conf
+touch /etc/exim/white-blocks.conf
+
+if [ "$ANTISPAM_SYSTEM" = 'spamassassin' ]; then
+    sed -i "s/#SPAM/SPAM/g" /etc/exim/exim.conf
+fi
+if [ "$ANTIVIRUS_SYSTEM" = 'clamav' ]; then
+    sed -i "s/#CLAMD/CLAMD/g" /etc/exim/exim.conf
+fi
+
+chmod 640 /etc/exim/exim.conf
+rm -rf /etc/exim/domains
+mkdir -p /etc/exim/domains
+
+rm -f /etc/alternatives/mta
+ln -s /usr/sbin/sendmail.exim /etc/alternatives/mta
+chkconfig sendmail off 2>/dev/null
+service sendmail stop 2>/dev/null
+chkconfig postfix off 2>/dev/null
+service postfix stop 2>/dev/null
+
+userlist=$(ls --sort=time $VESTA/data/users/ | grep -v 'history.log')
+OLDIFS=$IFS
+IFS=$'\n'
+for user in $userlist; do
+    for domainData in $(cat $VESTA/data/users/$user/mail.conf); do
+        eval $domainData
+        domain=$DOMAIN
+        format_domain_idn
+
+        ln -s $HOMEDIR/$user/conf/mail/$domain \
+            /etc/$MAIL_SYSTEM/domains/$domain_idn > /dev/null 2>&1
+
+        chmod 771 /etc/$MAIL_SYSTEM/domains/$domain_idn
+    done
+done
+IFS=$OLDIFS
+
+chkconfig exim on >/dev/null 2>&1
+service exim start >/dev/null 2>&1
+check_result $? "exim start failed"
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

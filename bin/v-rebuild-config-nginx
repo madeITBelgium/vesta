@@ -1,0 +1,168 @@
+#!/bin/bash
+# info: Rebuild system nginx configurations
+# options: [RESTART]
+#
+# The function for changing service confguration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart=${1-no}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[RESTART]'
+is_system_enabled "$PROXY_SYSTEM" 'PROXY_SYSTEM'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+os=$(get_server_os)
+version=$(get_server_os_version)
+vestacp="$VESTA/install/os-configs/$os/$version"
+
+service nginx stop >/dev/null 2>&1
+
+rm -f /etc/nginx/conf.d/*.conf
+cp -f $vestacp/nginx/nginx.conf /etc/nginx/nginx.conf
+cp -f $vestacp/nginx/status.conf /etc/nginx/conf.d/status.conf
+cp -f $vestacp/nginx/phpmyadmin.inc /etc/nginx/conf.d/phpmyadmin.inc
+cp -f $vestacp/nginx/phppgadmin.inc /etc/nginx/conf.d/phppgadmin.inc
+cp -f $vestacp/nginx/webmail.inc /etc/nginx/conf.d/webmail.inc
+cp -f $vestacp/logrotate/nginx /etc/logrotate.d/nginx
+echo > /etc/nginx/conf.d/vesta.conf
+mkdir -p /var/log/nginx/domains
+if [ "$os" = "rhel" ] && [ "$version" -eq 7 ]; then
+    mkdir /etc/systemd/system/nginx.service.d/ >/dev/null 2>&1
+    echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
+    echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
+fi
+
+
+iplist=$(ls $VESTA/data/ips/)
+for ip in $iplist; do
+    eval $(cat $VESTA/data/ips/$ip)
+    if [ "$VERSION" -eq '6' ]; then
+        cat $WEBTPL/$PROXY_SYSTEM/proxy_ip.tpl |\
+            sed -e "s/%ip%/[$ip]/g" \
+                -e "s/%web_port%/$WEB_PORT/g" \
+                -e "s/%proxy_port%/$PROXY_PORT/g" \
+            > /etc/$PROXY_SYSTEM/conf.d/$ip.conf
+
+        # mod_extract_forwarded
+        #fw_conf="/etc/$WEB_SYSTEM/conf.d/mod_extract_forwarded.conf"
+        #if [ -e "$fw_conf" ] && [ -z "$(cat $fw_conf | grep $ip)" ]; then
+        #    ips=$(grep 'MEFaccept ' $fw_conf | grep -v '#' | head -n1)
+        #    sed -i "s/$ips/$ips [$ip]/g" $fw_conf
+        #fi
+
+        # mod_rpaf
+        rpaf_conf="/etc/$WEB_SYSTEM/mods-enabled/rpaf.conf"
+        if [ -e "$rpaf_conf" ] && [ -z "$(cat $rpaf_conf | grep $ip)" ]; then
+            rpaf_str=$(grep RPAFproxy_ips $rpaf_conf)
+            rpaf_str="$rpaf_str [$ip]"
+            sed -i "s/.*RPAFproxy_ips.*/$rpaf_str/" $rpaf_conf
+        fi
+
+        #mod_remoteip
+        remoteip_conf="/etc/$WEB_SYSTEM/mods-enabled/remoteip.conf"
+        if [ -e "$remoteip_conf" ] && [ -z "$(cat $remoteip_conf | grep $ip)" ]; then
+            if [ $( grep -ic "$ip" $remoteip_conf ) -eq 0 ]; then
+                sed -i "s/<\/IfModule>/RemoteIPInternalProxy $ip\n<\/IfModule>/g" $remoteip_conf
+            fi
+        fi
+    else
+        cat $WEBTPL/$PROXY_SYSTEM/proxy_ip.tpl |\
+            sed -e "s/%ip%/$ip/g" \
+                -e "s/%web_port%/$WEB_PORT/g" \
+                -e "s/%proxy_port%/$PROXY_PORT/g" \
+            > /etc/$PROXY_SYSTEM/conf.d/$ip.conf
+
+        # mod_extract_forwarded
+        fw_conf="/etc/$WEB_SYSTEM/conf.d/mod_extract_forwarded.conf"
+        if [ -e "$fw_conf" ] && [ -z "$(cat $fw_conf | grep $ip)" ]; then
+            ips=$(grep 'MEFaccept ' $fw_conf | grep -v '#' | head -n1)
+            sed -i "s/$ips/$ips $ip/g" $fw_conf
+        fi
+
+        # mod_rpaf
+        rpaf_conf="/etc/$WEB_SYSTEM/mods-enabled/rpaf.conf"
+        if [ -e "$rpaf_conf" ] && [ -z "$(cat $rpaf_conf | grep $ip)" ]; then
+            rpaf_str=$(grep RPAFproxy_ips $rpaf_conf)
+            rpaf_str="$rpaf_str $ip"
+            sed -i "s/.*RPAFproxy_ips.*/$rpaf_str/" $rpaf_conf
+        fi
+
+        #mod_remoteip
+        remoteip_conf="/etc/$WEB_SYSTEM/mods-enabled/remoteip.conf"
+        if [ -e "$remoteip_conf" ] && [ -z "$(cat $remoteip_conf | grep $ip)" ]; then
+            if [ $( grep -ic "$ip" $remoteip_conf ) -eq 0 ]; then
+                sed -i "s/<\/IfModule>/RemoteIPInternalProxy $ip\n<\/IfModule>/g" $remoteip_conf
+            fi
+        fi
+    fi
+done
+
+userlist=$(ls --sort=time $VESTA/data/users/ | grep -v 'history.log')
+OLDIFS=$IFS
+IFS=$'\n'
+for user in $userlist; do
+    for domainData in $(cat $VESTA/data/users/$user/web.conf); do
+        eval $domainData
+        domain=$DOMAIN
+        format_domain_idn
+        
+        if [ ! -z "$IP" ] && [ "$IP" != "no" ]; then
+            conf="$HOMEDIR/$user/conf/web/$domain.nginx.conf"
+            confs="$HOMEDIR/$user/conf/web/$domain.nginx.ssl.conf"
+            if [ -e $conf ]; then
+                echo "include $conf;" >> /etc/nginx/conf.d/vesta.conf
+            fi
+            if [ "$SSL" != "no" ] && [ -e $confs ]; then
+                echo "include $conf;" >> /etc/nginx/conf.d/vesta.conf
+            fi
+        fi
+        
+        if [ ! -z "$IP6" ] && [ "$IP6" != "no" ]; then
+            conf="$HOMEDIR/$user/conf/web/$domain.nginx.ipv6.conf"
+            confs="$HOMEDIR/$user/conf/web/$domain.nginx.ssl.ipv6.conf"
+            if [ -e $conf ]; then
+                echo "include $conf;" >> /etc/nginx/conf.d/vesta.conf
+            fi
+            if [ "$SSL" != "no" ] && [ -e $confs ]; then
+                echo "include $confs;" >> /etc/nginx/conf.d/vesta.conf
+            fi
+        fi
+    done
+done
+IFS=$OLDIFS
+
+chkconfig nginx on >/dev/null 2>&1
+service nginx start >/dev/null 2>&1
+check_result $? "nginx start failed"
+
+# Workaround for OpenVZ/Virtuozzo
+if [ "$os" = 'rhel' ] && [ "$version" -eq '7' ] && [ -e "/proc/vz/veinfo" ] && [ -z "$(cat /etc/rc.local | grep 'service nginx restart')" ]; then
+    echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
+    echo "sleep 3 && service nginx restart" >> /etc/rc.local
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

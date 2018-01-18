@@ -14,5 +14,6 @@
 /test/setup/token
 /test/setup/password
 /test/setup/ip_address
+/install/os-configs_test
 .vscode
 .DS_Store

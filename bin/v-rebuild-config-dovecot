@@ -1,0 +1,55 @@
+#!/bin/bash
+# info: Rebuild system dovecot configurations
+# options: [RESTART]
+#
+# The function for changing service confguration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart=${1-no}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[RESTART]'
+is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+os=$(get_server_os)
+version=$(get_server_os_version)
+vestacp="$VESTA/install/os-configs/$os/$version"
+
+service dovecot stop >/dev/null 2>&1
+
+gpasswd -a dovecot mail > /dev/null 2>&1
+rm -rf /etc/dovecot/*
+mkdir /etc/dovecot > /dev/null 2>&1
+cp -Rf $vestacp/dovecot/ /etc/dovecot/
+cp -f $vestacp/logrotate/dovecot /etc/logrotate.d/dovecot
+chown -R root:root /etc/dovecot*
+
+chkconfig dovecot on >/dev/null 2>&1
+service dovecot start >/dev/null 2>&1
+check_result $? "dovecot start failed"
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

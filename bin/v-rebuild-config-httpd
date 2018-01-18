@@ -1,0 +1,116 @@
+#!/bin/bash
+# info: Rebuild system httpd configurations
+# options: [RESTART]
+#
+# The function for changing service confguration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart=${1-no}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[RESTART]'
+is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+os=$(get_server_os)
+version=$(get_server_os_version)
+vestacp="$VESTA/install/os-configs/$os/$version"
+
+service httpd stop >/dev/null 2>&1
+
+cd /etc/httpd
+cp -f $vestacp/httpd/httpd.conf conf/httpd.conf
+cp -f $vestacp/httpd/status.conf conf.d/status.conf
+cp -f $vestacp/httpd/ssl.conf conf.d/ssl.conf
+cp -f $vestacp/httpd/ruid2.conf conf.d/ruid2.conf
+cp -f $vestacp/logrotate/httpd /etc/logrotate.d/httpd
+if [ $version -ne 7 ] && [ "$os" = "rhel" ]; then
+    echo "MEFaccept 127.0.0.1" >> conf.d/mod_extract_forwarded.conf
+    echo > conf.d/proxy_ajp.conf
+fi
+if [ -e "conf.modules.d/00-dav.conf" ]; then
+    sed -i "s/^/#/" conf.modules.d/00-dav.conf conf.modules.d/00-lua.conf
+    sed -i "s/^/#/" conf.modules.d/00-proxy.conf
+fi
+echo > conf.d/vesta.conf
+touch logs/access_log logs/error_log logs/error_log logs/suexec.log
+chmod 640 logs/access_log logs/error_log logs/error_log logs/suexec.log
+chmod -f 777 /var/lib/php/session
+chmod a+x /var/log/httpd
+mkdir -p /var/log/httpd/domains
+chmod 751 /var/log/httpd/domains
+if [ "$version" -eq 7 ] && [ "$os" = "rhel" ]; then
+    mkdir /etc/systemd/system/httpd.service.d/ >/dev/null 2>&1
+    echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
+    echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
+fi
+
+
+userlist=$(ls --sort=time $VESTA/data/users/ | grep -v 'history.log')
+OLDIFS=$IFS
+IFS=$'\n'
+for user in $userlist; do
+    for domainData in $(cat $VESTA/data/users/$user/web.conf); do
+        eval $domainData
+        domain=$DOMAIN
+        format_domain_idn
+        
+        if [ ! -z "$IP" ] && [ "$IP" != "no" ]; then
+            conf="$HOMEDIR/$user/conf/web/$domain.httpd.conf"
+            confs="$HOMEDIR/$user/conf/web/$domain.httpd.ssl.conf"
+            if [ -e $conf ]; then
+                echo "include $conf" >> /etc/httpd/conf.d/vesta.conf
+            fi
+            if [ "$SSL" != "no" ] && [ -e $confs ]; then
+                echo "include $conf" >> /etc/httpd/conf.d/vesta.conf
+            fi
+        fi
+        
+        if [ ! -z "$IP6" ] && [ "$IP6" != "no" ]; then
+            conf="$HOMEDIR/$user/conf/web/$domain.httpd.ipv6.conf"
+            confs="$HOMEDIR/$user/conf/web/$domain.httpd.ssl.ipv6.conf"
+            if [ -e $conf ]; then
+                echo "include $conf" >> /etc/httpd/conf.d/vesta.conf
+            fi
+            if [ "$SSL" != "no" ] && [ -e $confs ]; then
+                echo "include $confs" >> /etc/httpd/conf.d/vesta.conf
+            fi
+        fi
+    done
+done
+IFS=$OLDIFS
+
+chkconfig httpd on >/dev/null 2>&1
+service httpd start >/dev/null 2>&1
+check_result $? "httpd start failed"
+
+# Workaround for OpenVZ/Virtuozzo
+if [ "$os" = 'rhel' ] && [ "$version" -eq '7' ] && [ -e "/proc/vz/veinfo" ] && [ -z "$(cat /etc/rc.local | grep 'service httpd restart')" ]; then
+    echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
+    echo "sleep 2 && service httpd restart" >> /etc/rc.local
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
