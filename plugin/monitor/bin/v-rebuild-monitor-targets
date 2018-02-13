@@ -43,7 +43,7 @@ echo "scrape_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
 while read str; do
     eval $str
     
-    echo "  - job_name: '$TYPE'" >> $PLUGIN/monitor/prometheus/prometheus.yml
+    echo "  - job_name: '$TYPE - $HOSTNAME'" >> $PLUGIN/monitor/prometheus/prometheus.yml
     echo "    static_configs:" >> $PLUGIN/monitor/prometheus/prometheus.yml
     echo "      - targets: ['$HOSTNAME:$PORT']" >> $PLUGIN/monitor/prometheus/prometheus.yml
 done < <(cat $PLUGIN/monitor/conf/targets.conf)
