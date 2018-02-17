@@ -54,6 +54,9 @@ get_domain_values 'web'
 local_ip=$(get_real_ip $IP)
 ipv6=$IP6
 
+PROXY="$template"
+PROXY_EXT="$extentions"
+
 # Preparing domain variables
 prepare_web_domain_values
 

@@ -53,4 +53,15 @@ if [ "$VERSION" = "0.0.6" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.7'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
+if [ "$VERSION" = "0.0.7" ]; then
+    VERSION="0.0.8"
+#    sed -i "s/VERSION=.*/VERSION='0.0.8'/g" /usr/local/vesta/conf/vesta.conf
+
+    #Fix not changed templates
+    userlist=$(ls --sort=time $VESTA/data/users/)
+    for user in $userlist; do
+        $BIN/v-rebuild-web-domains $user
+    done
+fi
+
 bash /usr/local/vesta/upd/add_default_plugins.sh
