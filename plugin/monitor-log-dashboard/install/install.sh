@@ -46,8 +46,8 @@ sudo systemctl restart logstash
 
 #Install java
 if [ "$INSTALL_JAVA" = 'yes' ]; then
-    wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.rpm"
-    sudo yum -y localinstall jdk-8u151-linux-x64.rpm
+    wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.rpm"
+    sudo yum -y localinstall jdk-8u161-linux-x64.rpm
     rm jdk-8u*-linux-x64.rpm
 fi
 
@@ -112,7 +112,7 @@ if [ "$INSTALL_LOGSTASH" = 'yes' ]; then
     echo 'type=rpm-md' >> /etc/yum.repos.d/logstash.repo
     sudo yum -y install logstash
 
-    cd $VESTA/plugin/monitor-log-dashboard/ssl
+    #cd $VESTA/plugin/monitor-log-dashboard/ssl
     #sudo openssl req -subj '/CN=$DOMAINNAME/' -x509 -days 3650 -batch -nodes -newkey rsa:2048 -keyout logstash-forwarder.key -out logstash-forwarder.crt
 
     cp $VESTA/plugin/monitor-log-dashboard/conf/logstash.yml /etc/logstash/logstash.yml
@@ -131,6 +131,7 @@ if [ "$INSTALL_LOGSTASH" = 'yes' ]; then
     curl -O https://gist.githubusercontent.com/thisismitch/3429023e8438cc25b86c/raw/d8c479e2a1adcea8b1fe86570e42abab0f10f364/filebeat-index-template.json
     curl -XPUT 'http://localhost:9200/_template/filebeat?pretty' -d@filebeat-index-template.json
 fi
+
 
 #----------------------------------------------------------#
 #                       Vesta                              #
