@@ -437,7 +437,11 @@ sleep 5
 
 # Checking swap on small instances
 if [ -z "$(swapon -s)" ] && [ $memory -lt 1000000 ]; then
-    fallocate -l 1G /swapfile
+    if [ "$release" -eq 7 ]; then
+        sudo dd if=/dev/zero of=/swapfile count=1024 bs=1MiB
+    else
+        fallocate -l 1G /swapfile
+    fi
     chmod 600 /swapfile
     mkswap /swapfile
     swapon /swapfile
