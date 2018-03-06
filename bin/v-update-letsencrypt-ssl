@@ -32,7 +32,7 @@ for user in $users; do
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
         spnd=$(is_object_unsuspended 'web' 'DOMAIN' "$domain")
         if [ ! -z "$spnd" ]; then
-            echo "$3 is suspended"
+            echo "$domain is suspended"
         else
             crt="$VESTA/data/users/$user/ssl/$domain.crt"
             if [ -e $crt ]; then
