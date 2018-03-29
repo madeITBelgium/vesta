@@ -651,6 +651,62 @@ if [ "$mail" != 'no' ] && [ ! -z "$MAIL_SYSTEM" ]; then
         find $HOMEDIR/$user/conf/mail/$domain_idn -user root \
             -exec chown $exim_user {} \;
 
+        #Restore roundcube settings
+        if [ -d "$HOMEDIR/$user/mail/$domain_idn" ]; then
+            for account in $(ls $HOMEDIR/$user/mail/$domain_idn); do
+                if [ -d "$HOMEDIR/$user/mail/$domain_idn/$account/roundcube" ]; then
+                    rc_user_id=$(mysql --defaults-file=/root/.my.cnf -e "SELECT user_id FROM roundcube.users WHERE username = '$account@$domain'" 2>/dev/null | tail -1)
+                    if [ "$rc_user_id" != "" ]; then
+                        echo -e "Restore roundcube settings $account@$domain_idn" |tee -a $tmpdir/restore.log
+                        
+                        #Delete old settings
+                        mysql --defaults-file=/root/.my.cnf -e "DELETE FROM roundcube.identities WHERE user_id = '$rc_user_id'" 2>/dev/null
+                        mysql --defaults-file=/root/.my.cnf -e "DELETE FROM roundcube.contacts WHERE user_id = '$rc_user_id'" 2>/dev/null
+                        
+                        preferences=$(cat $HOMEDIR/$user/mail/$domain_idn/$account/roundcube/user_data | awk -F '\t' '{print $9}')
+                        mysql --defaults-file=/root/.my.cnf -e "UPDATE roundcube.users SET preferences = '$preferences' WHERE user_id = '$rc_user_id'" 2>/dev/null
+                        
+                        #Identities
+                        while read p; do
+                            if [ "$p" != "" ]; then
+                                changed=$(echo $p | awk -F '\t' '{print $3}')
+                                del=$(echo $p | awk -F '\t' '{print $4}')
+                                standard=$(echo $p | awk -F '\t' '{print $5}')
+                                name=$(echo $p | awk -F '\t' '{print $6}')
+                                organization=$(echo $p | awk -F '\t' '{print $7}')
+                                email=$(echo $p | awk -F '\t' '{print $8}')
+                                reply_to=$(echo $p | awk -F '\t' '{print $9}')
+                                bcc=$(echo $p | awk -F '\t' '{print $10}')
+                                signature=$(echo $p | awk -F '\t' '{print $11}')
+                                html_signature=$(echo $p | awk -F '\t' '{print $12}')
+                                if [ "$signature" == "NULL" ]; then
+                                    signature=""
+                                fi
+                                mysql --defaults-file=/root/.my.cnf -e "INSERT INTO roundcube.identities (user_id, changed, del, standard, name, organization, email, \`reply-to\`, bcc, signature, html_signature) VALUES ($rc_user_id, '$canged', '$del', '$standard', '$name', '$organization', '$email', '$reply_to', '$bcc', '$signature', '$html_signature')"
+                            fi
+                        done <$HOMEDIR/$user/mail/$domain_idn/$account/roundcube/identities
+                        
+                        #Identities
+                        while read p; do
+                            if [ "$p" != "" ]; then
+                                changed=$(echo $p | awk -F '\t' '{print $2}')
+                                del=$(echo $p | awk -F '\t' '{print $3}')
+                                email=$(echo $p | awk -F '\t' '{print $4}')
+                                firstname=$(echo $p | awk -F '\t' '{print $5}')
+                                surname=$(echo $p | awk -F '\t' '{print $6}')
+                                vcard=$(echo $p | awk -F '\t' '{print $7}')
+                                words=$(echo $p | awk -F '\t' '{print $8}')
+                                
+                                mysql --defaults-file=/root/.my.cnf -e "INSERT INTO roundcube.contacts (user_id, changed, del, name, email, firstname, surname, vcard, words) VALUES ($rc_user_id, '$canged', '$del', '$name', '$email', '$firstname', '$surname', '$vcard', '$words')"
+                            fi
+                        done <$HOMEDIR/$user/mail/$domain_idn/$account/roundcube/contacts
+                    else
+                        echo -e "No roundcube settings found for $account@$domain" |tee -a $tmpdir/restore.log
+                    fi
+                fi
+                rmdir -f $HOMEDIR/$user/mail/$domain_idn/$account/roundcube 2>/dev/null
+            done
+        fi
     done
 fi
 
