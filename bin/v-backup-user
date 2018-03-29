@@ -353,6 +353,21 @@ if [ ! -z "$MAIL_SYSTEM" ] && [ "$MAIL" != '*' ]; then
                     tee -a $BACKUP/$user.log
             fi
         done
+        
+        #Backup roundcube settings per user
+        for account in $(ls); do
+            rc_user_id=$(mysql --defaults-file=/root/.my.cnf -e "SELECT user_id FROM roundcube.users WHERE username = '$account@$domain'" 2>/dev/null | tail -1)
+            if [ "$rc_user_id" != "" ]; then
+                echo -e "Backup roundcube settings $account@$domain" |tee -a $BACKUP/$user.log
+                mkdir $account/roundcube 2>/dev/null
+                mysql --defaults-file=/root/.my.cnf -e "SELECT * FROM roundcube.users WHERE user_id = '$rc_user_id'" 2>/dev/null | tail -n +1 > $account/roundcube/user_data
+                mysql --defaults-file=/root/.my.cnf -e "SELECT * FROM roundcube.identities WHERE user_id = '$rc_user_id'" 2>/dev/null | tail -n +1 > $account/roundcube/identities
+                mysql --defaults-file=/root/.my.cnf -e "SELECT * FROM roundcube.contacts WHERE user_id = '$rc_user_id'" 2>/dev/null | tail -n +1 > $account/roundcube/contacts
+            else
+                echo -e "No roundcube account found for $account@$domain" |tee -a $BACKUP/$user.log
+                rm -f $account/roundcube 2>/dev/null
+            fi
+        done
 
         # Compress archive
         if [ ${#accounts[@]} -gt 0 ]; then
