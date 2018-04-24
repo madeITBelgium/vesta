@@ -77,12 +77,4 @@ cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a111 64 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$cmd"
 
-sleep 5
-
-cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a112 64 $interface $user"
-$cmd > $tmpfile 2>&1
-echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a112" "$?" "$tmpfile" "$cmd"
-
-cat /var/log/httpd/error_log
-
 exit $OUTPUT
