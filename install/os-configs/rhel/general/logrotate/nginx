@@ -2,6 +2,7 @@
     create 0644 nginx nginx
     daily
     rotate 10
+    size 50M
     missingok
     notifempty
     compress
