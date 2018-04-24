@@ -80,9 +80,8 @@ echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a111" "$?" "$tmpfile" "$c
 cmd="v-add-sys-ipv6 2001:1620:28:1:b6f:8bca:93:a112 64 $interface $user"
 $cmd > $tmpfile 2>&1
 echo_result "IP6: Adding ip 2001:1620:28:1:b6f:8bca:93:a112" "$?" "$tmpfile" "$cmd"
-
-/usr/sbin/nginx -t -c /etc/nginx/nginx.conf
+apachectl -t
 ifconfig
-cat /etc/nginx/conf.d/*
+cat /etc/httpd/conf.d/*
 
 exit $OUTPUT
