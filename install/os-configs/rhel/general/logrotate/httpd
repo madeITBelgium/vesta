@@ -1,5 +1,8 @@
 /var/log/httpd/*log /var/log/httpd/domains/*log {
     missingok
+    daily
+    rotate 10
+    missingok
     notifempty
     compress
     sharedscripts
