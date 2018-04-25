@@ -1,0 +1,47 @@
+#!/bin/bash
+# info: Rebuild system logrotate configurations
+# options: [RESTART]
+#
+# The function for changing service confguration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart=${1-no}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[RESTART]'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+os=$(get_server_os)
+version=$(get_server_os_version)
+vestacp="$VESTA/install/os-configs/$os/$version"
+
+cp -f $vestacp/logrotate/vesta /etc/logrotate.d/vesta
+cp -f $vestacp/logrotate/nginx /etc/logrotate.d/nginx
+cp -f $vestacp/logrotate/httpd /etc/logrotate.d/httpd
+cp -f $vestacp/logrotate/dovecot /etc/logrotate.d/dovecot
+cp -f $vestacp/logrotate/mariadb /etc/logrotate.d/mariadb
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
