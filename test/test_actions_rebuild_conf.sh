@@ -34,6 +34,9 @@ echo_result() {
     fi
 }
 
+# Create random tmpfile
+tmpfile=$(mktemp -p /tmp )
+
 #----------------------------------------------------------#
 #                 Rebuild configuration                    #
 #----------------------------------------------------------#
@@ -72,5 +75,7 @@ echo_result "REBUILD CONFIG: logrotate" "$?" "$tmpfile" "$cmd"
 cmd="v-rebuild-config-nginx"
 $cmd > $tmpfile 2>&1
 echo_result "REBUILD CONFIG: nginx" "$?" "$tmpfile" "$cmd"
+
+rm $tmpfile
 
 exit $OUTPUT
