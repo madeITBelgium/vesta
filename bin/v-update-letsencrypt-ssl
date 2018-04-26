@@ -29,6 +29,7 @@ users=$($BIN/v-list-users | tail -n+3 | awk '{ print $1 }')
 for user in $users; do
     USER_DATA=$VESTA/data/users/$user
     # Checking user certificates
+    lecounter=0
     for domain in $(search_objects 'web' 'LETSENCRYPT' 'yes' 'DOMAIN'); do
         spnd=$(is_object_unsuspended 'web' 'DOMAIN' "$domain")
         if [ ! -z "$spnd" ]; then
@@ -98,7 +99,10 @@ for user in $users; do
                     echo "$domain $msg"
                 fi
             fi
-            sleep 10
+            if [ $lecounter -gt 0 ]; then
+                sleep 10
+            fi
+            ((lecounter++))
         fi
     done
     
