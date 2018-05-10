@@ -21,11 +21,39 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
+# Defining config host
+chost='cp.madeit.be'
+
+# Detcing OS
+case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
+    Debian)     version="debian" ;;
+    Ubuntu)     version="ubuntu" ;;
+    *)          version="rhel" ;;
+esac
+
+# Detecting release
+if [ "$version" = 'rhel' ]; then
+    if [ -e '/etc/redhat-release' ]; then
+        release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
+    else
+        release=6
+    fi
+fi
+if [ "$version" = 'ubuntu' ]; then
+    release=$(lsb_release -r |awk '{print $2}')
+fi
+if [ "$version" = 'debian' ]; then
+    release=$(cat /etc/issue|grep -o [0-9]|head -n1)
+fi
+
+# Defining download url
+vestacp="http://$chost/$version/$release/$VERSION"
+
 # Get new archive
 tmpdir=$(mktemp -d --dry-run)
 mkdir $tmpdir
 cd $tmpdir
-wget http://c.vestacp.com/rhel/7/templates.tar.gz -q
+wget $vestacp/templates.tar.gz -q
 if [ "$?" -ne 0 ]; then
     echo "Error: can't download template.tar.gz"
     log_event "$E_CONNECT" "$ARGUMENTS"

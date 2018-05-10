@@ -64,4 +64,13 @@ if [ "$VERSION" = "0.0.7" ]; then
     done
 fi
 
+if [ "$VERSION" = "0.0.8" ]; then
+    VERSION="0.0.9"
+    sed -i "s/VERSION=.*/VERSION='0.0.9'/g" /usr/local/vesta/conf/vesta.conf
+
+    /usr/local/vesta/bin/v-rebuild-config-logrotate
+    /usr/local/vesta/bin/v-update-dns-templates
+    /usr/local/vesta/bin/v-update-web-templates
+fi
+
 bash /usr/local/vesta/upd/add_default_plugins.sh
