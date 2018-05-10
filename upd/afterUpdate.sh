@@ -71,6 +71,12 @@ if [ "$VERSION" = "0.0.8" ]; then
     /usr/local/vesta/bin/v-rebuild-config-logrotate
     /usr/local/vesta/bin/v-update-dns-templates
     /usr/local/vesta/bin/v-update-web-templates
+    
+    userlist=$(ls --sort=time $VESTA/data/users/)
+    for user in $userlist; do
+        $BIN/v-rebuild-dns-domains $user
+        $BIN/v-rebuild-web-domains $user
+    done
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
