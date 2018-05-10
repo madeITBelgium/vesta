@@ -39,11 +39,10 @@ eval $(cat $VESTA/conf/plugin_data.conf | grep "PLUGIN='$plugin'")
 
 # Creating domain directories
 
-#mkdir -p $VESTA/plugin/$PLUGIN
-#cd $VESTA/plugin/$PLUGIN
-#wget $DOWNLOAD_URL -O $plugin.zip
-#unzip $plugin.zip
-#rm -f $plugin.zip
+cd $VESTA/plugin/$PLUGIN
+wget $DOWNLOAD_URL -O $plugin.zip
+unzip $plugin.zip
+rm -f $plugin.zip
 
 # Changing file owner & permission
 chmod 750 $VESTA/plugin/$PLUGIN

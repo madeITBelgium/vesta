@@ -53,8 +53,6 @@ if [ "$ACTIVE" == "no" ]; then
 
     # Adding record
     echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
-else
-    #Plugin is already active
 fi
 
 
