@@ -52,9 +52,9 @@ $cmd > $tmpfile 2>&1
 echo_result "USER: Adding new user testbckp" "$?" "$tmpfile" "$cmd"
 
 domain="test-testbckp.example.com"
-cmd="v-add-web-domain testbckp $domain 198.18.0.125"
+cmd="v-add-web-domain testbckp $domain"
 $cmd > $tmpfile 2>&1
-echo_result "WEB: Adding domain $domain on 198.18.0.125" "$?" "$tmpfile" "$cmd"
+echo_result "WEB: Adding domain $domain" "$?" "$tmpfile" "$cmd"
 
 cmd="v-backup-user testbckp"
 $cmd > $tmpfile 2>&1
@@ -66,6 +66,7 @@ echo_result "Deleting user testbckp" "$?" "$tmpfile" "$cmd"
 
 
 # restore user
+ls /backup
 cmd="v-restore-user testbckp $(ls /backup | grep testbckp)"
 $cmd > $tmpfile 2>&1
 echo_result "RESTORE USER: testbkcp" "$?" "$tmpfile" "$cmd"
@@ -76,7 +77,8 @@ echo_result "Deleting user testbckp" "$?" "$tmpfile" "$cmd"
 
 
 # restore under different username
-mv /backup/$(ls /backup | grep testbckp) testbackup.tar
+ls /backup | grep testbckp
+mv /backup/$(ls /backup | grep testbckp) /backup/testbackup.tar
 cmd="v-restore-user testbackup testbackup.tar"
 $cmd > $tmpfile 2>&1
 echo_result "RESTORE BACKUP: testbckp as user testbackup" "$?" "$tmpfile" "$cmd"

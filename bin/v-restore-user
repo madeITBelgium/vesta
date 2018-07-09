@@ -542,16 +542,31 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
             str="$str TIME='$(date +%T)' DATE='$(date +%F)'"
             echo $str >> $USER_DATA/dns.conf
         fi
-
+        
+        sed -i "s/$old_ip/$IP/g" "$tmpdir/dns/$domain/vesta/$domain.conf"
+        
+        if [ ! -z "$old_ipv6" ] && [ -z "$IP6" ]; then
+            sed -i "/$old_ipv6/d" "$tmpdir/dns/$domain/vesta/$domain.conf"
+        fi
+        if [ ! -z "$old_ipv6" ] && [ ! -z "$IP6" ]; then
+            sed -i "s/$old_ipv6/$IP6/g" "$tmpdir/dns/$domain/vesta/$domain.conf"
+        f
+        
         # Restoring dns records
         cp -f $tmpdir/dns/$domain/vesta/$domain.conf $USER_DATA/dns/
         if [ -z "$old_ipv6" ] && [ ! -z "$IP6" ]; then
             time_n_date=$(date +'%T %F')
             time=$(echo "$time_n_date" |cut -f 1 -d \ )
             date=$(echo "$time_n_date" |cut -f 2 -d \ )
+            ipb=$ip
+            ipv6b=$ipv6
+            
             ip=""
             ipv6="$IP6"
             add_dns_config_records
+            
+            ip=$ipb
+            ipv6=$pv6b
         fi
 
         # Rebuilding dns domain
