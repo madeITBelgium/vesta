@@ -64,9 +64,7 @@ cmd="v-delete-user testbckp"
 $cmd > $tmpfile 2>&1
 echo_result "Deleting user testbckp" "$?" "$tmpfile" "$cmd"
 
-
 # restore user
-ls /backup
 cmd="v-restore-user testbckp $(ls /backup | grep testbckp)"
 $cmd > $tmpfile 2>&1
 echo_result "RESTORE USER: testbkcp" "$?" "$tmpfile" "$cmd"
@@ -77,9 +75,8 @@ echo_result "Deleting user testbckp" "$?" "$tmpfile" "$cmd"
 
 
 # restore under different username
-ls /backup | grep testbckp
-mv /backup/$(ls /backup | grep testbckp) /backup/testbackup.tar
-cmd="v-restore-user testbackup testbackup.tar"
+mv /backup/$(ls /backup | grep testbckp) /backup/testbackup.2018-07-09_09-34-53.tar
+cmd="v-restore-user testbackup testbackup.2018-07-09_09-34-53.tar"
 $cmd > $tmpfile 2>&1
 echo_result "RESTORE BACKUP: testbckp as user testbackup" "$?" "$tmpfile" "$cmd"
 

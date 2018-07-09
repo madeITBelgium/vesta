@@ -550,7 +550,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
         fi
         if [ ! -z "$old_ipv6" ] && [ ! -z "$IP6" ]; then
             sed -i "s/$old_ipv6/$IP6/g" "$tmpdir/dns/$domain/vesta/$domain.conf"
-        f
+        fi
         
         # Restoring dns records
         cp -f $tmpdir/dns/$domain/vesta/$domain.conf $USER_DATA/dns/
