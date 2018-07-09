@@ -79,4 +79,10 @@ if [ "$VERSION" = "0.0.8" ]; then
     done
 fi
 
+if [ "$VERSION" = "0.0.9" ]; then
+    VERSION="0.0.10"
+    sed -i "s/VERSION=.*/VERSION='0.0.10'/g" /usr/local/vesta/conf/vesta.conf
+    bash /usr/local/vesta/upd/fix_roundcube.sh
+fi
+
 bash /usr/local/vesta/upd/add_default_plugins.sh
