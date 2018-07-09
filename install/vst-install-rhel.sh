@@ -18,28 +18,25 @@ release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
 vestacp="http://$CHOST/$VERSION/$release/latest"
 
-if [ "$release" -eq 7 ]; then
-    software="nginx httpd mod_ssl mod_ruid2 mod_fcgid php php-common php-cli
-    php-bcmath php-gd php-imap php-mbstring php-mcrypt php-mysql php-pdo
-    php-soap php-tidy php-xml php-xmlrpc php-fpm php-pgsql awstats webalizer
-    vsftpd proftpd bind bind-utils bind-libs exim dovecot clamav-server
-    clamav-update spamassassin roundcubemail mariadb mariadb-server phpMyAdmin
-    postgresql postgresql-server postgresql-contrib phpPgAdmin e2fsprogs
-    openssh-clients ImageMagick curl mc screen ftp zip unzip flex sqlite pcre
-    sudo bc jwhois mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype
-    fail2ban rsyslog iptables-services which vesta vesta-nginx vesta-php
-    vim-common expect vesta-ioncube vesta-softaculous s3cmd"
-else
-    software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
-    php php-common php-cli php-bcmath php-gd php-imap php-mbstring php-mcrypt
-    php-mysql php-pdo php-soap php-tidy php-xml php-xmlrpc php-fpm php-pgsql
-    awstats webalizer vsftpd proftpd bind bind-utils bind-libs exim dovecot
-    clamd spamassassin roundcubemail mysql mysql-server phpMyAdmin postgresql
-    postgresql-server postgresql-contrib phpPgAdmin e2fsprogs openssh-clients
-    ImageMagick curl mc screen ftp zip unzip flex sqlite pcre sudo bc jwhois
-    mailx lsof tar telnet rrdtool net-tools ntp GeoIP freetype fail2ban
-    which vesta vesta-nginx vesta-php vim-common expect vesta-ioncube
-    vesta-softaculous s3cmd"
+# Defining software pack for all distros
+software="awstats bc bind bind-libs bind-utils clamav-server clamav-update
+    curl dovecot e2fsprogs exim expect fail2ban flex freetype ftp GeoIP httpd
+    ImageMagick iptables-services jwhois lsof mailx mariadb mariadb-server mc
+    mod_fcgid mod_ruid2 mod_ssl net-tools nginx ntp openssh-clients pcre php
+    php-bcmath php-cli php-common php-fpm php-gd php-imap php-mbstring
+    php-mcrypt phpMyAdmin php-mysql php-pdo phpPgAdmin php-pgsql php-soap
+    php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
+    postgresql-server proftpd roundcubemail rrdtool rsyslog screen
+    spamassassin sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
+    vim-common vsftpd webalizer which zip"
+
+# Fix for old releases
+if [ "$release" -lt 7 ]; then
+    software=$(echo "$software" |sed -e "s/mariadb/mysql/g")
+    software=$(echo "$software" |sed -e "s/clamav-server/clamd/")
+    software=$(echo "$software" |sed -e "s/clamav-update//")
+    software=$(echo "$software" |sed -e "s/iptables-services//")
+    software="$software mod_extract_forwarded"
 fi
 
 # Defining help function
@@ -823,7 +820,7 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.0.9'" >> $VESTA/conf/vesta.conf
+echo "VERSION='0.0.8'" >> $VESTA/conf/vesta.conf
 
 #Letsencrypt
 echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf

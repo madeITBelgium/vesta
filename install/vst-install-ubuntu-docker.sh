@@ -19,42 +19,23 @@ codename="$(lsb_release -s -c)"
 vestacp="http://$CHOST/$VERSION/$release"
 vestacpinstalldir="/vesta/install/$VERSION/$release"
 
-if [ "$release" = '16.04' ]; then
-    software="nginx apache2 apache2-utils apache2.2-common
-        apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
-        libapache2-mod-fcgid libapache2-mod-php php php-common php-cgi
-        php-mysql php-curl php-fpm php-pgsql awstats webalizer vsftpd
-        proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
-        spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
-        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
-        e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect"
-elif [ "$release" = '16.10' ]; then
-    software="nginx apache2 apache2-utils apache2.2-common
-        apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
-        libapache2-mod-fcgid libapache2-mod-php7.0 php7.0 php7.0-common php7.0-cgi
-        php7.0-mysql php7.0-curl php7.0-fpm php7.0-pgsql awstats webalizer vsftpd
-        proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
-        spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpmyadmin mc
-        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
-        e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect"
-else
-    software="nginx apache2 apache2-utils apache2.2-common
-        apache2-suexec-custom libapache2-mod-ruid2 libapache2-mod-rpaf
-        libapache2-mod-fcgid libapache2-mod-php5 php5 php5-common php5-cgi
-        php5-mysql php5-curl php5-fpm php5-pgsql awstats webalizer vsftpd
-        proftpd-basic bind9 exim4 exim4-daemon-heavy clamav-daemon
-        spamassassin dovecot-imapd dovecot-pop3d roundcube-core
-        roundcube-mysql roundcube-plugins mysql-server mysql-common
-        mysql-client postgresql postgresql-contrib phppgadmin phpMyAdmin mc
-        flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
-        e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
-        bsdmainutils cron vesta vesta-nginx vesta-php expect"
+# Defining software pack for all distros
+software="apache2 apache2.2-common apache2-suexec-custom apache2-utils
+    apparmor-utils awstats bc bind9 bsdmainutils bsdutils clamav-daemon
+    cron curl dnsutils dovecot-imapd dovecot-pop3d e2fslibs e2fsprogs exim4
+    exim4-daemon-heavy expect fail2ban flex ftp git idn imagemagick
+    libapache2-mod-fcgid libapache2-mod-php libapache2-mod-rpaf
+    libapache2-mod-ruid2 lsof mc mysql-client mysql-common mysql-server nginx
+    ntpdate php-cgi php-common php-curl php-fpm phpmyadmin php-mysql
+    phppgadmin php-pgsql postgresql postgresql-contrib proftpd-basic quota
+    roundcube-core roundcube-mysql roundcube-plugins rrdtool rssh spamassassin
+    sudo vesta vesta-nginx vesta-php vim-common vsftpd webalizer whois zip"
+
+# Fix for old releases
+if [[ ${release:0:2} -lt 16 ]]; then
+    software=$(echo "$software" |sed -e "s/php /php5 /")
+    software=$(echo "$software" |sed -e "s/php-/php5-/")
+    software=$(echo "$software" |sed -e "s/mod-php/mod-php5/")
 fi
 
 # Defining help function
