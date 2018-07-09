@@ -37,6 +37,7 @@ for user in $users; do
         else
             crt="$VESTA/data/users/$user/ssl/$domain.crt"
             if [ -e $crt ]; then
+                echo "$domain Let Encrypt renew failed"
                 update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'no'
             else
                 crt_data=$(openssl x509 -text -in "$crt")
