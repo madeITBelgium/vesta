@@ -983,6 +983,7 @@ is_format_valid() {
                 quota)          is_int_format_valid "$arg" 'quota' ;;
                 record)         is_common_format_valid "$arg" 'record';;
                 restart)        is_boolean_format_valid "$arg" 'restart' ;;
+                rotate)         is_boolean_format_valid "$arg" 'rotate' ;;
                 rtype)          is_dns_type_format_valid "$arg" ;;
                 type)         	is_name_format_valid "$arg" 'object';;
                 rule)           is_int_format_valid "$arg" "rule id" ;;

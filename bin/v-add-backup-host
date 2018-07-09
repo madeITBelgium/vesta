@@ -17,11 +17,13 @@ if [ "$type" == 's3' ];then
     user=$4
     password=$5; HIDE=5
     path=${6-/}
+    rotate=${7-yes}
 else
     user=$3
     password=$4; HIDE=4
     path=${5-/backup}
     port=$6
+    rotate=${7-yes}
 fi
 
 # Includes
@@ -101,12 +103,13 @@ EOF
 
 if [ "$type" != 'local' ];then
     if [ "$type" = 's3' ]; then
-        check_args '5' "$#" "TYPE HOST BUCKET USERNAME PASSWORD [PATH] [PORT]"
+        check_args '5' "$#" "TYPE HOST BUCKET USERNAME PASSWORD [PATH] [ROTATE]"
     else
-        check_args '4' "$#" "TYPE HOST USERNAME PASSWORD [PATH] [PORT]"
+        check_args '4' "$#" "TYPE HOST USERNAME PASSWORD [PATH] [PORT] [ROTATE]"
     fi
     is_format_valid 'host'
     is_password_valid
+    is_format_valid 'rotate'
     if [ "$type" = 'sftp' ]; then
         which expect >/dev/null 2>&1
         check_result $? "expect command not found"  $E_NOTEXIST
@@ -210,7 +213,7 @@ if [ $type != 'local' ]; then
     if [ "$type" = 's3' ]; then
         str="$str\nBUCKET='$bucket'"
     fi
-    str="$str\nBPATH='$path'\nPORT='$port'\nTIME='$time'\nDATE='$date'"
+    str="$str\nBPATH='$path'\nPORT='$port'\nROTATE='$rotate'\nTIME='$time'\nDATE='$date'"
     echo -e "$str" > $VESTA/conf/$type.backup.conf
     chmod 660 $VESTA/conf/$type.backup.conf
 fi

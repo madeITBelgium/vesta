@@ -83,6 +83,18 @@ if [ "$VERSION" = "0.0.9" ]; then
     VERSION="0.0.10"
     sed -i "s/VERSION=.*/VERSION='0.0.10'/g" /usr/local/vesta/conf/vesta.conf
     bash /usr/local/vesta/upd/fix_roundcube.sh
+    
+    #UPDATE BACKUP HOSTS
+    files=$(ls /usr/local/vesta/ | grep backup.conf)
+    for file in files; do
+        conf="/usr/local/vesta/$file"
+        while read line ; do
+            eval $line
+            if [ "$(echo $line | grep 'ROTATE=')" == "" ]; then
+                sed -i "s/TIME='$TIME' DATE='$DATE'/ROTATE='yes' TIME='$TIME' DATE='$DATE'/g" "$conf"
+            fi
+        done < $conf
+    done
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh

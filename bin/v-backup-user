@@ -639,24 +639,26 @@ ftp_backup() {
     fi
 
     # Checking retention
-    if [ -z $BPATH ]; then
-        backup_list=$(ftpc "ls" |awk '{print $9}' |grep "^$user\.")
-    else
-        backup_list=$(ftpc "cd $BPATH" "ls" |awk '{print $9}' |grep "^$user\.")
-    fi
-    backups_count=$(echo "$backup_list" |wc -l)
-    if [ "$backups_count" -ge "$BACKUPS" ]; then
-        backups_rm_number=$((backups_count - BACKUPS + 1))
-        for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
-            backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar$//")
-            echo -e "$(date "+%F %T") Rotated ftp backup: $backup_date" |\
-                tee -a $BACKUP/$user.log
-            if [ -z $BPATH ]; then
-                ftpc "delete $backup"
-            else
-                ftpc "cd $BPATH" "delete $backup"
-            fi
-        done
+    if [ "$ROTATE" = 'yes' ]; then
+        if [ -z $BPATH ]; then
+            backup_list=$(ftpc "ls" |awk '{print $9}' |grep "^$user\.")
+        else
+            backup_list=$(ftpc "cd $BPATH" "ls" |awk '{print $9}' |grep "^$user\.")
+        fi
+        backups_count=$(echo "$backup_list" |wc -l)
+        if [ "$backups_count" -ge "$BACKUPS" ]; then
+            backups_rm_number=$((backups_count - BACKUPS + 1))
+            for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
+                backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar$//")
+                echo -e "$(date "+%F %T") Rotated ftp backup: $backup_date" |\
+                    tee -a $BACKUP/$user.log
+                if [ -z $BPATH ]; then
+                    ftpc "delete $backup"
+                else
+                    ftpc "cd $BPATH" "delete $backup"
+                fi
+            done
+        fi
     fi
 
     # Uploading backup archive
@@ -794,24 +796,26 @@ sftp_backup() {
     fi
 
     # Checking retention
-    if [ -z $BPATH ]; then
-        backup_list=$(sftpc "ls -l" |awk '{print $9}'|grep "^$user\.")
-    else
-        backup_list=$(sftpc "cd $BPATH" "ls -l" |awk '{print $9}'|grep "^$user\.")
-    fi
-    backups_count=$(echo "$backup_list" |wc -l)
-    if [ "$backups_count" -ge "$BACKUPS" ]; then
-        backups_rm_number=$((backups_count - BACKUPS + 1))
-        for backup in $(echo "$backup_list" |head -n $backups_rm_number); do
-            backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar.*$//")
-            echo -e "$(date "+%F %T") Rotated sftp backup: $backup_date" |\
-                tee -a $BACKUP/$user.log
-            if [ -z $BPATH ]; then
-                sftpc "rm $backup" > /dev/null 2>&1
-            else
-                sftpc "cd $BPATH" "rm $backup" > /dev/null 2>&1
-            fi
-        done
+    if [ "$ROTATE" = 'yes' ]; then
+        if [ -z $BPATH ]; then
+            backup_list=$(sftpc "ls -l" |awk '{print $9}'|grep "^$user\.")
+        else
+            backup_list=$(sftpc "cd $BPATH" "ls -l" |awk '{print $9}'|grep "^$user\.")
+        fi
+        backups_count=$(echo "$backup_list" |wc -l)
+        if [ "$backups_count" -ge "$BACKUPS" ]; then
+            backups_rm_number=$((backups_count - BACKUPS + 1))
+            for backup in $(echo "$backup_list" |head -n $backups_rm_number); do
+                backup_date=$(echo $backup |sed -e "s/$user.//" -e "s/.tar.*$//")
+                echo -e "$(date "+%F %T") Rotated sftp backup: $backup_date" |\
+                    tee -a $BACKUP/$user.log
+                if [ -z $BPATH ]; then
+                    sftpc "rm $backup" > /dev/null 2>&1
+                else
+                    sftpc "cd $BPATH" "rm $backup" > /dev/null 2>&1
+                fi
+            done
+        fi
     fi
 
     # Uploading backup archive
@@ -837,22 +841,22 @@ sftp_backup() {
 }
 
 google_backup() {
-
-
     # Defining google settings
     source $VESTA/conf/s3.backup.conf
     # Debug info
     echo -e "$(date "+%F %T") Remote: gs://$BUCKET/$BPATH/$user.$backup_new_date.tar"
 
     # Checking retention
-    backup_list=$(${gsutil} ls gs://$BUCKET/$BPATH/$user.* 2>/dev/null)
-    backups_count=$(echo "$backup_list" |wc -l)
-    if [ "$backups_count" -ge "$BACKUPS" ]; then
-        backups_rm_number=$((backups_count - BACKUPS))
-        for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
-            echo -e "$(date "+%F %T") Rotated gcp backup: $backup"
-            $gsutil rm $backup > /dev/null 2>&1
-        done
+    if [ "$ROTATE" = 'yes' ]; then
+        backup_list=$(${gsutil} ls gs://$BUCKET/$BPATH/$user.* 2>/dev/null)
+        backups_count=$(echo "$backup_list" |wc -l)
+        if [ "$backups_count" -ge "$BACKUPS" ]; then
+            backups_rm_number=$((backups_count - BACKUPS))
+            for backup in $(echo "$backup_list" |head -n $backups_rm_number); do 
+                echo -e "$(date "+%F %T") Rotated gcp backup: $backup"
+                $gsutil rm $backup > /dev/null 2>&1
+            done
+        fi
     fi
 
     # Uploading backup archive
@@ -876,18 +880,23 @@ google_backup() {
 s3_backup() {
     # Defining google settings
     source $VESTA/conf/s3.backup.conf
+    
     # Debug info
     echo -e "$(date "+%F %T") Remote: s3://$BUCKET${BPATH}$user.$date.tar"
     options=(--region="$HOST" --access_key="$USERNAME" --secret_key="$PASSWORD")
+    
+    
     # Checking retention
-    backup_list=$(s3cmd ${options[@]} ls s3://$BUCKET${BPATH}$user.* 2>/dev/null)
-    backups_count=$(echo "$backup_list" |wc -l)
-    if [ "$backups_count" -ge "$BACKUPS" ]; then
-        backups_rm_number=$((backups_count - BACKUPS + 1))
-        for backup in $(echo "$backup_list" |head -n $backups_rm_number | awk '{print $4}'); do
-            echo -e "$(date "+%F %T") Roated s3 backup: $backup"
-            s3cmd $options del $backup > /dev/null 2>&1
-        done
+    if [ "$ROTATE" = 'yes' ]; then
+        backup_list=$(s3cmd ${options[@]} ls s3://$BUCKET${BPATH}$user.* 2>/dev/null)
+        backups_count=$(echo "$backup_list" |wc -l)
+        if [ "$backups_count" -ge "$BACKUPS" ]; then
+            backups_rm_number=$((backups_count - BACKUPS + 1))
+            for backup in $(echo "$backup_list" |head -n $backups_rm_number | awk '{print $4}'); do
+                echo -e "$(date "+%F %T") Roated s3 backup: $backup"
+                s3cmd $options del $backup > /dev/null 2>&1
+            done
+        fi
     fi
 
     # Uploading backup archive

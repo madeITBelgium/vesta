@@ -26,6 +26,7 @@ script:
   - test/setup/test-server.sh test_actions_web_ipv6
   - test/setup/test-server.sh test_actions_dns_ipv6
   - test/setup/test-server.sh test_actions_rebuild_conf
+  - test/setup/test-server.sh test_actions_backup
   - test/setup/test-server.sh test_actions_delete
   
 after_script:
