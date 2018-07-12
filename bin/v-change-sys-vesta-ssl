@@ -67,7 +67,7 @@ if [ "$restart" != 'no' ]; then
     $BIN/v-restart-mail
     $BIN/v-restart-service dovecot
     if [ ! -z "$IMAP_SYSTEM" ]; then
-        v-restart-service "$IMAP_SYSTEM"
+        $BIN/v-restart-service "$IMAP_SYSTEM"
     fi
 fi
 
