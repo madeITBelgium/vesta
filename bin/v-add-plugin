@@ -34,14 +34,24 @@ is_format_valid 'key'
 #----------------------------------------------------------#
 
 # Get plugin DATA from web
-wget http://cp.tpweb.org/api/get-plugin/$plugin?output=bash -q -O - > $VESTA/conf/plugin_data.conf
-eval $(cat $VESTA/conf/plugin_data.conf | grep "PLUGIN='$plugin'")
+pluginData=$(wget -qO- http://cp.tpweb.org/api/get-plugin/$plugin?key=$key&output=bash)
+eval $(echo $pluginData | grep "PLUGIN='$plugin'")
+
+if [ -z $DOWNLOAD_URL ]; then
+    echo "Plugin not found"
+    exit $E_NOTEXIST;
+fi
 
 # Creating domain directories
+mkdir -p $VESTA/plugin
+cd $VESTA/plugin
+if [ -d $VESTA/plugin/$PLUGIN ]; then
+    echo "Plugin already installed"
+    exit $E_EXIST;
+fi
 
-cd $VESTA/plugin/$PLUGIN
-wget $DOWNLOAD_URL -O $plugin.zip
-unzip $plugin.zip
+wget -q $DOWNLOAD_URL -O $plugin.zip
+unzip $plugin.zip > /dev/null
 rm -f $plugin.zip
 
 # Changing file owner & permission
@@ -61,6 +71,7 @@ time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding plugin in plugin.conf
+sed -i "/PLUGIN='$PLUGIN'/d" $VESTA/conf/plugin.conf
 echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
 
 #----------------------------------------------------------#
