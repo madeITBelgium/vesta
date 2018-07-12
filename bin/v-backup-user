@@ -52,6 +52,11 @@ start_time=$(date '+%s')
 subj="$user → backup failed"
 email=$(grep CONTACT $VESTA/data/users/admin/user.conf |cut -f 2 -d \')
 
+# Check if backup is not disabled for the user
+if [ $BACKUPS -eq 0 ]; then
+    exit
+fi
+
 # Checking load average
 la=$(cat /proc/loadavg |cut -f 1 -d ' ' |cut -f 1 -d '.')
 i=0
