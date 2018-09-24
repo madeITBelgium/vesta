@@ -672,7 +672,12 @@ fi
 
 # Disabling iptables
 service iptables stop
+<<<<<<< HEAD
 service ip6tables stop
+=======
+service firewalld stop >/dev/null 2>&1
+
+>>>>>>> upstream/master
 
 # Configuring NTP synchronization
 echo '#!/bin/sh' > /etc/cron.daily/ntpdate
@@ -1280,12 +1285,22 @@ $VESTA/bin/v-change-user-language admin $lang
 # Configuring system IPs
 $VESTA/bin/v-update-sys-ip
 
+<<<<<<< HEAD
 # Get main ipv6
 ipv6=$(ip addr show | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | grep -ve "^fe80" | tail -1)
 if [ ! -z "$ipv6" ] && [ "::1" != "$ipv6" ]; then
     netmask=$(ip addr show | grep "$ipv6" | awk -F/ '{print $2}' | awk '{print $1}')
     #netmask=$(eval $netmask)
     $VESTA/bin/v-add-sys-ipv6 $ipv6 $netmask
+=======
+# Get main IP
+ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
+
+# Configuring firewall
+if [ "$iptables" = 'yes' ]; then
+    chkconfig firewalld off >/dev/null 2>&1
+    $VESTA/bin/v-update-firewall
+>>>>>>> upstream/master
 fi
 
 # Get main IP
