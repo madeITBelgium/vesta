@@ -36,7 +36,7 @@ for user in $users; do
             echo "$domain is suspended"
         else
             crt="$VESTA/data/users/$user/ssl/$domain.crt"
-            if [ -e $crt ]; then
+            if [ ! -f $crt ]; then
                 echo "$domain Let Encrypt renew failed"
                 update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'no'
             else
