@@ -251,7 +251,7 @@ if [ ! -e '/usr/bin/wget' ]; then
 fi
 
 # Checking repository availability
-wget -q "cp.madeit.be/GPG.txt" -O /dev/null
+wget -q "cp.madeit.be/rhel/7/latest/GPG.txt" -O /dev/null
 check_result $? "No access to Vesta repository"
 
 # Checking installed packages
