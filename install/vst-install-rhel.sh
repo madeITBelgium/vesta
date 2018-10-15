@@ -16,7 +16,7 @@ arch=$(uname -i)
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 codename="${os}_$release"
-vestacp="http://$CHOST/$VERSION/$release/latest"
+vestacp="$VESTA/install/$VERSION/$release"
 
 # Defining software pack for all distros
 software="awstats bc bind bind-libs bind-utils clamav-server clamav-update
@@ -251,7 +251,7 @@ if [ ! -e '/usr/bin/wget' ]; then
 fi
 
 # Checking repository availability
-wget -q "c.vestacp.com/GPG.txt" -O /dev/null
+wget -q "cp.madeit.be/GPG.txt" -O /dev/null
 check_result $? "No access to Vesta repository"
 
 # Checking installed packages
@@ -820,7 +820,7 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.0.8'" >> $VESTA/conf/vesta.conf
+echo "VERSION='0.0.11'" >> $VESTA/conf/vesta.conf
 
 #Letsencrypt
 echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf
@@ -839,10 +839,7 @@ sed -i 's/%domain%/It worked!/g' /var/www/html/index.html
 cp -rf $vestacp/firewall $VESTA/data/
 
 # Downloading firewall ipv6 rules
-chkconfig firewalld off >/dev/null 2>&1
-wget $vestacp/firewallv6.tar.gz -O firewallv6.tar.gz
-tar -xzf firewallv6.tar.gz
-rm -f firewallv6.tar.gz
+cp -rf $vestacp/firewallv6 $VESTA/data/
 
 # Configuring server hostname
 $VESTA/bin/v-change-sys-hostname $servername 2>/dev/null
@@ -1219,10 +1216,7 @@ fi
 
 if [ "$fail2ban" = 'yes' ]; then
     cd /etc
-    wget $vestacp/fail2ban.tar.gz -O fail2ban.tar.gz
-    tar -xzf fail2ban.tar.gz
-    rm -f fail2ban.tar.gz
-
+    cp -rf $vestacp/fail2ban /etc/
     if [ "$dovecot" = 'no' ]; then
         fline=$(cat /etc/fail2ban/jail.local |grep -n dovecot-iptables -A 2)
         fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
