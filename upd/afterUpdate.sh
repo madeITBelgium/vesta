@@ -97,4 +97,11 @@ if [ "$VERSION" = "0.0.9" ]; then
     done
 fi
 
+
+
+if [ "$VERSION" = "0.0.10" ]; then
+    VERSION="0.0.11"
+    sed -i "s/VERSION=.*/VERSION='0.0.11'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
 bash /usr/local/vesta/upd/add_default_plugins.sh
