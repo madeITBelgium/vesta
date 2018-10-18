@@ -97,11 +97,17 @@ if [ "$VERSION" = "0.0.9" ]; then
     done
 fi
 
-
-
 if [ "$VERSION" = "0.0.10" ]; then
     VERSION="0.0.11"
     sed -i "s/VERSION=.*/VERSION='0.0.11'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
+if [ "$VERSION" = "0.0.11" ]; then
+    VERSION="0.0.12"
+    sed -i "s/VERSION=.*/VERSION='0.0.12'/g" /usr/local/vesta/conf/vesta.conf
+    
+    bash /usr/local/vesta/upd/fix_dhcprenew.sh
+    bash /usr/local/vesta/upd/limit_sudo.sh
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
