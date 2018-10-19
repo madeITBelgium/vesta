@@ -475,7 +475,7 @@ echo "enabled=1" >> $nrepo
 vrepo='/etc/yum.repos.d/vesta.repo'
 echo "[vesta]" > $vrepo
 echo "name=Vesta - $REPO" >> $vrepo
-echo "baseurl=http://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
+echo "baseurl=https://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
 echo "enabled=1" >> $vrepo
 echo "gpgcheck=0" >> $vrepo
 #echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
@@ -1287,7 +1287,7 @@ fi
 # Get main IP
 ip=$(ip addr|grep 'inet '|grep global|head -n1|awk '{print $2}'|cut -f1 -d/)
 # Get public ip
-pub_ip=$(wget http://cp.madeit.be/my-ip.php -O - 2>/dev/null)
+pub_ip=$(wget -4 https://cp.madeit.be/my-ip.php -O - 2>/dev/null)
 if [ ! -z "$pub_ip" ] && [ "$pub_ip" != "$ip" ]; then
     echo "$VESTA/bin/v-update-sys-ip" >> /etc/rc.local
     $VESTA/bin/v-change-sys-ip-nat $ip $pub_ip
