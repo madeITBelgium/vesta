@@ -47,8 +47,8 @@ EOF
 sftpc() {
     expect -f "-" <<EOF "$@"
         set count 0
-        spawn /usr/bin/sftp -o StrictHostKeyChecking=no -o \
-            Port=$port $user@$host
+        spawn "/usr/bin/sftp -o StrictHostKeyChecking=no -o \
+            Port=$port '$user@$host'"
         expect {
             "password:" {
                 send "$password\r"
@@ -104,20 +104,25 @@ EOF
 if [ "$type" != 'local' ];then
     if [ "$type" = 's3' ]; then
         check_args '5' "$#" "TYPE HOST BUCKET USERNAME PASSWORD [PATH] [ROTATE]"
+        is_format_valid 'host'
     else
         check_args '4' "$#" "TYPE HOST USERNAME PASSWORD [PATH] [PORT] [ROTATE]"
+        is_format_valid 'user' 'host' 'path' 'port'
     fi
-    is_format_valid 'host'
     is_password_valid
     is_format_valid 'rotate'
     if [ "$type" = 'sftp' ]; then
         which expect >/dev/null 2>&1
         check_result $? "expect command not found"  $E_NOTEXIST
     fi
+    
     if [ "$type" = 's3' ]; then
         which s3cmd >/dev/null 2>&1
         check_result $? "s3cmd command not found"  $E_NOTEXIST
     fi
+    
+    host "$host" >/dev/null 2>&1
+    check_result $? "host connection failed" "$E_CONNECT"
 fi
 
 
