@@ -61,7 +61,7 @@ date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Prepare values for the insert
 dns_rec="DOMAIN='$DOMAIN' IP='$IP' TPL='$TPL' TTL='$TTL' EXP='$EXP'"
-dns_rec="$dns_rec SOA='$SOA' SERIAL="$SERIAL" SRC='$src' RECORDS='$RECORDS'"
+dns_rec="$dns_rec SOA='$SOA' SERIAL='$SERIAL' SRC='$src' RECORDS='$RECORDS'"
 dns_rec="$dns_rec SUSPENDED='$SUSPENDED' TIME='$time' DATE='$date'"
 echo "$dns_rec" >> $USER_DATA/dns.conf
 
