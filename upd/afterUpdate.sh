@@ -116,6 +116,7 @@ if [ "$VERSION" = "0.0.12" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.13'/g" /usr/local/vesta/conf/vesta.conf
     
     bash /usr/local/vesta/upd/fix_nologinShell.sh
+    bash /usr/local/vesta/upd/add_custom_docroot.sh
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
