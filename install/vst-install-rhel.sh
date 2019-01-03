@@ -692,8 +692,13 @@ chmod a+x /backup
 echo 'LS_COLORS="$LS_COLORS:di=00;33"' >> /etc/profile
 
 # Register /sbin/nologin and /usr/sbin/nologin
-echo "/sbin/nologin" >> /etc/shells
-echo "/usr/sbin/nologin" >> /etc/shells
+if [ "$(grep /sbin/nologin /etc/shells)" = "" ]; then
+    echo "/sbin/nologin" >> /etc/shells
+ fi
+ 
+if [ "$(grep /usr/sbin/nologin /etc/shells)" = "" ]; then
+    echo "/usr/sbin/nologin" >> /etc/shells
+ fi
 
 # Changing default systemd interval
 if [ "$release" -eq '7' ]; then
