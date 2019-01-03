@@ -12,12 +12,13 @@
 # Argument definition
 user=$1
 
-# LE API
-API='https://acme-v02.api.letsencrypt.org'
-
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
+
+# LE API
+API='https://acme-v02.api.letsencrypt.org'
+#API='https://acme-staging-v02.api.letsencrypt.org'
 
 # encode base64
 encode_base64() {
@@ -40,7 +41,7 @@ query_le_v2() {
     post_data='{"protected":"'"$protected_"'",'
     post_data=$post_data'"payload":"'"$payload_"'",'
     post_data=$post_data'"signature":"'"$signature_"'"}'
-
+    
     curl -s -i -d "$post_data" "$1" -H "$content"
 }
 

@@ -14,13 +14,14 @@ user=$1
 domain=$2
 aliases=$3
 
-# LE API
-API='https://acme-v02.api.letsencrypt.org'
-
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
+
+# LE API
+API='https://acme-v02.api.letsencrypt.org'
+#API='https://acme-staging-v02.api.letsencrypt.org'
 
 # encode base64
 encode_base64() {
@@ -189,6 +190,7 @@ for auth in $authz; do
         nonce=$(echo "$answer" |grep Nonce |cut -f2 -d \ |tr -d '\r\n')
         status=$(echo "$answer"|grep HTTP/1.1 |tail -n1 |cut -f 2 -d ' ')
         if [[ "$status" -ne 200 ]]; then
+            echo $answer
             check_result $E_CONNECT "Let's Encrypt vvalidation status $status"
         fi
 
@@ -204,7 +206,7 @@ for auth in $authz; do
 done
 
 # Generating new ssl certificate
-ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "$email" "BE" "Antwerp" \
+ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "info@$domain" "BE" "Antwerp" \
     "Geel" "Made I.T." "IT" "$aliases" |tail -n1 |awk '{print $2}')
 
 # Sedning CSR to finalize order / STEP 6
