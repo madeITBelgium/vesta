@@ -21,6 +21,9 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+LETSENCRYPTAPI='https://acme-v01.api.letsencrypt.org'
+#LETSENCRYPTAPI='https://acme-staging.api.letsencrypt.org'
+
 # Additional argument formatting
 format_domain
 format_domain_idn
@@ -50,7 +53,7 @@ get_domain_values 'web'
 $BIN/v-add-web-domain-alias $user $domain "mail.$domain"
 
 # Registering LetsEncrypt user account
-$BIN/v-add-letsencrypt-user $user
+$BIN/v-add-letsencrypt-v1-user $user
 if [ "$?" -ne 0  ]; then
     #Delete temp alias
     $BIN/v-delete-web-domain-alias $user $domain "mail.$domain"

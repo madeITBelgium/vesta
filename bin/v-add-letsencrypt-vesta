@@ -24,6 +24,9 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+LETSENCRYPTAPI='https://acme-v01.api.letsencrypt.org'
+#LETSENCRYPTAPI='https://acme-staging.api.letsencrypt.org'
+
 # Additional argument formatting
 format_domain
 format_domain_idn
@@ -47,7 +50,7 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain"
 get_domain_values 'web'
 
 # Registering LetsEncrypt user account
-$BIN/v-add-letsencrypt-user $user
+$BIN/v-add-letsencrypt-v1-user $user
 if [ "$?" -ne 0  ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
