@@ -1100,9 +1100,6 @@ if [ "$dovecot" = 'yes' ]; then
     cp -r $vestacpinstalldir/dovecot /etc/dovecot
     cp $vestacpinstalldir/logrotate/dovecot /etc/logrotate.d/dovecot
     chown -R root:root /etc/dovecot*
-    if [ "$release" -eq 7 ]; then
-        sed -i "s#namespace inbox {#namespace inbox {\n  inbox = yes#" /etc/dovecot/conf.d/15-mailboxes.conf
-    fi
     chkconfig dovecot on
     service dovecot start
     check_result $? "dovecot start failed"
