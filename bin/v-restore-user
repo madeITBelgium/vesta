@@ -407,9 +407,14 @@ if [ "$web" != 'no' ] && [ ! -z "$WEB_SYSTEM" ]; then
                     cp -f $tmpdir/web/$domain/conf/ssl.$crt $USER_DATA/ssl/$crt
                 done
             fi
-
+            
+            #Check documentroot
+            if [ -z "$DOCROOT" ]; then
+                DOCROOT="public_html"
+            fi
+            
             # Concatenating web.conf keys
-            str="DOMAIN='$domain' IP='$IP' IP6='$IP6' ALIAS='$ALIAS'"
+            str="DOMAIN='$domain' IP='$IP' IP6='$IP6' DOCROOT='$DOCROOT' ALIAS='$ALIAS'"
             str="$str TPL='$TPL' SSL='$SSL' SSL_HOME='$SSL_HOME'"
             str="$str LETSENCRYPT='$LETSENCRYPT' FTP_USER='$FTP_USER'"
             str="$str FTP_MD5='$FTP_MD5' BACKEND='$BACKEND' PROXY='$PROXY'"
