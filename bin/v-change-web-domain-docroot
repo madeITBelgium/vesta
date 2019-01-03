@@ -13,7 +13,7 @@
 user=$1
 domain=$2
 domain_idn=$2
-docroot={$3-public_html}
+docroot="${3-public_html}"
 restart=$4
 
 # Includes
@@ -44,7 +44,8 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain"
 
 # Preparing variables for vhost replace
 get_domain_values 'web'
-
+local_ip=$(get_real_ip $IP)
+ipv6=$IP6
 DOCROOT=$docroot
 
 # Preparing domain variables

@@ -159,10 +159,24 @@
                                                 </select>
                                             </td>
                                         </tr>
+                                        
+                                        <?php if ($v_ssl_home == 'same') { ?>
+                                            <tr>
+                                                <td class="vst-text step-top">
+                                                    <?php print __('Document root');?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" size="20" class="vst-input" name="v_docroot" value="<?=htmlentities(trim($v_docroot, "'"))?>"> <!-- ' -->
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                        
                                         <tr>
                                             <td class="vst-text input-label">
                                                 <?php print __('SSL Certificate');?>
-                                                <span id="generate-csr"> / <a class="generate" target="_blank" href="/generate/ssl/?domain=<?=htmlentities(trim($v_domain, "'"))?>"><?=__('Generate CSR')?></a></span>
+                                                <span id="generate-csr"> / <a class="generate" target="_blank" href="/generate/ssl/?domain=<?=htmlentities(trim($v_domain, "'"))?>"><?=__('Generate CSR')?></a></span> <!-- ' -->
                                             </td>
                                         </tr>
                                         <tr>

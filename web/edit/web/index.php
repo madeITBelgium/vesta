@@ -36,6 +36,7 @@ $v_tpl = $data[$v_domain]['IP'];
 $v_cgi = $data[$v_domain]['CGI'];
 $v_elog = $data[$v_domain]['ELOG'];
 $v_ssl = $data[$v_domain]['SSL'];
+$v_docroot = $data[$v_domain]['DOCROOT'];
 if (!empty($v_ssl)) {
     exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
     $ssl_str = json_decode(implode('', $output), true);
@@ -325,6 +326,16 @@ if (!empty($_POST['save'])) {
             $restart_proxy = 'yes';
             unset($output);
         }
+    }
+    
+    // Change default document root
+    if (($v_docroot != $_POST['v_docroot']) && (empty($_SESSION['error_msg']))) {
+        $v_docroot = escapeshellarg($_POST['v_docroot']);
+        exec (VESTA_CMD."v-change-web-domain-docroot ".$v_username." ".$v_domain." ".$v_docroot." 'no'", $output, $return_var);
+        check_return_code($return_var, $output);
+        $restart_web = 'yes';
+        $restart_proxy = 'yes';
+        unset($output);
     }
 
     // Change SSL certificate
