@@ -26,8 +26,7 @@ aliases=$6
 proxy_ext=$7
 docroot="${8-public_html}"
 DOCROOT=$docroot
-echo $docroot;
-exit
+
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
