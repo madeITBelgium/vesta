@@ -896,6 +896,13 @@ is_name_format_valid() {
     fi
 }
 
+# Docroot validator
+is_docroot_format_valid() {
+    if ! [[ "$1" =~ ^[[:alnum:]][-|_|\/[:alnum:]]{0,100}[[:alnum:]]$ ]]; then
+        check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+}
+
 # Object validator
 is_object_format_valid() {
     if ! [[ "$1" =~ ^[a-zA-Z0-9][-|\.|_[:alnum:]]{0,64}[[:alnum:]]$ ]]; then
@@ -948,6 +955,7 @@ is_format_valid() {
                 dbuser)         is_dbuser_format_valid "$arg" 'dbuser';;
                 dkim)           is_boolean_format_valid "$arg" 'dkim' ;;
                 dkim_size)      is_int_format_valid "$arg" ;;
+                docroot)        is_docroot_format_valid "$arg" "docroot" ;;
                 domain)         is_domain_format_valid "$arg" ;;
                 dvalue)         is_dns_record_format_valid "$arg";;
                 email)          is_email_format_valid "$arg" ;;

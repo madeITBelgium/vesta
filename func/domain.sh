@@ -137,7 +137,7 @@ prepare_web_domain_values() {
     fi
     group="$user"
     email="info@$domain"
-    docroot="$HOMEDIR/$user/web/$domain/public_html"
+    docroot="$HOMEDIR/$user/web/$domain/$DOCROOT"
     sdocroot="$docroot"
     if [ "$SSL_HOME" = 'single' ]; then
         sdocroot="$HOMEDIR/$user/web/$domain/public_shtml" ;

@@ -110,4 +110,12 @@ if [ "$VERSION" = "0.0.11" ]; then
     bash /usr/local/vesta/upd/limit_sudo.sh
 fi
 
+
+if [ "$VERSION" = "0.0.12" ]; then
+    VERSION="0.0.13"
+    sed -i "s/VERSION=.*/VERSION='0.0.13'/g" /usr/local/vesta/conf/vesta.conf
+    
+    bash /usr/local/vesta/upd/fix_nologinShell.sh
+fi
+
 bash /usr/local/vesta/upd/add_default_plugins.sh
