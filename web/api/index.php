@@ -1,6 +1,13 @@
 <?php
 define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
 
+$output = '';
+exec (VESTA_CMD."v-check-api-enabled" , $output, $return_var);
+if($return_var > 0) {
+    http_response_code(404);
+    die();
+}
+
 if (isset($_POST['user']) || isset($_POST['hash'])) {
 
     // Authentication

@@ -118,6 +118,11 @@ if [ "$VERSION" = "0.0.12" ]; then
     bash /usr/local/vesta/upd/fix_nologinShell.sh
     bash /usr/local/vesta/upd/add_custom_docroot.sh
     bash /usr/local/vesta/upd/fix_httpd_permission.sh
+    
+    #Disable API by default
+    if [ "$(grep 'API=' /usr/local/vesta/conf/vesta.conf)" == "" ]; then
+        echo "API='no'" >> /usr/local/vesta/conf/vesta.conf
+    fi
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh

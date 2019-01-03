@@ -829,10 +829,13 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.0.12'" >> $VESTA/conf/vesta.conf
+echo "VERSION='0.0.13'" >> $VESTA/conf/vesta.conf
 
 #Letsencrypt
 echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf
+
+#Disable API
+echo "API='no'" >> $VESTA/conf/vesta.conf
 
 # Installing hosting packages
 cp -rf $vestacp/packages $VESTA/data/
