@@ -24,9 +24,10 @@ ipv6=$4
 restart=$5      # will be moved to the end soon
 aliases=$6
 proxy_ext=$7
-docroot={$8-public_html}
+docroot="${8-public_html}"
 DOCROOT=$docroot
-
+echo $docroot;
+exit
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
