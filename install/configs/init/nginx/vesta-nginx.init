@@ -36,7 +36,7 @@ start() {
 
 stop() {
     echo -n $"Stopping vesta-nginx: "
-    killproc -p /var/run/vesta-nginx.pid vesta-nginx -QUIT
+    killproc -p /usr/local/vesta/nginx/var/run/vesta-nginx.pid vesta-nginx -QUIT
     retval=$?
     echo
     [ -f ${pidfile} ] && /bin/rm -f ${pidfile}
@@ -51,7 +51,7 @@ restart(){
 
 reload() {
     echo -n $"Reloading vesta-nginx: "
-    killproc -p /var/run/vesta-nginx.pid vesta-nginx -USR2
+    killproc -p /usr/local/vesta/nginx/var/run/vesta-nginx.pid vesta-nginx -USR2
     retval=$?
     echo
     [[ $retval -ne 0 ]] && exit $retval
@@ -59,68 +59,7 @@ reload() {
 }
 
 rh_status(){
-    status -p /var/run/vesta-nginx.pid #!/bin/sh
-#
-#   nginx
-#
-# chkconfig:   - 85 15
-# description:  Run vesta web server
-# processname: vesta
-. /etc/rc.d/init.d/functions
-
-# vesta PATH
-. /etc/profile.d/vesta.sh
-
-# Source networking configuration.
-. /etc/sysconfig/network
-
-# Check that networking is up.
-[ "$NETWORKING" = "no" ] && exit 0
-
-nginx="/usr/local/vesta/nginx/sbin/vesta-nginx"
-nignx_conf="/usr/local/vesta/nginx/nginx.conf"
-
-vesta_user=admin
-vesta_group=admin
-
-start() {
-    [ -x $nginx ] || exit 5
-    [ -f $nignx_conf ] || exit 6
-
-    echo -n $"Starting vesta-nginx: "
-    daemon $nginx -c $nignx_conf
-    retval=$?
-    echo
-    [[ $retval -ne 0 ]] && exit $retval
-    return $retval
-}
-
-stop() {
-    echo -n $"Stopping vesta-nginx: "
-    killproc -p /var/run/vesta-nginx.pid vesta-nginx -QUIT
-    retval=$?
-    echo
-    [ -f ${pidfile} ] && /bin/rm -f ${pidfile}
-    [[ $retval -ne 0 ]] && exit $retval
-    return $retval
-}
-
-restart(){
-    stop
-    start
-}
-
-reload() {
-    echo -n $"Reloading vesta-nginx: "
-    killproc -p /var/run/vesta-nginx.pid vesta-nginx -USR2
-    retval=$?
-    echo
-    [[ $retval -ne 0 ]] && exit $retval
-    return $retval
-}
-
-rh_status(){
-    status -p /var/run/vesta-nginx.pid vesta-nginx
+    status -p /usr/local/vesta/nginx/var/run/vesta-nginx.pid vesta-nginx
 }
 
 case "$1" in
