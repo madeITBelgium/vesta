@@ -132,6 +132,8 @@ while getopts "y:s:e:p:fh" Option; do
     esac
 done
 
+set_default_value 'interactive' 'yes'
+
 # Checking root permissions
 if [ "x$(id -u)" != 'x0' ]; then
     check_result 1 "Script can be run executed only by root"
@@ -151,17 +153,6 @@ check_result $? "No access to Vesta repository"
 tmpfile=$(mktemp -p /tmp)
 rpm -qa > $tmpfile
 
-awstats bc clamav-update
-    curl dovecot e2fsprogs expect flex freetype ftp GeoIP 
-    ImageMagick jwhois lsof mailx mc
-    mod_fcgid mod_ruid2 mod_ssl net-tools ntp openssh-clients pcre php
-    php-bcmath php-cli php-common php-fpm php-gd php-imap php-mbstring
-    php-mcrypt phpMyAdmin php-mysql php-pdo phpPgAdmin php-pgsql php-soap
-    php-tidy php-xml php-xmlrpc 
-    roundcubemail rrdtool rsyslog screen
-     sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
-    vim-common webalizer which zip
-    
 apache="no"
 if [ ! -z "$(grep httpd $tmpfile)" ]; then
     apache="yes"
@@ -1210,24 +1201,8 @@ fi
 #                   Configure Admin User                   #
 #----------------------------------------------------------#
 
-# Deleting old admin user
-if [ ! -z "$(grep ^admin: /etc/passwd)" ]; then
-    rm -f /tmp/sess_* >/dev/null 2>&1
-fi
-
-while read USER; do
-    if [ ! -f "$VESTA/data/users/$USER/user.conf" ]; then
-        continue;
-    fi
-    
-    $VESTA/bin/v-rebuild-user $USER
-done < <(grep '@' /etc/passwd |cut -f1 -d:)
-
-# Adding Vesta admin account
-#$VESTA/bin/v-add-user admin $vpass $email default System Administrator
-#check_result $? "can't create admin user"
-$VESTA/bin/v-change-user-shell admin bash
-$VESTA/bin/v-change-user-language admin $lang
+# Deleting sessions
+rm -f /tmp/sess_* >/dev/null 2>&1
 
 # Configuring system IPs
 $VESTA/bin/v-update-sys-ip
@@ -1264,11 +1239,18 @@ $VESTA/bin/v-update-sys-rrd
 sed -i "s/VERSION=.*/VERSION='0.9.8'/g" /usr/local/vesta/conf/vesta.conf
 bash /usr/local/vesta/upd/afterUpdate.sh
 
+while read USER; do
+    if [ ! -f "$VESTA/data/users/$USER/user.conf" ]; then
+        continue;
+    fi
+    
+    $VESTA/bin/v-rebuild-user $USER
+done < <(grep '@' /etc/passwd |cut -f1 -d:)
+
 # Starting Vesta service
+chown admin:admin $VESTA/data/sessions
 chkconfig vesta on
 service vesta start
-check_result $? "vesta start failed"
-chown admin:admin $VESTA/data/sessions
 
 # Adding cronjob for autoupdates
 $VESTA/bin/v-add-cron-vesta-autoupdate

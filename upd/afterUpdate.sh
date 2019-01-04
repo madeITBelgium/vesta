@@ -86,7 +86,7 @@ if [ "$VERSION" = "0.0.9" ]; then
     
     #UPDATE BACKUP HOSTS
     files=$(ls /usr/local/vesta/ | grep backup.conf)
-    for file in files; do
+    for file in $files; do
         conf="/usr/local/vesta/$file"
         while read line ; do
             eval $line
@@ -123,6 +123,18 @@ if [ "$VERSION" = "0.0.12" ]; then
     if [ "$(grep 'API=' /usr/local/vesta/conf/vesta.conf)" == "" ]; then
         echo "API='no'" >> /usr/local/vesta/conf/vesta.conf
     fi
+    
+    #UPDATE BACKUP HOSTS
+    files=$(ls /usr/local/vesta/ | grep backup.conf)
+    for file in $files; do
+        conf="/usr/local/vesta/$file"
+        while read line ; do
+            eval $line
+            if [ "$(echo $line | grep 'ROTATE=')" == "" ]; then
+                sed -i "s/TIME='$TIME' DATE='$DATE'/ROTATE='yes' TIME='$TIME' DATE='$DATE'/g" "$conf"
+            fi
+        done < $conf
+    done
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
