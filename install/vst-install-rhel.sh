@@ -736,6 +736,7 @@ touch $VESTA/data/queue/backup.pipe $VESTA/data/queue/disk.pipe \
     $VESTA/data/queue/webstats.pipe $VESTA/data/queue/restart.pipe \
     $VESTA/data/queue/traffic.pipe $VESTA/log/system.log \
     $VESTA/log/nginx-error.log $VESTA/log/auth.log
+touch $VESTA/conf/plugin.conf
 chmod 750 $VESTA/conf $VESTA/data/users $VESTA/data/ips $VESTA/log
 chmod -R 750 $VESTA/data/queue
 chmod 660 $VESTA/log/*
@@ -931,7 +932,7 @@ if [ "$apache" = 'yes'  ]; then
     chmod -f 777 /var/lib/php/session
     chmod a+x /var/log/httpd
     mkdir -p /var/log/httpd/domains
-    chmod 751 /var/log/httpd/domains
+    chmod 754 /var/log/httpd/domains
     if [ "$release" -eq 7 ]; then
         mkdir /etc/systemd/system/httpd.service.d/
         echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf

@@ -11,5 +11,3 @@ fi
 source /etc/profile.d/vesta.sh
 source /usr/local/vesta/func/main.sh
 bash /usr/local/vesta/upd/add_plugin.sh
-
-bash /usr/local/vesta/upd/fix_httpd_permission.sh
