@@ -37,7 +37,7 @@ service dovecot stop >/dev/null 2>&1
 gpasswd -a dovecot mail > /dev/null 2>&1
 rm -rf /etc/dovecot/*
 mkdir /etc/dovecot > /dev/null 2>&1
-cp -Rf $vestacp/dovecot/ /etc/dovecot
+cp -Rf $vestacp/dovecot/* /etc/dovecot/
 cp -f $vestacp/logrotate/dovecot /etc/logrotate.d/dovecot
 chown -R root:root /etc/dovecot*
 
