@@ -419,16 +419,6 @@ echo "baseurl=http://nginx.org/packages/centos/$release/\$basearch/" >> $nrepo
 echo "gpgcheck=0" >> $nrepo
 echo "enabled=1" >> $nrepo
 
-# Installing Vesta repository
-vrepo='/etc/yum.repos.d/vesta.repo'
-echo "[vesta]" > $vrepo
-echo "name=Vesta - $REPO" >> $vrepo
-echo "baseurl=https://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
-echo "enabled=1" >> $vrepo
-echo "gpgcheck=0" >> $vrepo
-#echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
-#wget $vestacp/GPG.txt -O /etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA
-
 
 #----------------------------------------------------------#
 #                         Backup                           #
@@ -590,6 +580,14 @@ check_result $? "Removing vesta cp failed"
 
 rm -rf /usr/local/vesta
 
+#Replace Vesta REPO
+vrepo='/etc/yum.repos.d/vesta.repo'
+echo "[vesta]" > $vrepo
+echo "name=Vesta - $REPO" >> $vrepo
+echo "baseurl=https://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
+echo "enabled=1" >> $vrepo
+echo "gpgcheck=0" >> $vrepo
+
 #----------------------------------------------------------#
 #                     Install packages                     #
 #----------------------------------------------------------#
@@ -642,23 +640,11 @@ echo "$(which ntpdate) -s pool.ntp.org" >> /etc/cron.daily/ntpdate
 chmod 775 /etc/cron.daily/ntpdate
 ntpdate -s pool.ntp.org
 
-# Disabling webalizer routine
-rm -f /etc/cron.daily/00webalizer
-
 # Adding backup user
 adduser backup 2>/dev/null
+rm -rf /backup
 ln -sf /home/backup /backup
 chmod a+x /backup
-
-# Set directory color
-echo 'LS_COLORS="$LS_COLORS:di=00;33"' >> /etc/profile
-
-# Changing default systemd interval
-if [ "$release" -eq '7' ]; then
-    echo "DefaultStartLimitInterval=1s" >> /etc/systemd/system.conf
-    echo "DefaultStartLimitBurst=60" >> /etc/systemd/system.conf
-    systemctl daemon-reexec
-fi
 
 #----------------------------------------------------------#
 #                     Configure VESTA                      #
@@ -785,10 +771,13 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.0.12'" >> $VESTA/conf/vesta.conf
+echo "VERSION='0.0.13'" >> $VESTA/conf/vesta.conf
 
 #Letsencrypt
 echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf
+
+#API
+echo "API='no'" >> $VESTA/conf/vesta.conf
 
 # Installing hosting packages
 cp -rf $vestacp/packages $VESTA/data/
@@ -1073,9 +1062,6 @@ if [ "$dovecot" = 'yes' ]; then
     cp -rf $vestacp/dovecot /etc/
     cp -f $vestacp/logrotate/dovecot /etc/logrotate.d/
     chown -R root:root /etc/dovecot*
-    if [ "$release" -eq 7 ]; then
-        sed -i "s#namespace inbox {#namespace inbox {\n  inbox = yes#" /etc/dovecot/conf.d/15-mailboxes.conf
-    fi
     chkconfig dovecot on
     service dovecot start
     check_result $? "dovecot start failed"
