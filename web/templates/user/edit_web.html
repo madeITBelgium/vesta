@@ -128,6 +128,18 @@
                                 </td>
                             </tr>
                             <?php }?>
+                            <?php if ($v_ssl_home == 'same') { ?>
+                                <tr>
+                                    <td class="vst-text step-top">
+                                        <?php print __('Document root');?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" size="20" class="vst-input" name="v_docroot" value="<?=htmlentities(trim($v_docroot, "'"))?>"> <!-- ' -->
+                                    </td>
+                                </tr>
+                            <?php } ?>
                             <tr>
                                 <td class="vst-text step-top">
                                     <label><input type="checkbox" size="20" class="vst-checkbox" name="v_ssl" <?php if ($v_ssl == 'yes') echo "checked=yes" ?> onclick="javascript:elementHideShow('ssltable');"> <?php print __('SSL Support');?></label>
@@ -159,19 +171,6 @@
                                                 </select>
                                             </td>
                                         </tr>
-                                        
-                                        <?php if ($v_ssl_home == 'same') { ?>
-                                            <tr>
-                                                <td class="vst-text step-top">
-                                                    <?php print __('Document root');?>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <input type="text" size="20" class="vst-input" name="v_docroot" value="<?=htmlentities(trim($v_docroot, "'"))?>"> <!-- ' -->
-                                                </td>
-                                            </tr>
-                                        <?php } ?>
                                         
                                         <tr>
                                             <td class="vst-text input-label">
