@@ -137,4 +137,11 @@ if [ "$VERSION" = "0.0.12" ]; then
     done
 fi
 
+if [ "$VERSION" = "0.0.13" ]; then
+    VERSION="0.0.14"
+    sed -i "s/VERSION=.*/VERSION='0.0.14'/g" /usr/local/vesta/conf/vesta.conf
+    
+    echo "Run script /usr/local/vesta/bin/v-update-web-templates"
+fi
+
 bash /usr/local/vesta/upd/add_default_plugins.sh
