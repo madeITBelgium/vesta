@@ -46,6 +46,7 @@ is_object_unsuspended 'web' 'DOMAIN' "$domain"
 get_domain_values 'web'
 local_ip=$(get_real_ip $IP)
 ipv6=$IP6
+tempdocroot=$docroot
 DOCROOT=$docroot
 
 # Preparing domain variables
@@ -70,7 +71,7 @@ fi
 #----------------------------------------------------------#
 
 # Update config
-update_object_value 'web' 'DOMAIN' "$domain" '$DOCROOT' "$docroot"
+update_object_value 'web' 'DOMAIN' "$domain" '$DOCROOT' "$tempdocroot"
 
 # Restart web server
 $BIN/v-restart-web $restart

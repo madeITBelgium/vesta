@@ -21,9 +21,6 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
-# Defining config host
-chost='cp.madeit.be'
-
 # Detcing OS
 case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
     Debian)     version="debian" ;;
@@ -46,17 +43,10 @@ if [ "$version" = 'debian' ]; then
     release=$(cat /etc/issue|grep -o [0-9]|head -n1)
 fi
 
-# Defining download url
-vestacp="http://$chost/$version/$release/$VERSION"
+# Defining original path
+vestacp="$VESTA/install/os-configs/$version/$release"
 
-# Downloading template archive
-cd $(mktemp -d)
-wget $vestacp/templates.tar.gz -q
-
-check_result $? "can't download template.tar.gz" $E_CONNECT
-
-# Updating templates
-tar -xzpf templates.tar.gz -C $VESTA/data/ templates/web
+cp -rf $vestacp/templates $VESTA/data/
 
 # Rebuilding web domains
 for user in $($BIN/v-list-sys-users plain); do
