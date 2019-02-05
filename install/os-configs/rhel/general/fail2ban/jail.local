@@ -37,3 +37,10 @@ filter  = vesta
 action  = vesta[name=VESTA]
 logpath = /var/log/vesta/auth.log
 maxretry = 5
+
+[wordpress-iptables]
+enabled = true
+filter  = wordpress
+action  = vesta[name=WEB]
+logpath = /var/log/httpd/domains/*.access.log
+maxretry = 10
