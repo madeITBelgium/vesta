@@ -756,10 +756,6 @@ $LANG['th'] = array(
     'Do not use encryption' => 'ไม่ใช้การเข้ารหัส',
 
     'maximum characters length, including prefix' => 'ความยาว charset สูงสุด %s ตัว, รวมถึงคำนำหน้า',
-<<<<<<< HEAD
-    'Email Credentials' => 'Email Credentials',
-=======
 
     'Email Credentials' => 'ข้อมูลการใช้อีเมล',
->>>>>>> upstream/master
 );

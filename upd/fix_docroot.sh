@@ -12,7 +12,6 @@ for user in $userlist; do
         eval $line
         #Check documentroot
         if [ -z "$DOCROOT" ]; then
-            DOCROOT="public_html"
             update_object_value 'web' 'DOMAIN' "$DOMAIN" '$DOCROOT' "public_html"
         fi
     done < $conf

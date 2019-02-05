@@ -5,21 +5,21 @@ if(!defined('VESTA_CMD')) {
 }
 
 class Hook {
-    $filters = [];
+    private $filters = [];
     
     public function add_filter($callback, $priority = 1) {
-        $filters[] = [
+        $this->filters[] = [
             'function' => $callback, 
             'priority' => $priority
         ];
         
-        usort($filters, function ($a, $b) {
+        usort($this->filters, function ($a, $b) {
             return $a["priority"] - $b["priority"];
         });
     }
     
     public function do_action($args) {
-        foreach($filters as $filterCallback) {
+        foreach($this->filters as $filterCallback) {
             if(is_array($args)) {
                 call_user_func_array($filterCallback['function'], $args);
             }
