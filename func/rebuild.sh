@@ -146,7 +146,7 @@ rebuild_user_conf() {
 
 # WEB domain rebuild
 rebuild_web_domain_conf() {
-
+    unset AUTH_USER
     get_domain_values 'web'
     if [ -z $IP6 ] || [ "$IP6" == "no" ]; then
         IP6=""

@@ -43,6 +43,8 @@ rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.conf
 rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.ipv6.conf
 rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.ssl.conf
 rm -f $HOMEDIR/$user/conf/web/*.$WEB_SYSTEM.ssl.ipv6.conf
+rm -f $HOMEDIR/$user/conf/web/$WEB_SYSTEM*.htpasswd
+rm -f $HOMEDIR/$user/conf/web/$WEB_SYSTEM*.conf_htaccess
 if [ ! -z "$PROXY_SYSTEM" ]; then
     sed -i "/.*\/$user\/conf\/web\//d" /etc/$PROXY_SYSTEM/conf.d/vesta.conf
     rm -f $HOMEDIR/$user/conf/web/*.$PROXY_SYSTEM.conf
