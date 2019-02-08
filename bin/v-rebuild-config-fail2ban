@@ -1,0 +1,76 @@
+#!/bin/bash
+# info: Rebuild system fail2ban configurations
+# options: [RESTART]
+#
+# The function for changing service confguration.
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+restart=${1-yes}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '0' "$#" '[RESTART]'
+is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+os=$(get_server_os)
+version=$(get_server_os_version)
+vestacp="$VESTA/install/os-configs/$os/$version"
+
+cd /etc
+cp -rf $vestacp/fail2ban /etc/
+if [ "$IMAP_SYSTEM" = 'dovecot' ]; then
+    fline=$(cat /etc/fail2ban/jail.local |grep -n dovecot-iptables -A 2)
+    fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
+    sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
+fi
+
+if [ "$MAIL_SYSTEM" = 'exim' ]; then
+    fline=$(cat /etc/fail2ban/jail.local |grep -n exim-iptables -A 2)
+    fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
+    sed -i "${fline}s/true/false/" /etc/fail2ban/jail.local
+fi
+
+if [ "$FTP_SYSTEM" = 'vsftpd' ]; then
+    #Create vsftpd Log File
+    if [ ! -f "/var/log/vsftpd.log" ]; then
+        touch /var/log/vsftpd.log
+    fi
+    fline=$(cat /etc/fail2ban/jail.local |grep -n vsftpd-iptables -A 2)
+    fline=$(echo "$fline" |grep enabled |tail -n1 |cut -f 1 -d -)
+    sed -i "${fline}s/false/true/" /etc/fail2ban/jail.local
+fi
+chkconfig fail2ban on
+mkdir -p /var/run/fail2ban
+if [ -e "/usr/lib/systemd/system/fail2ban.service" ]; then
+    exec_pre='ExecStartPre=/bin/mkdir -p /var/run/fail2ban'
+    sed -i "s|\[Service\]|[Service]\n$exec_pre|g" \
+        /usr/lib/systemd/system/fail2ban.service
+    systemctl daemon-reload
+fi
+service fail2ban restart
+check_result $? "fail2ban restart failed"
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
