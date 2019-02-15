@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/madeITBelgium/vesta.svg?branch=master)](https://travis-ci.org/madeITBelgium/vesta)
 [![GitHub version](https://badge.fury.io/gh/madeITBelgium%2Fvesta.svg)](https://badge.fury.io/gh/madeITBelgium%2Fvesta)
-[![Coverage Status](https://coveralls.io/repos/github/madeITBelgium/vesta/badge.svg?branch=master)](https://coveralls.io/github/madeITBelgium/vesta?branch=master)
+[![codecov](https://codecov.io/gh/madeITBelgium/vesta/branch/master/graph/badge.svg)](https://codecov.io/gh/madeITBelgium/vesta)
 
 * Vesta is an open source hosting control panel.
 * Vesta has a clean and focused interface without the clutter.
