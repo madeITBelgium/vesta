@@ -30,4 +30,5 @@ script:
   - test/setup/test-server.sh test_actions_delete
   
 after_script:
+  - test/setup/test-coverage.sh ${TRAVIS_JOB_ID}
   - test/setup/delete-server.sh $API_TOKEN
