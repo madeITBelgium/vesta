@@ -29,7 +29,7 @@ if [ "$release" -eq 9 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools unzip"
 elif [ "$release" -eq 8 ]; then
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -42,7 +42,7 @@ elif [ "$release" -eq 8 ]; then
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect libmail-dkim-perl
-        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools"
+        unrar-free vim-common vesta-ioncube vesta-softaculous net-tools unzip"
 else
     software="nginx apache2 apache2-utils apache2.2-common
         apache2-suexec-custom libapache2-mod-ruid2
@@ -55,7 +55,7 @@ else
         flex whois rssh git idn zip sudo bc ftp lsof ntpdate rrdtool quota
         e2fslibs bsdutils e2fsprogs curl imagemagick fail2ban dnsutils
         bsdmainutils cron vesta vesta-nginx vesta-php expect unrar-free
-        vim-common vesta-ioncube vesta-softaculous net-tools"
+        vim-common vesta-ioncube vesta-softaculous net-tools unzip"
 fi
 
 # Defining help function
@@ -259,7 +259,7 @@ if [ "x$(id -u)" != 'x0' ]; then
 fi
 
 # Checking admin user account
-if [ ! -z "$(grep ^admin: /etc/passwd /etc/group)" ] && [ -z "$force" ]; then
+if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ -z "$force" ]; then
     echo 'Please remove admin user account before proceeding.'
     echo 'If you want to do it automatically run installer with -f option:'
     echo -e "Example: bash $0 --force\n"
@@ -476,6 +476,17 @@ apt-key add /tmp/nginx_signing.key
 echo "deb http://$RHOST/$codename/ $codename vesta" > $apt/vesta.list
 wget $CHOST/deb_signing.key -O deb_signing.key
 apt-key add deb_signing.key
+
+# Installing jessie backports
+if [ "$release" -eq 8 ]; then
+    if [ ! -e /etc/apt/apt.conf ]; then
+        echo 'Acquire::Check-Valid-Until "false";' >> /etc/apt/apt.conf
+    fi
+    if [ ! -e /etc/apt/sources.list.d/backports.list ]; then
+        echo "deb http://archive.debian.org/debian jessie-backports main" >\
+            /etc/apt/sources.list.d/backports.list
+    fi
+fi
 
 
 #----------------------------------------------------------#
@@ -1240,7 +1251,7 @@ if [ ! -z "$(grep ^admin: /etc/passwd)" ] && [ "$force" = 'yes' ]; then
     mv -f /home/admin  $vst_backups/home/ >/dev/null 2>&1
     rm -f /tmp/sess_* >/dev/null 2>&1
 fi
-if [ ! -z "$(grep ^admin: /etc/group)" ] && [ "$force" = 'yes' ]; then
+if [ ! -z "$(grep ^admin: /etc/group)" ]; then
     groupdel admin > /dev/null 2>&1
 fi
 
