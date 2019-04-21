@@ -30,5 +30,5 @@ script:
   - test/setup/test-server.sh test_actions_delete
   
 after_script:
-  - test/setup/test-coverage.sh
+ # - test/setup/test-coverage.sh
   - test/setup/delete-server.sh $API_TOKEN
