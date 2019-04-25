@@ -121,7 +121,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Change web domain IP
-    if (($v_ip != $_POST['v_ip'] || (empty($_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
+    if (($v_ip != $_POST['v_ip'] || (!empty($v_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
         $ip = escapeshellarg($_POST['v_ip']); //set v_ip to $ip because 'change DNS domain IP' won't get executed.
         exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".$ip." 'no'", $output, $return_var);
         check_return_code($return_var,$output);
@@ -131,7 +131,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Change web domain IP6
-    if (($v_ipv6 != $_POST['v_ipv6'] || (empty($_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg']))) {
+    if (($v_ipv6 != $_POST['v_ipv6'] || (!empty($v_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg']))) {
         $ipv6 = escapeshellarg($_POST['v_ipv6']);
         exec (VESTA_CMD."v-change-web-domain-ipv6 ".$v_username." ".$v_domain." ".$ipv6." 'no'", $output, $return_var);
         check_return_code($return_var,$output);
@@ -141,7 +141,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Change dns domain IP
-    if (($v_ip != $_POST['v_ip'] || (empty($_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg'])))  {
+    if (($v_ip != $_POST['v_ip'] || (!empty($v_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg'])))  {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
@@ -153,7 +153,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Change dns domain IP6
-    if (($v_ipv6 != $_POST['v_ipv6'] || (empty($_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg'])))  {
+    if (($v_ipv6 != $_POST['v_ipv6'] || (!empty($v_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg'])))  {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
@@ -165,7 +165,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Change dns ip for each alias
-    if (($v_ip != $_POST['v_ip'] || (empty($_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
+    if (($v_ip != $_POST['v_ip'] || (!empty($v_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
         foreach($valiases as $v_alias ){
             exec (VESTA_CMD."v-list-dns-domain ".$v_username." '".$v_alias."' json", $output, $return_var);
             unset($output);
@@ -179,7 +179,7 @@ if (!empty($_POST['save'])) {
     }
 
     // Change dns ip for each alias
-    if (($v_ipv6 != $_POST['v_ipv6'] || (empty($_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg']))) {
+    if (($v_ipv6 != $_POST['v_ipv6'] || (!empty($v_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg']))) {
         foreach($valiases as $v_alias ){
             exec (VESTA_CMD."v-list-dns-domain ".$v_username." '".$v_alias."' json", $output, $return_var);
             unset($output);
