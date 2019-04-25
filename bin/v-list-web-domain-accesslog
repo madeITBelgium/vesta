@@ -78,7 +78,7 @@ else
     read_cmd="tail -n $ttl"
 fi
 
-lines=$($read_cmd /var/log/$WEB_SYSTEM/domains/$domain.log)
+lines=$($read_cmd /var/log/$WEB_SYSTEM/domains/$domain.access.log)
 IFS=$'\n'
 
 # Listing data
