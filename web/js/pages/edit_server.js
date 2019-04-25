@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $('select[name=v_filemanager]').change(function(){
-        if($(this).val() == 'yes'){
+        if($(this).val() === 'yes'){
             $('.filemanager.description').show();
         } else {
             $('.filemanager.description').hide();
@@ -8,14 +8,14 @@ $(document).ready(function(){
     });
 
     $('select[name=v_sftp]').change(function(){
-        if($(this).val() == 'yes'){
+        if($(this).val() === 'yes'){
             $('.sftp.description').show();
         } else {
             $('.sftp.description').hide();
         }
     });
     $('select[name=v_backup_type]').change(function(){
-        if($(this).val() == 's3'){
+        if($(this).val() === 's3'){
             $('input[name=v_backup_bucket]').closest('tr').show().prev().show();
             $('input[name=v_backup_host]').closest('tr').show().prev().show();
             $('input[name=v_backup_host]').replaceWith('<select class="vst-list" name="v_backup_host">' + ['us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2', 'sa-east-1'].reduce(function (data, region) {
@@ -28,7 +28,7 @@ $(document).ready(function(){
         }
     });
 	 $('select[name=v_softaculous]').change(function(){
-        if($(this).val() == 'yes'){
+        if($(this).val() === 'yes'){
             $('.softaculous.description').show();
         } else {
             $('.softaculous.description').hide();
@@ -42,7 +42,11 @@ $(document).ready(function(){
             $('.mail-relay').hide();
         }
 	});
-
+    
+    if($('input[name=v_letsencrypt]:checked').length > 0) {
+        toggle_letsencrypt('input[name=v_letsencrypt]:checked');
+    }
+});
 
 function toggle_letsencrypt(elm) {
     if ($(elm).attr('checked')) {

@@ -89,42 +89,25 @@ unset($output);
 
 // List ssl certificate info
 exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
-$v_sys_ssl_str = json_decode(implode('', $output), true);
+$v_ssl_str = json_decode(implode('', $output), true);
 unset($output);
-$v_sys_ssl_crt = $v_sys_ssl_str['VESTA']['CRT'];
-$v_sys_ssl_key = $v_sys_ssl_str['VESTA']['KEY'];
-$v_sys_ssl_ca = $v_sys_ssl_str['VESTA']['CA'];
-$v_sys_ssl_subject = $v_sys_ssl_str['VESTA']['SUBJECT'];
-$v_sys_ssl_aliases = $v_sys_ssl_str['VESTA']['ALIASES'];
-$v_sys_ssl_not_before = $v_sys_ssl_str['VESTA']['NOT_BEFORE'];
-$v_sys_ssl_not_after = $v_sys_ssl_str['VESTA']['NOT_AFTER'];
-$v_sys_ssl_signature = $v_sys_ssl_str['VESTA']['SIGNATURE'];
-$v_sys_ssl_pub_key = $v_sys_ssl_str['VESTA']['PUB_KEY'];
-$v_sys_ssl_issuer = $v_sys_ssl_str['VESTA']['ISSUER'];
-
-// List mail ssl certificate info
-if (!empty($_SESSION['VESTA_CERTIFICATE'])); {
-    exec (VESTA_CMD."v-list-sys-mail-ssl json", $output, $return_var);
-    $v_mail_ssl_str = json_decode(implode('', $output), true);
-    unset($output);
-    $v_mail_ssl_crt = $v_mail_ssl_str['MAIL']['CRT'];
-    $v_mail_ssl_key = $v_mail_ssl_str['MAIL']['KEY'];
-    $v_mail_ssl_ca = $v_mail_ssl_str['MAIL']['CA'];
-    $v_mail_ssl_subject = $v_mail_ssl_str['MAIL']['SUBJECT'];
-    $v_mail_ssl_aliases = $v_mail_ssl_str['MAIL']['ALIASES'];
-    $v_mail_ssl_not_before = $v_mail_ssl_str['MAIL']['NOT_BEFORE'];
-    $v_mail_ssl_not_after = $v_mail_ssl_str['MAIL']['NOT_AFTER'];
-    $v_mail_ssl_signature = $v_mail_ssl_str['MAIL']['SIGNATURE'];
-    $v_mail_ssl_pub_key = $v_mail_ssl_str['MAIL']['PUB_KEY'];
-    $v_mail_ssl_issuer = $v_mail_ssl_str['MAIL']['ISSUER'];
-}
+$v_ssl_crt = $v_ssl_str['VESTA']['CRT'];
+$v_ssl_key = $v_ssl_str['VESTA']['KEY'];
+$v_ssl_ca = $v_ssl_str['VESTA']['CA'];
+$v_ssl_subject = $v_ssl_str['VESTA']['SUBJECT'];
+$v_ssl_aliases = $v_ssl_str['VESTA']['ALIASES'];
+$v_ssl_not_before = $v_ssl_str['VESTA']['NOT_BEFORE'];
+$v_ssl_not_after = $v_ssl_str['VESTA']['NOT_AFTER'];
+$v_ssl_signature = $v_ssl_str['VESTA']['SIGNATURE'];
+$v_ssl_pub_key = $v_ssl_str['VESTA']['PUB_KEY'];
+$v_ssl_issuer = $v_ssl_str['VESTA']['ISSUER'];
 
 // Check system configuration
 exec (VESTA_CMD . "v-list-sys-config json", $output, $return_var);
 $data = json_decode(implode('', $output), true);
 unset($output);
 
-$v_letsencrypt = $data['LETSENCRYPT'];
+$v_letsencrypt = $data['config']['LETSENCRYPT'] ?? null;
 if (empty($v_letsencrypt)) $v_letsencrypt = 'no';
 
 
@@ -225,47 +208,6 @@ if (!empty($_POST['save'])) {
             check_return_code($return_var,$output);
             unset($output);
             $v_db_adv = 'yes';
-        }
-    }
-
-
-    // Delete Mail Domain SSL certificate
-    if ((!isset($_POST['v_mail_ssl_domain_checkbox'])) && (!empty($_SESSION['MAIL_CERTIFICATE'])) && (empty($_SESSION['error_msg']))) {
-        unset($_SESSION['MAIL_CERTIFICATE']);
-        exec (VESTA_CMD."v-delete-sys-mail-ssl", $output, $return_var);
-        check_return_code($return_var,$output);
-        unset($output);
-    }
-
-    // Updating Mail Domain SSL certificate
-    if ((isset($_POST['v_mail_ssl_domain_checkbox'])) && (isset($_POST['v_mail_ssl_domain'])) && (empty($_SESSION['error_msg']))) {
-        if ((!empty($_POST['v_mail_ssl_domain'])) && ($_POST['v_mail_ssl_domain'] != $_SESSION['MAIL_CERTIFICATE'])) {
-            $v_mail_ssl_str = explode(":", $_POST['v_mail_ssl_domain']);
-            $v_mail_ssl_user = escapeshellarg($v_mail_ssl_str[0]);
-            $v_mail_ssl_domain = escapeshellarg($v_mail_ssl_str[1]);
-            exec (VESTA_CMD."v-add-sys-mail-ssl ".$v_mail_ssl_user." ".$v_mail_ssl_domain, $output, $return_var);
-            check_return_code($return_var,$output);
-            unset($output);
-            unset($v_mail_ssl_str);
-
-            if (empty($_SESSION['error_msg'])) {
-                $_SESSION['MAIL_CERTIFICATE'] = $_POST['v_mail_ssl_domain'];
-
-                // List SSL certificate info
-                exec (VESTA_CMD."v-list-sys-mail-ssl json", $output, $return_var);
-                $v_mail_ssl_str = json_decode(implode('', $output), true);
-                unset($output);
-                $v_mail_ssl_crt = $v_mail_ssl_str['MAIL']['CRT'];
-                $v_mail_ssl_key = $v_mail_ssl_str['MAIL']['KEY'];
-                $v_mail_ssl_ca = $v_mail_ssl_str['MAIL']['CA'];
-                $v_mail_ssl_subject = $v_mail_ssl_str['MAIL']['SUBJECT'];
-                $v_mail_ssl_aliases = $v_mail_ssl_str['MAIL']['ALIASES'];
-                $v_mail_ssl_not_before = $v_mail_ssl_str['MAIL']['NOT_BEFORE'];
-                $v_mail_ssl_not_after = $v_mail_ssl_str['MAIL']['NOT_AFTER'];
-                $v_mail_ssl_signature = $v_mail_ssl_str['MAIL']['SIGNATURE'];
-                $v_mail_ssl_pub_key = $v_mail_ssl_str['MAIL']['PUB_KEY'];
-                $v_mail_ssl_issuer = $v_mail_ssl_str['MAIL']['ISSUER'];
-            }
         }
     }
 
@@ -449,92 +391,43 @@ if (!empty($_POST['save'])) {
             $v_backup_remote_adv = '';
         }
     }
-
-
-
-    // Delete WEB Domain SSL certificate
-    if ((!isset($_POST['v_web_ssl_domain_checkbox'])) && (!empty($_SESSION['VESTA_CERTIFICATE'])) && (empty($_SESSION['error_msg']))) {
-        unset($_SESSION['VESTA_CERTIFICATE']);
-        exec (VESTA_CMD."v-delete-sys-vesta-ssl", $output, $return_var);
-        check_return_code($return_var,$output);
-        unset($output);
-    }
-
-    // Updating WEB Domain SSL certificate
-    if ((isset($_POST['v_web_ssl_domain_checkbox'])) && (isset($_POST['v_web_ssl_domain'])) && (empty($_SESSION['error_msg']))) {
-
-        if ((!empty($_POST['v_web_ssl_domain'])) && ($_POST['v_web_ssl_domain'] != $_SESSION['VESTA_CERTIFICATE'])) {
-            $v_web_ssl_str = explode(":", $_POST['v_web_ssl_domain']);
-            $v_web_ssl_user = escapeshellarg($v_web_ssl_str[0]);
-            $v_web_ssl_domain = escapeshellarg($v_web_ssl_str[1]);
-            exec (VESTA_CMD."v-add-sys-vesta-ssl ".$v_web_ssl_user." ".$v_web_ssl_domain, $output, $return_var);
-            check_return_code($return_var,$output);
-            unset($output);
-
-            if (empty($_SESSION['error_msg'])) {
-                $_SESSION['VESTA_CERTIFICATE'] = $_POST['v_web_ssl_domain'];
-
-                // List SSL certificate info
-                exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
-                $v_sys_ssl_str = json_decode(implode('', $output), true);
-                unset($output);
-                $v_sys_ssl_crt = $v_sys_ssl_str['VESTA']['CRT'];
-                $v_sys_ssl_key = $v_sys_ssl_str['VESTA']['KEY'];
-                $v_sys_ssl_ca = $v_sys_ssl_str['VESTA']['CA'];
-                $v_sys_ssl_subject = $v_sys_ssl_str['VESTA']['SUBJECT'];
-                $v_sys_ssl_aliases = $v_sys_ssl_str['VESTA']['ALIASES'];
-                $v_sys_ssl_not_before = $v_sys_ssl_str['VESTA']['NOT_BEFORE'];
-                $v_sys_ssl_not_after = $v_sys_ssl_str['VESTA']['NOT_AFTER'];
-                $v_sys_ssl_signature = $v_sys_ssl_str['VESTA']['SIGNATURE'];
-                $v_sys_ssl_pub_key = $v_sys_ssl_str['VESTA']['PUB_KEY'];
-                $v_sys_ssl_issuer = $v_sys_ssl_str['VESTA']['ISSUER'];
-            }
-        }
-    }
-
-
+    
     // Update SSL certificate
-    if ((!empty($_POST['v_sys_ssl_crt'])) && (empty($_POST['v_web_ssl_domain'])) && (empty($_SESSION['error_msg']))) {
-        if (($v_sys_ssl_crt != str_replace("\r\n", "\n",  $_POST['v_sys_ssl_crt'])) || ($v_sys_ssl_key != str_replace("\r\n", "\n",  $_POST['v_sys_ssl_key']))) {
+    if (( $v_letsencrypt == 'no' ) && (empty($_POST['v_letsencrypt'])) && (!empty($_POST['v_ssl_crt'])) && (empty($_SESSION['error_msg']))) {
+        if (($v_ssl_crt != str_replace("\r\n", "\n",  $_POST['v_ssl_crt'])) || ($v_ssl_key != str_replace("\r\n", "\n",  $_POST['v_ssl_key']))) {
             exec ('mktemp -d', $mktemp_output, $return_var);
             $tmpdir = $mktemp_output[0];
-
             // Certificate
-            if (!empty($_POST['v_sys_ssl_crt'])) {
+            if (!empty($_POST['v_ssl_crt'])) {
                 $fp = fopen($tmpdir."/certificate.crt", 'w');
-                fwrite($fp, str_replace("\r\n", "\n",  $_POST['v_sys_ssl_crt']));
+                fwrite($fp, str_replace("\r\n", "\n",  $_POST['v_ssl_crt']));
                 fwrite($fp, "\n");
                 fclose($fp);
             }
-
             // Key
-            if (!empty($_POST['v_sys_ssl_key'])) {
+            if (!empty($_POST['v_ssl_key'])) {
                 $fp = fopen($tmpdir."/certificate.key", 'w');
-                fwrite($fp, str_replace("\r\n", "\n", $_POST['v_sys_ssl_key']));
+                fwrite($fp, str_replace("\r\n", "\n", $_POST['v_ssl_key']));
                 fwrite($fp, "\n");
                 fclose($fp);
             }
-
             exec (VESTA_CMD."v-change-sys-vesta-ssl ".$tmpdir, $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
-
-            if (empty($_SESSION['error_msg'])) {
-                // List ssl certificate info
-                exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
-                $v_sys_ssl_str = json_decode(implode('', $output), true);
-                unset($output);
-                $v_sys_ssl_crt = $v_sys_ssl_str['VESTA']['CRT'];
-                $v_sys_ssl_key = $v_sys_ssl_str['VESTA']['KEY'];
-                $v_sys_ssl_ca = $v_sys_ssl_str['VESTA']['CA'];
-                $v_sys_ssl_subject = $v_sys_ssl_str['VESTA']['SUBJECT'];
-                $v_sys_ssl_aliases = $v_sys_ssl_str['VESTA']['ALIASES'];
-                $v_sys_ssl_not_before = $v_sys_ssl_str['VESTA']['NOT_BEFORE'];
-                $v_sys_ssl_not_after = $v_sys_ssl_str['VESTA']['NOT_AFTER'];
-                $v_sys_ssl_signature = $v_sys_ssl_str['VESTA']['SIGNATURE'];
-                $v_sys_ssl_pub_key = $v_sys_ssl_str['VESTA']['PUB_KEY'];
-                $v_sys_ssl_issuer = $v_sys_ssl_str['VESTA']['ISSUER'];
-            }
+            // List ssl certificate info
+            exec (VESTA_CMD."v-list-sys-vesta-ssl json", $output, $return_var);
+            $ssl_str = json_decode(implode('', $output), true);
+            unset($output);
+            $v_ssl_crt = $ssl_str['VESTA']['CRT'];
+            $v_ssl_key = $ssl_str['VESTA']['KEY'];
+            $v_ssl_ca = $ssl_str['VESTA']['CA'];
+            $v_ssl_subject = $ssl_str['VESTA']['SUBJECT'];
+            $v_ssl_aliases = $ssl_str['VESTA']['ALIASES'];
+            $v_ssl_not_before = $ssl_str['VESTA']['NOT_BEFORE'];
+            $v_ssl_not_after = $ssl_str['VESTA']['NOT_AFTER'];
+            $v_ssl_signature = $ssl_str['VESTA']['SIGNATURE'];
+            $v_ssl_pub_key = $ssl_str['VESTA']['PUB_KEY'];
+            $v_ssl_issuer = $ssl_str['VESTA']['ISSUER'];
         }
     }
     
