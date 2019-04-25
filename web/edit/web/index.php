@@ -38,7 +38,7 @@ $v_elog = $data[$v_domain]['ELOG'];
 $v_ssl = $data[$v_domain]['SSL'];
 $v_docroot = $data[$v_domain]['DOCROOT'];
 if (!empty($v_ssl)) {
-    exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
+    exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".escapeshellarg($v_domain)."' json", $output, $return_var);
     $ssl_str = json_decode(implode('', $output), true);
     unset($output);
     $v_ssl_crt = $ssl_str[$v_domain]['CRT'];
@@ -429,7 +429,7 @@ if (!empty($_POST['save'])) {
     // Add Lets Encrypt support
     if ((!empty($_POST['v_ssl'])) && ( $v_letsencrypt == 'no' ) && (!empty($_POST['v_letsencrypt'])) && empty($_SESSION['error_msg'])) {
         $l_aliases = str_replace("\n", ',', $v_aliases);
-        exec (VESTA_CMD."v-add-letsencrypt-domain ".$user." ".$v_domain." '".$l_aliases."' 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-add-letsencrypt-domain ".$user." ".$v_domain." '".escapeshellarg($l_aliases)."' 'no'", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $v_letsencrypt = 'yes';
