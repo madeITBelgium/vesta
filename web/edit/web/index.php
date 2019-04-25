@@ -255,7 +255,7 @@ if (!empty($_POST['save'])) {
                     if ($return_var == 0) {
                         $ip = empty($v_ip) ? "no" : $v_ip;
                         $ipv6 = empty($v_ipv6) ? "no" : $v_ipv6;
-                        exec (VESTA_CMD."v-add-dns-on-web-alias ".$v_username." ".escapeshellarg($alias)." ".$ip." ".$ipv6" no", $output, $return_var);
+                        exec (VESTA_CMD."v-add-dns-on-web-alias ".$v_username." ".escapeshellarg($alias)." ".$ip." ".$ipv6." no", $output, $return_var);
                         check_return_code($return_var,$output);
                     unset($output);
                         $restart_dns = 'yes';

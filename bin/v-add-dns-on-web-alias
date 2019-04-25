@@ -35,13 +35,13 @@ if [ -e "$USER_DATA/dns/$alias.conf" ]; then
     exit
 fi
 
-if [ -z "$ip" ] && [ "$ip" != "no" ]; then
+if [ ! -z "$ip" ] && [ "$ip" != "no" ]; then
     is_format_valid 'ip'
 else
     ip="no"
 fi
 
-if [ -z "$ipv6" ] && [ "$ipv6" != "no" ]; then
+if [ ! -z "$ipv6" ] && [ "$ipv6" != "no" ]; then
     is_format_valid 'ipv6'
 else
     ipv6="no"
