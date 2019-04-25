@@ -356,6 +356,8 @@ rebuild_web_domain_conf() {
                 echo "auth_basic_user_file    $htpasswd;" >> $htaccess
             fi
             chmod 640 $htpasswd $htaccess >/dev/null 2>&1
+            chgrp $user $htpasswd $htaccess >/dev/null 2>&1
+
         fi
     done
 }
