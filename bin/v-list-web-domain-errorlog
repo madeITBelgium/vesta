@@ -19,6 +19,10 @@ format=${4-shell}
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
 
+# Additional argument formatting
+format_domain
+format_domain_idn
+
 # JSON list function
 json_list() {
     i=1
