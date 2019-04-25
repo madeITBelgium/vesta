@@ -165,6 +165,10 @@ if [ "$VERSION" = "0.0.16" ]; then
     if [ "$FIREWALL_EXTENSION" = 'fail2ban' ]; then
         bash /usr/local/vesta/bin/v-rebuild-config-fail2ban
     fi
+    
+    if [ "$PROXY_SYSTEM" = 'nginx' ]; then
+        bash /usr/local/vesta/upd/update_nginx_extensions.sh
+    fi
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
