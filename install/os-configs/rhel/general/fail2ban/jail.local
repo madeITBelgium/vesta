@@ -43,4 +43,5 @@ enabled = true
 filter  = wordpress
 action  = vesta[name=WEB]
 logpath = /var/log/httpd/domains/*.access.log
-maxretry = 10
+findtime = 3600
+maxretry = 100
