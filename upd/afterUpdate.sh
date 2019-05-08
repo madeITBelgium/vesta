@@ -160,7 +160,7 @@ fi
 
 if [ "$VERSION" = "0.0.16" ]; then
     VERSION="0.0.17"
-    #sed -i "s/VERSION=.*/VERSION='0.0.17'/g" /usr/local/vesta/conf/vesta.conf
+    sed -i "s/VERSION=.*/VERSION='0.0.17'/g" /usr/local/vesta/conf/vesta.conf
     
     if [ "$FIREWALL_EXTENSION" = 'fail2ban' ]; then
         bash /usr/local/vesta/bin/v-rebuild-config-fail2ban
