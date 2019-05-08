@@ -43,5 +43,6 @@ enabled = true
 filter  = wordpress
 action  = vesta[name=WEB]
 logpath = /var/log/httpd/domains/*.access.log
-findtime = 3600
+findtime = 600
 maxretry = 100
+bantime = 300     # ban for 5min
