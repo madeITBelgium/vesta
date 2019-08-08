@@ -262,7 +262,11 @@ add_web_config() {
         fi
     fi
 
-    trigger="${2/.*pl/.sh}"
+    trigger="${2/%.tpl/.sh}"
+    if [[ "$2" =~ stpl$ ]]; then
+        trigger="${2/%.stpl/.sh}"
+    fi
+
     if [ -x "$WEBTPL/$1/$WEB_BACKEND/$trigger" ]; then
         $WEBTPL/$1/$WEB_BACKEND/$trigger \
             $user $domain $local_ip $ipv6 $HOMEDIR $HOMEDIR/$user/web/$domain/public_html
@@ -424,7 +428,7 @@ is_web_domain_cert_valid() {
         check_result $E_FORBIDEN "SSL Key is protected (remove pass_phrase)"
     fi
 
-    openssl s_server -quiet -cert $ssl_dir/$domain.crt \
+    openssl s_server -port 654321 -quiet -cert $ssl_dir/$domain.crt \
         -key $ssl_dir/$domain.key >> /dev/null 2>&1 &
     pid=$!
     sleep 0.5

@@ -38,7 +38,7 @@ $v_elog = $data[$v_domain]['ELOG'];
 $v_ssl = $data[$v_domain]['SSL'];
 $v_docroot = $data[$v_domain]['DOCROOT'];
 if (!empty($v_ssl)) {
-    exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".escapeshellarg($v_domain)."' json", $output, $return_var);
+    exec (VESTA_CMD."v-list-web-domain-ssl ".$user." ".escapeshellarg($v_domain)." json", $output, $return_var);
     $ssl_str = json_decode(implode('', $output), true);
     unset($output);
     $v_ssl_crt = $ssl_str[$v_domain]['CRT'];
@@ -123,7 +123,7 @@ if (!empty($_POST['save'])) {
     // Change web domain IP
     if (($v_ip != $_POST['v_ip'] || (!empty($v_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
         $ip = escapeshellarg($_POST['v_ip']); //set v_ip to $ip because 'change DNS domain IP' won't get executed.
-        exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".$ip." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-change-web-domain-ip ".$v_username." ".$v_domain." ".$ip." no", $output, $return_var);
         check_return_code($return_var,$output);
         $restart_web = 'yes';
         $restart_proxy = 'yes';
@@ -133,7 +133,7 @@ if (!empty($_POST['save'])) {
     // Change web domain IP6
     if (($v_ipv6 != $_POST['v_ipv6'] || (!empty($v_ipv6) && $_POST['v_ipv6'] == 'no')) && (empty($_SESSION['error_msg']))) {
         $ipv6 = escapeshellarg($_POST['v_ipv6']);
-        exec (VESTA_CMD."v-change-web-domain-ipv6 ".$v_username." ".$v_domain." ".$ipv6." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-change-web-domain-ipv6 ".$v_username." ".$v_domain." ".$ipv6." no", $output, $return_var);
         check_return_code($return_var,$output);
         $restart_web = 'yes';
         $restart_proxy = 'yes';
@@ -145,7 +145,7 @@ if (!empty($_POST['save'])) {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
-            exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".$ip." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_domain." ".$ip." no", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             $restart_dns = 'yes';
@@ -157,7 +157,7 @@ if (!empty($_POST['save'])) {
         exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain." json", $output, $return_var);
         unset($output);
         if ($return_var == 0 ) {
-            exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." ".$v_domain." ".$ipv6." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-dns-domain-ipv6 ".$v_username." ".$v_domain." ".$ipv6." no", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             $restart_dns = 'yes';
@@ -167,10 +167,12 @@ if (!empty($_POST['save'])) {
     // Change dns ip for each alias
     if (($v_ip != $_POST['v_ip'] || (!empty($v_ip) && $_POST['v_ip'] == 'no')) && (empty($_SESSION['error_msg']))) {
         foreach($valiases as $v_alias ){
-            exec (VESTA_CMD."v-list-dns-domain ".$v_username." '".$v_alias."' json", $output, $return_var);
+            $v_alias = escapeshellarg($v_alias);
+            exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_alias." json", $output, $return_var);
             unset($output);
             if ($return_var == 0 ) {
-                exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." '".$v_alias."' ".$ip, $output, $return_var);
+                $ip = escapeshellarg($_POST['v_ip']);
+                exec (VESTA_CMD."v-change-dns-domain-ip ".$v_username." ".$v_alias." ".$v_ip, $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
                 $restart_dns = 'yes';
@@ -203,7 +205,7 @@ if (!empty($_POST['save'])) {
     // Change template (admin only)
     if (($v_template != $_POST['v_template']) && ( $_SESSION['user'] == 'admin') && (empty($_SESSION['error_msg']))) {
         $v_template = escapeshellarg($_POST['v_template']);
-        exec (VESTA_CMD."v-change-web-domain-tpl ".$v_username." ".$v_domain." ".$v_template." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-change-web-domain-tpl ".$v_username." ".$v_domain." ".$v_template." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $restart_web = 'yes';
@@ -223,7 +225,8 @@ if (!empty($_POST['save'])) {
                 $restart_web = 'yes';
                 $restart_proxy = 'yes';
                 $v_template = escapeshellarg($_POST['v_template']);
-                exec (VESTA_CMD."v-delete-web-domain-alias ".$v_username." ".$v_domain." '".$alias."' 'no'", $output, $return_var);
+                $alias = escapeshellarg($alias);
+                exec (VESTA_CMD."v-delete-web-domain-alias ".$v_username." ".$v_domain." ".$alias." no", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
 
@@ -231,7 +234,7 @@ if (!empty($_POST['save'])) {
                     exec (VESTA_CMD."v-list-dns-domain ".$v_username." ".$v_domain, $output, $return_var);
                     unset($output);
                     if ($return_var == 0) {
-                        exec (VESTA_CMD."v-delete-dns-on-web-alias ".$v_username." ".$v_domain." '".$alias."' 'no'", $output, $return_var);
+                        exec (VESTA_CMD."v-delete-dns-on-web-alias ".$v_username." ".$v_domain." ".$alias." no", $output, $return_var);
                         check_return_code($return_var,$output);
                         unset($output);
                         $restart_dns = 'yes';
@@ -246,7 +249,8 @@ if (!empty($_POST['save'])) {
                 $restart_web = 'yes';
                 $restart_proxy = 'yes';
                 $v_template = escapeshellarg($_POST['v_template']);
-                exec (VESTA_CMD."v-add-web-domain-alias ".$v_username." ".$v_domain." ".escapeshellarg($alias)." 'no'", $output, $return_var);
+                $alias = escapeshellarg($alias);
+                exec (VESTA_CMD."v-add-web-domain-alias ".$v_username." ".$v_domain." ".$alias." no", $output, $return_var);
                 check_return_code($return_var,$output);
                 unset($output);
                 if (empty($_SESSION['error_msg'])) {
@@ -275,7 +279,7 @@ if (!empty($_POST['save'])) {
 
     // Delete proxy support
     if ((!empty($_SESSION['PROXY_SYSTEM'])) && (!empty($v_proxy)) && (empty($_POST['v_proxy'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-delete-web-domain-proxy ".$v_username." ".$v_domain." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-delete-web-domain-proxy ".$v_username." ".$v_domain." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         unset($v_proxy);
@@ -292,7 +296,7 @@ if (!empty($_POST['save'])) {
         if (( $v_proxy_template != $_POST['v_proxy_template']) || ($v_proxy_ext != $ext)) {
             $ext = str_replace(', ', ",", $ext);
             if (!empty($_POST['v_proxy_template'])) $v_proxy_template = $_POST['v_proxy_template'];
-            exec (VESTA_CMD."v-change-web-domain-proxy-tpl ".$v_username." ".$v_domain." ".escapeshellarg($v_proxy_template)." ".escapeshellarg($ext)." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-web-domain-proxy-tpl ".$v_username." ".$v_domain." ".escapeshellarg($v_proxy_template)." ".escapeshellarg($ext)." no", $output, $return_var);
             check_return_code($return_var,$output);
             $v_proxy_ext = str_replace(',', ', ', $ext);
             unset($output);
@@ -311,7 +315,7 @@ if (!empty($_POST['save'])) {
             $ext = str_replace(' ', ",", $ext);
             $v_proxy_ext = str_replace(',', ', ', $ext);
         }
-        exec (VESTA_CMD."v-add-web-domain-proxy ".$v_username." ".$v_domain." ".escapeshellarg($v_proxy_template)." ".escapeshellarg($ext)." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-add-web-domain-proxy ".$v_username." ".$v_domain." ".escapeshellarg($v_proxy_template)." ".escapeshellarg($ext)." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $restart_proxy = 'yes';
@@ -321,7 +325,7 @@ if (!empty($_POST['save'])) {
     if (( $v_ssl == 'yes') && (!empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
         if ( $v_ssl_home != $_POST['v_ssl_home'] ) {
             $v_ssl_home = escapeshellarg($_POST['v_ssl_home']);
-            exec (VESTA_CMD."v-change-web-domain-sslhome ".$user." ".$v_domain." ".$v_ssl_home." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-web-domain-sslhome ".$user." ".$v_domain." ".$v_ssl_home." no", $output, $return_var);
             check_return_code($return_var,$output);
             $v_ssl_home = $_POST['v_ssl_home'];
             $restart_web = 'yes';
@@ -370,13 +374,13 @@ if (!empty($_POST['save'])) {
                 fclose($fp);
             }
 
-            exec (VESTA_CMD."v-change-web-domain-sslcert ".$user." ".$v_domain." ".$tmpdir." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-change-web-domain-sslcert ".$user." ".$v_domain." ".$tmpdir." no", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             $restart_web = 'yes';
             $restart_proxy = 'yes';
 
-            exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
+            exec (VESTA_CMD."v-list-web-domain-ssl ".$user." ".$v_domain." json", $output, $return_var);
             $ssl_str = json_decode(implode('', $output), true);
             unset($output);
             $v_ssl_crt = $ssl_str[$v_domain]['CRT'];
@@ -400,7 +404,7 @@ if (!empty($_POST['save'])) {
 
     // Delete Lets Encrypt support
     if (( $v_letsencrypt == 'yes' ) && (empty($_POST['v_letsencrypt'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-delete-letsencrypt-domain ".$user." ".$v_domain." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-delete-letsencrypt-domain ".$user." ".$v_domain." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $v_ssl_crt = '';
@@ -415,7 +419,7 @@ if (!empty($_POST['save'])) {
 
     // Delete SSL certificate
     if (( $v_ssl == 'yes' ) && (empty($_POST['v_ssl'])) && (empty($_SESSION['error_msg']))) {
-        exec (VESTA_CMD."v-delete-web-domain-ssl ".$v_username." ".$v_domain." 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-delete-web-domain-ssl ".$v_username." ".$v_domain." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $v_ssl_crt = '';
@@ -429,7 +433,7 @@ if (!empty($_POST['save'])) {
     // Add Lets Encrypt support
     if ((!empty($_POST['v_ssl'])) && ( $v_letsencrypt == 'no' ) && (!empty($_POST['v_letsencrypt'])) && empty($_SESSION['error_msg'])) {
         $l_aliases = str_replace("\n", ',', $v_aliases);
-        exec (VESTA_CMD."v-add-letsencrypt-domain ".$user." ".$v_domain." '".escapeshellarg($l_aliases)."' 'no'", $output, $return_var);
+        exec (VESTA_CMD."v-add-letsencrypt-domain ".$user." ".$v_domain." ".escapeshellarg($l_aliases)." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
         $v_letsencrypt = 'yes';
@@ -477,14 +481,14 @@ if (!empty($_POST['save'])) {
                 fwrite($fp, str_replace("\r\n", "\n", $_POST['v_ssl_ca']));
                 fclose($fp);
             }
-            exec (VESTA_CMD."v-add-web-domain-ssl ".$user." ".$v_domain." ".$tmpdir." ".$v_ssl_home." 'no'", $output, $return_var);
+            exec (VESTA_CMD."v-add-web-domain-ssl ".$user." ".$v_domain." ".$tmpdir." ".$v_ssl_home." no", $output, $return_var);
             check_return_code($return_var,$output);
             unset($output);
             $v_ssl = 'yes';
             $restart_web = 'yes';
             $restart_proxy = 'yes';
 
-            exec (VESTA_CMD."v-list-web-domain-ssl ".$user." '".$v_domain."' json", $output, $return_var);
+            exec (VESTA_CMD."v-list-web-domain-ssl ".$user." ".$v_domain." json", $output, $return_var);
             $ssl_str = json_decode(implode('', $output), true);
             unset($output);
             $v_ssl_crt = $ssl_str[$_POST['v_domain']]['CRT'];

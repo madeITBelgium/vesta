@@ -61,6 +61,7 @@ csv_list() {
 #----------------------------------------------------------#
 
 check_args '2' "$#" 'USER DOMAIN [FORMAT]'
+is_format_valid 'user' 'domain'
 is_object_valid 'user' 'USER' "$user"
 is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 
@@ -70,8 +71,8 @@ is_object_valid 'mail' 'DOMAIN' "$domain_idn"
 #----------------------------------------------------------#
 
 # Parsing domain keys
-if [ -e "$USER_DATA/mail/$domain_idn.pub" ]; then
-    pub=$(cat $USER_DATA/mail/$domain.pub |grep -v "KEY-----")
+if [ -e "$USER_DATA/mail/$domain.pub" ]; then
+    pub=$(cat $USER_DATA/mail/$domain.pub |grep -v "KEY-----" |tr -d "\n\r")
     pub=$(echo "$pub" |sed ':a;N;$!ba;s/\n/\\n/g')
 else
     pub="DKIM-SUPPORT-IS-NOT-ACTIVATED"

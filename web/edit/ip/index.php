@@ -20,7 +20,7 @@ if (empty($_GET['ip'])) {
 
 // List ip
 $v_ip = escapeshellarg($_GET['ip']);
-exec (VESTA_CMD."v-list-sys-ip ".$v_ip." 'json'", $output, $return_var);
+exec (VESTA_CMD."v-list-sys-ip ".$v_ip." json", $output, $return_var);
 check_return_code($return_var,$output);
 $data = json_decode(implode('', $output), true);
 unset($output);
@@ -46,7 +46,7 @@ if ( $v_suspended == 'yes' ) {
 }
 
 // List users
-exec (VESTA_CMD."v-list-sys-users 'json'", $output, $return_var);
+exec (VESTA_CMD."v-list-sys-users json", $output, $return_var);
 $users = json_decode(implode('', $output), true);
 unset($output);
 
@@ -57,9 +57,9 @@ if (!empty($_POST['save'])) {
     // Change Status
     if (($v_ipstatus == 'shared') && (empty($_POST['v_shared'])) && (empty($_SESSION['error_msg']))) {
         if($v_version == 6) {
-            exec (VESTA_CMD."v-change-sys-ipv6-status ".$v_ip." 'dedicated'", $output, $return_var);
+            exec (VESTA_CMD."v-change-sys-ipv6-status ".$v_ip." dedicated", $output, $return_var);
         } else {
-            exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'dedicated'", $output, $return_var);
+            exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." dedicated", $output, $return_var);
         }
         check_return_code($return_var,$output);
         unset($output);
@@ -67,9 +67,9 @@ if (!empty($_POST['save'])) {
     }
     if (($v_ipstatus == 'dedicated') && (!empty($_POST['v_shared'])) && (empty($_SESSION['error_msg']))) {
         if($v_version == 6) {
-            exec (VESTA_CMD."v-change-sys-ipv6-status ".$v_ip." 'shared'", $output, $return_var);
+            exec (VESTA_CMD."v-change-sys-ipv6-status ".$v_ip." shared", $output, $return_var);
         } else {
-            exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." 'shared'", $output, $return_var);
+            exec (VESTA_CMD."v-change-sys-ip-status ".$v_ip." shared", $output, $return_var);
         }
         check_return_code($return_var,$output);
         unset($output);
