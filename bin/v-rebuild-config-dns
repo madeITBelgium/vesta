@@ -48,8 +48,8 @@ for user in $userlist; do
         domain=$DOMAIN
         domain_idn=$domain
         format_domain_idn
-        
-        if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+        str=$(grep "DOMAIN='$domain'" $VESTA/data/users/$user/dns.conf |grep "SUSPENDED='yes")
+        if [ -z "$str" ] && [[ "$DNS_SYSTEM" =~ named|bind ]]; then
             if [ -e '/etc/named.conf' ]; then
                 dns_conf='/etc/named.conf'
                 dns_group='named'
