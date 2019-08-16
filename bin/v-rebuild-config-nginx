@@ -130,7 +130,7 @@ for user in $userlist; do
                 echo "include $conf;" >> /etc/nginx/conf.d/vesta.conf
             fi
             if [ "$SSL" != "no" ] && [ -e $confs ]; then
-                echo "include $conf;" >> /etc/nginx/conf.d/vesta.conf
+                echo "include $confs;" >> /etc/nginx/conf.d/vesta.conf
             fi
         fi
         
