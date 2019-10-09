@@ -750,7 +750,7 @@ is_date_format_valid() {
 # Database user validator
 is_dbuser_format_valid() {
     exclude="[!|@|#|$|^|&|*|(|)|+|=|{|}|:|,|<|>|?|/|\|\"|'|;|%|\`| ]"
-    if [ 17 -le ${#1} ]; then
+    if [ 17 -le ${#1} ] && [ $(mysql -V | awk '{print $5}' | cut -d. -f1) = 5 ]; then
         check_result $E_INVALID "mysql username can be up to 16 characters long"
 	fi
     if [[ "$1" =~ $exclude ]]; then
