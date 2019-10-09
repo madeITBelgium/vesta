@@ -144,10 +144,15 @@ ps -eo pid,pcpu,size > $tmp_file
 # Checking current time
 ctime=$(date +%s)
 
+# Checking VESTA service
+get_srv_state vesta
+data="NAME='vesta' SYSTEM='Vesta CP' STATE='$state' CPU='$cpu'"
+data="$data MEM='$mem' RTIME='$rtime'"
+
 # Checking WEB system
 if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB_SYSTEM" != 'remote' ]; then
     get_srv_state $WEB_SYSTEM
-    data="NAME='$WEB_SYSTEM' SYSTEM='web server' STATE='$state' CPU='$cpu'"
+    data="$data\nNAME='$WEB_SYSTEM' SYSTEM='web server' STATE='$state' CPU='$cpu'"
     data="$data MEM='$mem' RTIME='$rtime'"
 fi
 
