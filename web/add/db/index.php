@@ -122,6 +122,16 @@ unset($output);
 unset($db_hosts_tmp1);
 unset($db_hosts_tmp2);
 
+exec (VESTA_CMD."v-list-sys-services json", $output, $return_var);
+$services = json_decode(implode('', $output), true);
+unset($output);
+
+$dbVersion = $services['mariadb']['VERSION'] ?? ($services['mysql']['VERSION'] ?? null);
+$maxLength = true;
+if(!empty($dbVersion) && strpos($dbVersion, '10') == 0) {
+    $maxLength = false;
+}
+
 render_page($user, $TAB, 'add_db');
 
 // Flush session messages
