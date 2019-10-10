@@ -217,7 +217,7 @@ fi
 if [ ! -z "$ANTISPAM_SYSTEM" ] && [ "$ANTISPAM_SYSTEM" != 'remote' ]; then
     get_srv_state $ANTISPAM_SYSTEM spamd
     data="$data\nNAME='$ANTISPAM_SYSTEM' SYSTEM='email antispam'"
-    data="$data STATE='$state' CPU='$cpu' MEM='$mem' RTIME='$rtime' SVERSION=''"
+    data="$data STATE='$state' CPU='$cpu' MEM='$mem' RTIME='$rtime' SVERSION='$(spamd --version | head -n1 | grep -o '[0-9.]*' | head -n1)'"
 fi
 
 # Checking DB system
@@ -262,7 +262,7 @@ fi
 if [ ! -z "$CRON_SYSTEM" ] && [ "$CRON_SYSTEM" != 'remote' ]; then
     get_srv_state $CRON_SYSTEM
     data="$data\nNAME='$CRON_SYSTEM' SYSTEM='job scheduler' STATE='$state'"
-    data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime' SVERSION=''"
+    data="$data CPU='$cpu' MEM='$mem' RTIME='$rtime' SVERSION='$(whereis -b crontab | cut -d' ' -f2 | xargs rpm -qf | grep -o '[0-9.]*' | head -n 1)'"
 fi
 
 # Checking FIREWALL system
