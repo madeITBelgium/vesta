@@ -7,3 +7,4 @@ rm -f /usr/local/vesta/data/users/admin/notifications.conf
 /usr/local/vesta/bin/v-add-user-notification admin "Release 0.9.8-18" "Biggest the <a href='http://vestacp.com/roadmap/#0.9.8-18'>release notes</a>"
 /usr/local/vesta/bin/v-add-user-notification admin "Softaculous" "Softaculous is one of the best Auto Installers and it is finally <a href='/edit/server/?lead=sftp#module-softaculous'>available</a>"
 /usr/local/vesta/bin/v-add-user-notification admin "Release 0.0.17" "This release is about stability and refinement. We added Let's Encrypt v2 support and added server certificate management tools. For more information please read <a href='http://vestacp.com/roadmap/#0.9.8-24'>release notes</a>"
+
