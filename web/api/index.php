@@ -55,6 +55,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
             exit;
         }
     } else {
+        $v_ip = escapeshellarg($_SERVER['REMOTE_ADDR']);
         $key = '/usr/local/vesta/data/keys/' . basename($_POST['hash']);
         if (file_exists($key) && is_file($key)) {
             exec(VESTA_CMD ."v-check-api-key ".escapeshellarg($key)." ".$v_ip,  $output, $return_var);
