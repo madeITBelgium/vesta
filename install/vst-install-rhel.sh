@@ -73,13 +73,20 @@ help() {
 
 # Defining password-gen function
 gen_pass() {
-    MATRIX='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-    LENGTH=10
-    while [ ${n:=1} -le $LENGTH ]; do
-        PASS="$PASS${MATRIX:$(($RANDOM%${#MATRIX})):1}"
-        let n+=1
+    matrix=$1
+    lenght=$2
+    if [ -z "$matrix" ]; then
+        matrix=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+    fi
+    if [ -z "$lenght" ]; then
+        lenght=10
+    fi
+    i=1
+    while [ $i -le $lenght ]; do
+        pass="$pass${matrix:$(($RANDOM%${#matrix})):1}"
+       ((i++))
     done
-    echo "$PASS"
+    echo "$pass"
 }
 
 # Defining return code check function
@@ -1351,8 +1358,11 @@ command="sudo $VESTA/bin/v-update-user-stats"
 $VESTA/bin/v-add-cron-job 'admin' '20' '00' '*' '*' '*' "$command"
 command="sudo $VESTA/bin/v-update-sys-rrd"
 $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
+
+min=$(gen_pass '012345' '2')
+hour=$(gen_pass '1234567' '1')
 command="sudo $VESTA/bin/v-notify-sys-status"
-$VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command"
+$VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command"
 service crond restart
 
 # Building RRD images

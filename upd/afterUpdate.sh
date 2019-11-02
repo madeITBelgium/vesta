@@ -180,7 +180,10 @@ fi
 
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
     command="sudo $VESTA/bin/v-notify-sys-status"
-    $VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command" 
+    
+    min=$(generate_password '012345' '2')
+    hour=$(generate_password '1234567' '1')
+    $VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command" 
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
