@@ -1358,6 +1358,8 @@ service crond restart
 # Building RRD images
 $VESTA/bin/v-update-sys-rrd
 
+$VESTA/bin/v-add-cron-vesta-autoupdate
+
 # Enabling file system quota
 if [ "$quota" = 'yes' ]; then
     $VESTA/bin/v-add-sys-quota

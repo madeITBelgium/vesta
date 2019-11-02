@@ -184,6 +184,7 @@ if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; the
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
+$VESTA/bin/v-add-cron-vesta-autoupdate
 
 #Send update e-mail to admin
 tmpfile=$(mktemp -p /tmp)
