@@ -87,6 +87,6 @@ echo $dropletIpv4 > $THISDIR/ip_address
 
 
 #setup coverage
-sshpass -p $rPassword ssh root@$dropletIpv4 "yum install -y git gcc-c++ cmake elfutils-libelf-devel libcurl-devel binutils-devel elfutils-devel"
-sshpass -p $rPassword ssh root@$dropletIpv4 "cd /root && wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz && tar xzf master.tar.gz"
-sshpass -p $rPassword ssh root@$dropletIpv4 "cd /root/kcov-master && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=/root/kcov .. && make && make install"
+#sshpass -p $rPassword ssh root@$dropletIpv4 "yum install -y git gcc-c++ cmake elfutils-libelf-devel libcurl-devel binutils-devel elfutils-devel"
+#sshpass -p $rPassword ssh root@$dropletIpv4 "cd /root && wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz && tar xzf master.tar.gz"
+#sshpass -p $rPassword ssh root@$dropletIpv4 "cd /root/kcov-master && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=/root/kcov .. && make && make install"
