@@ -1,0 +1,107 @@
+#!/bin/bash
+# info: Notify sys status
+#
+# Control and notify the status of the sys
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+export PATH=$PATH:/sbin
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(echo -e "$data" |grep NAME |wc -l)
+    echo "{"
+    while read str; do
+        eval $str
+        echo -n '    "'$NAME'": {
+        "VALUE": "'$VALUE'",
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+        ((i++))
+    done < <(echo -e "$data" |grep NAME)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "NAME   VALUE"
+    echo "----   -----"
+    while read str; do
+        eval $str
+        echo "$NAME $VALUE"
+    done < <(echo -e "$data" |grep NAME)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        eval $str
+        echo -e "$NAME\t$VALUE"
+    done < <(echo -e "$data" |grep NAME)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "NAME,VALUE"
+    while read str; do
+        eval $str
+        echo "$NAME,\"$VALUE"
+    done < <(echo -e "$data" |grep NAME)
+}
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+
+os=$(cut -f 1 -d ' ' /etc/redhat-release)
+release=$(grep -o "[0-9.]*" /etc/redhat-release |head -n1)
+
+api="No";
+v-check-api-enabled
+if [ $? -eq 0 ]; then 
+    api="Yes";
+fi
+
+# Checking VESTA service
+data="NAME='vestaCP' VALUE='$VERSION'"
+data="$data\nNAME='OS' VALUE='$os'"
+data="$data\nNAME='OS_RELEASE' VALUE='$release'"
+data="$data\nNAME='USERS' VALUE='$(ls -l $VESTA/data/users | tail -n +1 | wc -l)'"
+data="$data\nNAME='DOMAINS' VALUE='$(cat $VESTA/data/users/*/web.conf | wc -l)'"
+data="$data\nNAME='API' VALUE='$api'"
+
+curl --silent -d "$data" -X POST https://cp.madeit.be/notify.php > /dev/null
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+exit

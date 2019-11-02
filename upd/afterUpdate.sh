@@ -171,4 +171,14 @@ if [ "$VERSION" = "0.0.16" ]; then
     fi
 fi
 
+if [ "$VERSION" = "0.0.17" ]; then
+    VERSION="0.0.18"
+    sed -i "s/VERSION=.*/VERSION='0.0.18'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
+if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
+    command="sudo $VESTA/bin/v-notify-sys-status"
+    $VESTA/bin/v-add-cron-job 'admin' '15' '02' '*' '*' '*' "$command" 
+fi
+
 bash /usr/local/vesta/upd/add_default_plugins.sh
