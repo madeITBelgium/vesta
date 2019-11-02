@@ -72,7 +72,7 @@ header='{"e":"'$exponent'","kty":"RSA","n":"'"$modulus"'"}'
 header='{"alg":"RS256","jwk":'"$header"'}'
 
 # Requesting nonce
-nonce=$(curl -s -I "$api/directory" |grep Nonce |cut -f 2 -d \ |tr -d '\r\n')
+nonce=$(curl -s -I "$api/directory" |grep -i nonce |cut -f2 -d\ |tr -d '\r\n')
 protected=$(echo -n '{"nonce":"'"$nonce"'"}' |encode_base64)
 
 # Defining registration query
@@ -86,7 +86,7 @@ data=$data'"payload":"'"$payload"'","signature":"'"$signature"'"}'
 
 # Sending request to LetsEncrypt API
 answer=$(curl -s -i -d "$data" "$api/acme/new-reg")
-status=$(echo "$answer" |grep HTTP/1.1 |tail -n1 |cut -f2 -d ' ')
+status=$(echo "$answer" |grep HTTP/ |tail -n1 |cut -f2 -d ' ')
 
 # Checking http answer status
 if [[ "$status" -ne "201" ]] && [[ "$status" -ne "409" ]]; then

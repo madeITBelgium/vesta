@@ -64,7 +64,7 @@ header='{"e":"'$exponent'","kty":"RSA","n":"'"$modulus"'"}'
 header='{"alg":"RS256","jwk":'"$header"'}'
 
 # Requesting nonce
-nonce=$(curl -s -I "$api/directory" |grep Nonce |cut -f2 -d \ |tr -d '\r\n')
+nonce=$(curl -s -I "$api/directory" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
 protected=$(echo -n '{"nonce":"'"$nonce"'"}' |encode_base64)
 
 # Defining ACME query (request challenge)

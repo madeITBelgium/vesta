@@ -59,7 +59,7 @@ header='{"e":"'$exponent'","kty":"RSA","n":"'"$modulus"'"}'
 header='{"alg":"RS256","jwk":'"$header"'}'
 
 # Requesting nonce
-nonce=$(curl -s -I "$api/directory" |grep Nonce |cut -f2 -d \ |tr -d '\r\n')
+nonce=$(curl -s -I "$api/directory" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
 protected=$(echo -n '{"nonce":"'"$nonce"'"}' |encode_base64)
 
 # Defining ACME query (request challenge)
@@ -75,13 +75,13 @@ data=$data'"payload":"'"$payload"'","signature":"'"$signature"'"}'
 answer=$(curl -s -i -d "$data" "$api/acme/new-authz")
 
 # Checking http answer status
-status=$(echo "$answer" |grep HTTP/1.1 |tail -n1 |cut -f2 -d ' ')
+status=$(echo "$answer" |grep HTTP/ |tail -n1 |cut -f2 -d ' ')
 if [[ "$status" -ne "201" ]]; then
     check_result $E_CONNECT "LetsEncrypt challenge request $status"
 fi
 
 # Parsing domain nonce,token and uri
-nonce=$(echo "$answer" |grep Nonce |cut -f2 -d \ |tr -d '\r\n')
+nonce=$(echo "$answer" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
 protected=$(echo -n '{"nonce":"'"$nonce"'"}' |encode_base64)
 token=$(echo "$answer" |grep -A 3 http-01 |grep token |cut -f 4 -d \")
 uri=$(echo "$answer" |grep -A 3 http-01 |grep uri |cut -f 4 -d \")
