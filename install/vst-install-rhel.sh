@@ -1395,7 +1395,7 @@ fi
 
 # Sending notification to admin email
 echo -e "Congratulations, you have just successfully installed \
-Vesta Control Panel
+Vesta Control Panel by Made I.T.
 
     https://$ip:8083
     username: admin
@@ -1407,7 +1407,7 @@ Thank you.
 
 --
 Sincerely yours
-vestacp.com team
+madeit.be team - Support: https://github.com/madeITBelgium/vesta
 " > $tmpfile
 
 send_mail="$VESTA/web/inc/mail-wrapper.php"

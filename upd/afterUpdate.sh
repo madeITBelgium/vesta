@@ -4,6 +4,8 @@ source /etc/profile.d/vesta.sh
 source /usr/local/vesta/func/main.sh
 source /usr/local/vesta/conf/vesta.conf
 
+STARTVERSION=$(echo $VERSION)
+
 if [ "$VERSION" = "0.9.8" ]; then
     #Convert to made I.T.
     bash /usr/local/vesta/upd/add_ipv6.sh
@@ -182,3 +184,38 @@ if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; the
 fi
 
 bash /usr/local/vesta/upd/add_default_plugins.sh
+
+#Send update e-mail to admin
+tmpfile=$(mktemp -p /tmp)
+email=$($VESTA/bin/v-list-user admin | grep EMAIL: | awk '{print $2}')
+echo -e "Congratulations, you have just successfully updated \
+Vesta Control Panel by Made I.T.
+
+Previous Version: $STARTVERSION
+New Version: $VERSION
+
+We hope that you enjoy your installation of Vesta. Please \
+feel free to contact us anytime if you have any questions.
+
+Support: https://github.com/madeITBelgium/vesta
+
+--
+Sincerely yours
+madeit.be team
+" > $tmpfile
+
+send_mail="$VESTA/web/inc/mail-wrapper.php"
+cat $tmpfile | $send_mail -s "Vesta Control Panel" $email
+
+
+echo '======================================================='
+echo
+echo ' _|      _|  _|_|_|_|    _|_|_|  _|_|_|_|_|    _|_|   '
+echo ' _|      _|  _|        _|            _|      _|    _| '
+echo ' _|      _|  _|_|_|      _|_|        _|      _|_|_|_| '
+echo '   _|  _|    _|              _|      _|      _|    _| '
+echo '     _|      _|_|_|_|  _|_|_|        _|      _|    _| '
+echo
+echo
+cat $tmpfile
+rm -f $tmpfile
