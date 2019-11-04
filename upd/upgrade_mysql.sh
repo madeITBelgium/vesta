@@ -23,8 +23,10 @@ echo "Install MariaDB server"
 yum install MariaDB-server MariaDB-client -y
 
 echo "Start MariaDB services"
-systemctl enable mysql
+#systemctl enable mysql
 service mysql start
 
 echo "Upgrade databases"
 mysql_upgrade
+
+echo "Database upgraded to $(mysql -V | awk '{print $5}' | cut -d- -f1)"

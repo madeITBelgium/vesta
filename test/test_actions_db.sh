@@ -45,8 +45,8 @@ tmpfile=$(mktemp -p /tmp )
 #----------------------------------------------------------#
 
 # Add database
-database="website"
-database_user="website"
+database="we"
+database_user="we"
 database_pass="test123"
 cmd="v-add-database $user $database $database_user $database_pass"
 $cmd > $tmpfile 2>&1
@@ -58,7 +58,7 @@ database_long="websitewithverylongname"
 database_long_user="websitewithverylongname"
 cmd="v-add-database $user $database_long $database_long_user $database_pass"
 $cmd > $tmpfile 2>&1
-if [ "$?" -eq 1 ]; then
+if [ "$?" -eq 2 ]; then
     retval=0
 else
     retval=1
