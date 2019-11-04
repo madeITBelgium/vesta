@@ -70,6 +70,7 @@ bash $VESTA/upd/upgrade_mysql.sh
 
 #Add long database name
 cmd="v-add-database $user $databaselong $databaselonguser $database_pass"
+$cmd > $tmpfile 2>&1
 echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cmd"
 
 v-list-databases $user
