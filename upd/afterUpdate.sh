@@ -178,6 +178,11 @@ if [ "$VERSION" = "0.0.17" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.18'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
+if [ "$VERSION" = "0.0.18" ]; then
+    VERSION="0.0.19"
+    sed -i "s/VERSION=.*/VERSION='0.0.19'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
     command="sudo $VESTA/bin/v-notify-sys-status"
     
@@ -195,8 +200,10 @@ email=$($VESTA/bin/v-list-user admin | grep EMAIL: | awk '{print $2}')
 echo -e "Congratulations, you have just successfully updated \
 Vesta Control Panel by Made I.T.
 
+Server $(hostname)
 Previous Version: $STARTVERSION
 New Version: $VERSION
+
 
 We hope that you enjoy your installation of Vesta. Please \
 feel free to contact us anytime if you have any questions.
