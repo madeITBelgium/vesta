@@ -50,3 +50,11 @@ Extra features
 - Plugin support
 - Letsencrypt on maildomains
 - Letsencrypt on vesta CP
+
+
+## Upgrade Mysql to 10.4
+Since version 0.0.19 we added a script to upgrade your MySQL Server to MariaDB Version 10.4
+
+```
+bash /usr/local/vesta/upd/upgrade_mysql.sh
+```

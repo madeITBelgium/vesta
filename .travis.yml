@@ -21,6 +21,7 @@ script:
   - test/setup/test-server.sh test_actions_cron
   - test/setup/test-server.sh test_actions_ip
   - test/setup/test-server.sh test_actions_web
+  - test/setup/test-server.sh test_actions_db
   - test/setup/test-server.sh test_actions_dns
   - test/setup/test-server.sh test_actions_ipv6
   - test/setup/test-server.sh test_actions_web_ipv6
