@@ -10,6 +10,9 @@
 # Argument definition
 format=${1-shell}
 
+# Importing system environment
+source /etc/profile
+
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/conf/vesta.conf
