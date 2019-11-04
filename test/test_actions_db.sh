@@ -54,9 +54,9 @@ echo_result "DB: Adding database $database $database_user $database_pass" "$?" "
 
 
 # add long database name (should error)
-database_long="websitewithverylongname"
-database_long_user="websitewithverylongname"
-cmd="v-add-database $user $database_long $database_long_user $database_pass"
+databaselong="websitewithverylongname"
+databaselonguser="websitewithverylongname"
+cmd="v-add-database $user $databaselong $databaselonguser $database_pass"
 $cmd > $tmpfile 2>&1
 if [ "$?" -eq 2 ]; then
     retval=0
@@ -69,7 +69,7 @@ echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cm
 bash $VESTA/upd/upgrade_mysql.sh
 
 #Add long database name
-cmd="v-add-database $user $database_long $database_long_user $database_pass"
+cmd="v-add-database $user $databaselong $databaselonguser $database_pass"
 echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cmd"
 
 # Add delete database
@@ -78,9 +78,9 @@ $cmd > $tmpfile 2>&1
 echo_result "DB: Delete database testu_123_$database" "$?" "$tmpfile" "$cmd"
 
 # Add delete database
-cmd="v-delete-database $user testu_123_$database_long"
+cmd="v-delete-database $user testu_123_$databaselong"
 $cmd > $tmpfile 2>&1
-echo_result "DB: Delete database testu_123_$database" "$?" "$tmpfile" "$cmd"
+echo_result "DB: Delete database testu_123_$databaselong" "$?" "$tmpfile" "$cmd"
 
 
 exit $OUTPUT
