@@ -6,6 +6,8 @@ source /usr/local/vesta/conf/vesta.conf
 
 STARTVERSION=$(echo $VERSION)
 
+NEWRELEASE=""
+
 if [ "$VERSION" = "0.9.8" ]; then
     #Convert to made I.T.
     bash /usr/local/vesta/upd/add_ipv6.sh
@@ -181,6 +183,8 @@ fi
 if [ "$VERSION" = "0.0.18" ]; then
     VERSION="0.0.19"
     sed -i "s/VERSION=.*/VERSION='0.0.19'/g" /usr/local/vesta/conf/vesta.conf
+    
+    NEWRELEASE="$NEWRELEASE \n Wanna upgrade your MySQL from 5.5 to  MariaDB 10.4 server? Run 'bash /usr/local/vesta/upd/upgrade_mysql.sh'"
 fi
 
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
@@ -200,9 +204,10 @@ email=$($VESTA/bin/v-list-user admin | grep EMAIL: | awk '{print $2}')
 echo -e "Congratulations, you have just successfully updated \
 Vesta Control Panel by Made I.T.
 
-Server $(hostname)
+Server: $(hostname)
 Previous Version: $STARTVERSION
 New Version: $VERSION
+$NEWRELEASE
 
 
 We hope that you enjoy your installation of Vesta. Please \
