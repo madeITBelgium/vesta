@@ -73,14 +73,14 @@ cmd="v-add-database $user $database_long $database_long_user $database_pass"
 echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cmd"
 
 # Add delete database
-cmd="v-delete-database $user $database"
+cmd="v-delete-database $user testu_123_$database"
 $cmd > $tmpfile 2>&1
-echo_result "DB: Delete database $database" "$?" "$tmpfile" "$cmd"
+echo_result "DB: Delete database testu_123_$database" "$?" "$tmpfile" "$cmd"
 
 # Add delete database
-cmd="v-delete-database $user $database_long"
+cmd="v-delete-database $user testu_123_$database_long"
 $cmd > $tmpfile 2>&1
-echo_result "DB: Delete database $database" "$?" "$tmpfile" "$cmd"
+echo_result "DB: Delete database testu_123_$database" "$?" "$tmpfile" "$cmd"
 
 
 exit $OUTPUT
