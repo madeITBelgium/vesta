@@ -187,6 +187,11 @@ if [ "$VERSION" = "0.0.18" ]; then
     NEWRELEASE="$NEWRELEASE \n Wanna upgrade your MySQL from 5.5 to  MariaDB 10.4 server? Run 'bash /usr/local/vesta/upd/upgrade_mysql.sh'"
 fi
 
+if [ "$VERSION" = "0.0.19" ]; then
+    VERSION="0.0.20"
+    sed -i "s/VERSION=.*/VERSION='0.0.20'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
     command="sudo $VESTA/bin/v-notify-sys-status"
     
