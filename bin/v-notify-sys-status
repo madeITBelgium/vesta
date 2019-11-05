@@ -79,7 +79,7 @@ os=$(cut -f 1 -d ' ' /etc/redhat-release)
 release=$(grep -o "[0-9.]*" /etc/redhat-release |head -n1)
 
 api="No";
-v-check-api-enabled
+$VESTA/bin/v-check-api-enabled
 if [ $? -eq 0 ]; then 
     api="Yes";
 fi
