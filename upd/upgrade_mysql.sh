@@ -24,7 +24,8 @@ yum install MariaDB-server MariaDB-client -y
 
 echo "Start MariaDB services"
 #systemctl enable mysql
-service mysql start
+service mysql start 2> /dev/null
+service mariadb start 2> /dev/null
 
 echo "Upgrade databases"
 mysql_upgrade
