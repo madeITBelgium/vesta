@@ -192,8 +192,17 @@ if [ "$VERSION" = "0.0.19" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.20'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
+if [ "$VERSION" = "0.0.20" ]; then
+    #Fix e-mail of cronjob
+    sed -i "s|v-notify-sys-status'|v-notify-sys-status > /dev/null'|g" $VESTA/data/users/admin/cron.conf
+    $VESTA/bin/v-rebuild-cron-jobs admin
+    
+    VERSION="0.0.21"
+    sed -i "s/VERSION=.*/VERSION='0.0.21'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
-    command="sudo $VESTA/bin/v-notify-sys-status"
+    command="sudo $VESTA/bin/v-notify-sys-status > /dev/null"
     
     min=$(generate_password '012345' '2')
     hour=$(generate_password '1234567' '1')

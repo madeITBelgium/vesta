@@ -837,7 +837,7 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.0.20'" >> $VESTA/conf/vesta.conf
+echo "VERSION='0.0.21'" >> $VESTA/conf/vesta.conf
 
 #Letsencrypt
 echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf
@@ -1361,7 +1361,7 @@ $VESTA/bin/v-add-cron-job 'admin' '*/5' '*' '*' '*' '*' "$command"
 
 min=$(gen_pass '012345' '2')
 hour=$(gen_pass '1234567' '1')
-command="sudo $VESTA/bin/v-notify-sys-status"
+command="sudo $VESTA/bin/v-notify-sys-status > /dev/null"
 $VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command"
 service crond restart
 
