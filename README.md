@@ -58,3 +58,10 @@ Since version 0.0.19 we added a script to upgrade your MySQL Server to MariaDB V
 ```
 bash /usr/local/vesta/upd/upgrade_mysql.sh
 ```
+
+## Upgrade PHP to 7.4
+Since version 0.0.21 we added a script to upgrade your PHP version to PHP 7.4
+
+```
+bash /usr/local/vesta/upd/upgrade_php.sh
+```

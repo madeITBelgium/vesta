@@ -639,6 +639,9 @@ fi
 #                     Install packages                     #
 #----------------------------------------------------------#
 
+#PHP 7.4
+yum-config-manager --enable remi-php74
+
 # Installing rpm packages
 yum install -y $software
 if [ $? -ne 0 ]; then
