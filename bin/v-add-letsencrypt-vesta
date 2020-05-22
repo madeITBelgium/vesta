@@ -111,8 +111,27 @@ OLD_IFS=$IFS
 IFS=$'\n'
 for domaindata in $(cat $VESTA/data/users/*/web.conf |grep -v "'$domain'"); do
     eval $domaindata
-    aliases="$aliases,$DOMAIN"
-    
+    if [ "$SUSPENDED" = "no" ]; then
+        is_on_this_server="no"
+        for ip in $(v-list-sys-ips | tail -n +3 | awk '{print $1}'); do
+            if [ 0 -lt $(dig +short $DOMAIN | grep $ip | wc -l) ]; then
+                is_on_this_server="yes"
+            elif [ 0 -lt $(dig +short AAAA $DOMAIN | grep $ip | wc -l) ]; then
+                is_on_this_server="yes"
+            fi
+        done
+        
+        if [ "$is_on_this_server" = "yes" ]; then
+            response=$(curl -s --head  --request GET http://$DOMAIN)
+            if echo $response | grep "200 OK" > /dev/null; then 
+                aliases="$aliases,$DOMAIN"
+            elif echo $response | grep "301 Moved Permanently" > /dev/null; then 
+                aliases="$aliases,$DOMAIN"
+            elif echo $response | grep "500 Internal Server Error" > /dev/null; then 
+                aliases="$aliases,$DOMAIN"
+            fi
+        fi
+    fi
     #if [ $countDomains -lt 50 ]; then
         #aliases="$aliases,mail.$DOMAIN"
     #fi
@@ -158,7 +177,7 @@ for auth in $authz; do
     if [[ "$status" -ne 200 ]]; then
         check_result $E_CONNECT "Let's Encrypt acme/authz bad status $status"
     fi
-
+    
     # Accepting challenge / STEP 4
     domUser=$(find_user_by_domainname "$checkdomain")
     if [ "$WEB_SYSTEM" = 'nginx' ] || [ ! -z "$PROXY_SYSTEM" ]; then
@@ -217,6 +236,7 @@ for auth in $authz; do
         check_result $E_CONNECT "Let's Encrypt domain verification failed"
     fi
 done
+
 
 # Generating CSR
 ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "info@$domain" "BE" "Antwerp" \
