@@ -18,7 +18,7 @@ ssh root@your.server
 
 Download the installation script, and run it:
 ```bash
-curl http://cp.madeit.be/vst-install.sh | bash
+curl https://cp.madeit.be/vst-install.sh | bash
 ```
 
 How to install (3 step)
@@ -31,7 +31,7 @@ ssh root@your.server
 
 Download the installation script:
 ```bash
-curl -O http://cp.madeit.be/vst-install.sh
+curl -O https://cp.madeit.be/vst-install.sh
 ```
 Then run it:
 ```bash
@@ -64,4 +64,22 @@ Since version 0.0.21 we added a script to upgrade your PHP version to PHP 7.4
 
 ```
 bash /usr/local/vesta/upd/upgrade_php.sh
+```
+
+
+## Migrate from Vesta CP to Vesta CP by Made I.T. (this fork)
+We created a script that automaticly replace the original Vesta CP to the latest version of this fork. This is currently in BETA!
+
+Connect to your server as root via SSH
+```bash
+ssh root@your.server
+```
+
+Download the installation script:
+```bash
+curl -O https://raw.githubusercontent.com/madeITBelgium/vesta/master/install/vst-install-rhel-migrate.sh
+```
+Then run it:
+```bash
+bash vst-install-rhel-migrate.sh
 ```
