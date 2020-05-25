@@ -1,10 +1,10 @@
 ### Operating System (OS/VERSION):
 
-Type here, e.g. CentOS 6
+Type here, e.g. CentOS 7, CentOS 8
 
 ### VestaCP Version:
 
-Type here, e.g. 3.14159
+Type here, e.g. 0.0.20
 
 ### Installed Software (what you got with the installer):
 
