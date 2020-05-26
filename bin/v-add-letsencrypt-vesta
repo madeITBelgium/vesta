@@ -65,7 +65,7 @@ find_user_by_domainname() {
     OLD_IFS=$IFS
     IFS=$'\n'
     for list_user in $(v-list-users | tail -n +3 | awk '{print $1}'); do
-        if [ ! -z $(v-list-web-domains $list_user | tail -n +3 | awk '{print $1}' | grep $1) ];
+        if [ ! -z "$(v-list-web-domains $list_user | tail -n +3 | awk '{print $1}' | grep $1)" ];
         then
             usr=$list_user
         fi
@@ -132,6 +132,8 @@ for domaindata in $(cat $VESTA/data/users/*/web.conf |grep -v "'$domain'"); do
             fi
         fi
     fi
+    
+    #echo $DOMAIN $is_on_this_server $(find_user_by_domainname "$DOMAIN")
     #if [ $countDomains -lt 50 ]; then
         #aliases="$aliases,mail.$DOMAIN"
     #fi
