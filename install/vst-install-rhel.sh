@@ -438,8 +438,8 @@ sleep 5
 #----------------------------------------------------------#
 
 # Checking swap on small instances
-if [ -z "$(swapon -s)" ] && [ $memory -lt 1000000 ]; then
-    if [ "$release" -eq 7 ]; then
+if [ -z "$(swapon -s)" ] && [ $memory -lt 4000000 ]; then
+    if [ "$release" -ge 7 ]; then
         sudo dd if=/dev/zero of=/swapfile count=1024 bs=1MiB
     else
         fallocate -l 1G /swapfile
@@ -711,7 +711,7 @@ if [ "$(grep /usr/sbin/nologin /etc/shells)" = "" ]; then
  fi
 
 # Changing default systemd interval
-if [ "$release" -eq '7' ]; then
+if [ "$release" -ge 7 ]; then
     # Hi Lennart
     echo "DefaultStartLimitInterval=1s" >> /etc/systemd/system.conf
     echo "DefaultStartLimitBurst=60" >> /etc/systemd/system.conf
@@ -899,7 +899,7 @@ if [ "$nginx" = 'yes' ]; then
     cp -f $vestacp/logrotate/nginx /etc/logrotate.d/
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
-    if [ "$release" -eq 7 ]; then
+    if [ "$release" -ge 7 ]; then
         mkdir /etc/systemd/system/nginx.service.d/
         echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
         echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
@@ -909,7 +909,7 @@ if [ "$nginx" = 'yes' ]; then
     check_result $? "nginx start failed"
 
     # Workaround for OpenVZ/Virtuozzo
-    if [ "$release" -ge '7' ] && [ -e "/proc/vz/veinfo" ]; then
+    if [ "$release" -ge 7 ] && [ -e "/proc/vz/veinfo" ]; then
         echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
         echo "sleep 3 && service nginx restart" >> /etc/rc.local
     fi
@@ -943,7 +943,7 @@ if [ "$apache" = 'yes'  ]; then
     chmod a+x /var/log/httpd
     mkdir -p /var/log/httpd/domains
     chmod 754 /var/log/httpd/domains
-    if [ "$release" -eq 7 ]; then
+    if [ "$release" -ge 7 ]; then
         mkdir /etc/systemd/system/httpd.service.d/
         echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
         echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
@@ -953,7 +953,7 @@ if [ "$apache" = 'yes'  ]; then
     check_result $? "httpd start failed"
 
     # Workaround for OpenVZ/Virtuozzo
-    if [ "$release" -ge '7' ] && [ -e "/proc/vz/veinfo" ]; then
+    if [ "$release" -ge 7 ] && [ -e "/proc/vz/veinfo" ]; then
         echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
         echo "sleep 2 && service httpd restart" >> /etc/rc.local
     fi
@@ -1179,12 +1179,12 @@ if [ "$clamd" = 'yes' ]; then
     mkdir -p /var/log/clamav /var/run/clamav
     chown clam:clam /var/log/clamav /var/run/clamav
     chown -R clam:clam /var/lib/clamav
-    if [ "$release" -ge '7' ]; then
+    if [ "$release" -ge 7 ]; then
         cp -f $vestacp/clamav/clamd.service /usr/lib/systemd/system/
         systemctl --system daemon-reload
     fi
     /usr/bin/freshclam
-    if [ "$release" -ge '7' ]; then
+    if [ "$release" -ge 7 ]; then
         sed -i "s/nofork/foreground/" /usr/lib/systemd/system/clamd.service
         systemctl daemon-reload
     fi
@@ -1202,7 +1202,7 @@ if [ "$spamd" = 'yes' ]; then
     chkconfig spamassassin on
     service spamassassin start
     check_result $? "spamassassin start failed"
-    if [ "$release" -ge '7' ]; then
+    if [ "$release" -ge 7 ]; then
         groupadd -g 1001 spamd
         useradd -u 1001 -g spamd -s /sbin/nologin -d \
             /var/lib/spamassassin spamd
