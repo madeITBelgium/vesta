@@ -393,6 +393,8 @@ unsuspend_mysql_database() {
     mysql_connect $HOST
     query="GRANT ALL ON \`$database\`.* FROM \`$DBUSER\`@\`%\`"
     mysql_query "$query" > /dev/null
+    query="GRANT ALL ON \`$database\`.* TO \`$DBUSER\`@\`%\`"
+    mysql_query "$query" > /dev/null
     query="GRANT ALL ON \`$database\`.* TO \`$DBUSER\`@localhost"
     mysql_query "$query" > /dev/null
 }
