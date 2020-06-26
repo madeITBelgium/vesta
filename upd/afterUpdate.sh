@@ -208,6 +208,7 @@ fi
 
 if [ "$VERSION" = "0.0.22" ]; then
     VERSION="0.0.23"
+    bash /usr/local/vesta/bin/v-rebuild-config-exim
     sed -i "s/VERSION=.*/VERSION='0.0.23'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
