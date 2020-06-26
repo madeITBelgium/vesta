@@ -39,6 +39,20 @@ if [ "$release" -lt 7 ]; then
     software="$software mod_extract_forwarded"
 fi
 
+# Fix for releases 8
+if [ "$release" -eq 8 ]; then
+    software=$(echo "$software" |sed -e "s/jwhois//g")
+    software=$(echo "$software" |sed -e "s/mod_ruid2//")
+    software=$(echo "$software" |sed -e "s/ntp//")
+    software=$(echo "$software" |sed -e "s/php-imap//")
+    software=$(echo "$software" |sed -e "s/php-mcrypt//")
+    software=$(echo "$software" |sed -e "s/php-mysql//")
+    software=$(echo "$software" |sed -e "s/php-tidy//")
+    software=$(echo "$software" |sed -e "s/webalizer//")
+    software=$(echo "$software" |sed -e "s/awstats//")
+    software="$software php-pspell"
+fi
+
 # Defining help function
 help() {
     echo "Usage: $0 [OPTIONS]
@@ -456,12 +470,25 @@ fi
 #----------------------------------------------------------#
 
 # Updating system
-yum -y update
-check_result $? 'yum update failed'
+if [ "$release" -ge 8 ]; then
+    dnf -y update
+    check_result $? 'yum update failed'
 
-# Installing EPEL repository
-yum install epel-release -y
-check_result $? "Can't install EPEL repository"
+    # Installing EPEL repository
+    dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+    check_result $? "Can't install EPEL repository"
+    
+    # Installing REMI repository
+    dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+    check_result $? "Can't install EPEL repository"
+else
+    yum -y update
+    check_result $? 'yum update failed'
+
+    # Installing EPEL repository
+    yum install epel-release -y
+    check_result $? "Can't install EPEL repository"
+fi
 
 # Installing Remi repository
 if [ "$remi" = 'yes' ] && [ ! -e "/etc/yum.repos.d/remi.repo" ]; then
@@ -470,13 +497,15 @@ if [ "$remi" = 'yes' ] && [ ! -e "/etc/yum.repos.d/remi.repo" ]; then
     sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/remi.repo
 fi
 
-# Installing Nginx repository
-nrepo="/etc/yum.repos.d/nginx.repo"
-echo "[nginx]" > $nrepo
-echo "name=nginx repo" >> $nrepo
-echo "baseurl=http://nginx.org/packages/centos/$release/\$basearch/" >> $nrepo
-echo "gpgcheck=0" >> $nrepo
-echo "enabled=1" >> $nrepo
+if [ "$release" -lt 8 ]; then
+    # Installing Nginx repository
+    nrepo="/etc/yum.repos.d/nginx.repo"
+    echo "[nginx]" > $nrepo
+    echo "name=nginx repo" >> $nrepo
+    echo "baseurl=http://nginx.org/packages/centos/$release/\$basearch/" >> $nrepo
+    echo "gpgcheck=0" >> $nrepo
+    echo "enabled=1" >> $nrepo
+fi
 
 # Installing Vesta repository
 vrepo='/etc/yum.repos.d/vesta.repo'
@@ -639,22 +668,31 @@ fi
 #                     Install packages                     #
 #----------------------------------------------------------#
 
-#PHP 7.4
-yum-config-manager --enable remi-php74
 
 # Installing rpm packages
-yum install -y $software
-if [ $? -ne 0 ]; then
-    if [ "$remi" = 'yes' ]; then
-        yum -y --disablerepo=* \
-            --enablerepo="*base,*updates,nginx,epel,vesta,remi*" \
-            install $software
-    else
-        yum -y --disablerepo=* --enablerepo="*base,*updates,nginx,epel,vesta" \
-            install $software
+if [ "$release" -ge 8 ]; then
+    #PHP 7.4
+    dnf module install php:remi-7.4 -y
+    
+    dnf install -y $software
+    check_result $? "yum install failed"
+else
+    #PHP 7.4
+    yum-config-manager --enable remi-php74
+    
+    yum install -y $software
+    if [ $? -ne 0 ]; then
+        if [ "$remi" = 'yes' ]; then
+            yum -y --disablerepo=* \
+                --enablerepo="BaseOS,nginx,epel,vesta,remi*" \
+                install $software
+        else
+            yum -y --disablerepo=* --enablerepo="BaseOS,nginx,epel,vesta" \
+                install $software
+        fi
     fi
+    check_result $? "yum install failed"
 fi
-check_result $? "yum install failed"
 
 #----------------------------------------------------------#
 #                     Configure system                     #
