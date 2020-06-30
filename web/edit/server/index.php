@@ -433,7 +433,7 @@ if (!empty($_POST['save'])) {
     }
     
     // Add Letsencrypt certificate
-    if ((!empty($_POST['v_ssl'])) && ( $v_letsencrypt == 'no' ) && (!empty($_POST['v_letsencrypt'])) && empty($_SESSION['error_msg'])) {
+    if (( $v_letsencrypt == 'no' ) && (!empty($_POST['v_letsencrypt'])) && empty($_SESSION['error_msg'])) {
         $l_aliases = str_replace("\n", ',', $v_aliases);
         exec (VESTA_CMD."v-add-letsencrypt-vesta", $output, $return_var);
         check_return_code($return_var,$output);
