@@ -278,7 +278,7 @@ fi
 
 # Checking FIREWALL Fail2ban extention
 if [ ! -z "$FIREWALL_EXTENSION" ]; then
-    get_srv_state $FIREWALL_EXTENSION fail2ban-server script
+    get_srv_state $FIREWALL_EXTENSION f2b/server script
     data="$data\nNAME='$FIREWALL_EXTENSION' SYSTEM='brute-force monitor'"
     data="$data STATE='$state' CPU='$cpu' MEM='$mem' RTIME='$rtime' SVERSION='$(fail2ban-server --version | grep -o '[0-9.]*' | head -n2 | tail -n1)'"
 fi
