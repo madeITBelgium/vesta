@@ -3,6 +3,7 @@
 CURRENTVESION=$(php -v | awk '{print $2}' | head -1)
 echo "Current PHP Version: $CURRENTVESION"
 
+yum install -y yum-utils > /dev/null
 yum-config-manager --disable remi-php71 > /dev/null
 yum-config-manager --disable remi-php72 > /dev/null
 yum-config-manager --disable remi-php73 > /dev/null
