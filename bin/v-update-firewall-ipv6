@@ -153,7 +153,7 @@ if [ ! -z "$FIREWALL_EXTENSION" ]; then
     for ban in $(cat $VESTA/data/firewallv6/banlist.conf 2>/dev/null); do
         eval $ban
         echo -n "$iptables -I fail2ban-$CHAIN 1 -s $IP" >> $tmp
-        echo " -j REJECT --reject-with icmp-port-unreachable" >> $tmp
+        echo " -j REJECT --reject-with icmp6-port-unreachable" >> $tmp
     done
     bash $tmp 2>/dev/null
     rm -f $tmp
