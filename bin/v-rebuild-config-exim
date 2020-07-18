@@ -65,6 +65,8 @@ for user in $userlist; do
     for domainData in $(cat $VESTA/data/users/$user/mail.conf); do
         eval $domainData
         domain=$DOMAIN
+        format_domain
+        domain_idn=$domain
         format_domain_idn
 
         ln -s $HOMEDIR/$user/conf/mail/$domain \
