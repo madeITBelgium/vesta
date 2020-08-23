@@ -158,6 +158,7 @@ fi
 change_user_package
 
 # Update user shell
+pkg_data=$(cat $VESTA/data/packages/$package.pkg |grep -v TIME | grep -v DATE)
 shell_conf=$(echo "$pkg_data" | grep 'SHELL' | cut -f 2 -d \')
 shell=$(grep -w "$shell_conf" /etc/shells |head -n1)
 /usr/bin/chsh -s "$shell" "$user" &>/dev/null
