@@ -22,6 +22,10 @@ source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
 
+# Another workaround for cron environment
+PATH="$PATH:$BIN"
+export PATH
+
 API='https://acme-v02.api.letsencrypt.org'
 #API='https://acme-staging-v02.api.letsencrypt.org'
 
