@@ -1,7 +1,8 @@
 server {
     listen      %ip%:%proxy_port%;
     server_name %domain_idn% %alias_idn%;
-    error_log  /var/log/httpd/domains/%domain%.error.log error;
+    error_log   /var/log/httpd/domains/%domain%.error.log error;
+    root        %docroot%;
 
     location / {
         proxy_pass      http://%ip%:%web_port%;
