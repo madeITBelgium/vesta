@@ -335,7 +335,7 @@ if (!empty($_POST['save'])) {
     }
     
     // Change default document root
-    if (($v_docroot != $_POST['v_docroot']) && (empty($_SESSION['error_msg']))) {
+    if (($v_docroot != $_POST['v_docroot']) && !empty($_POST['v_docroot']) && (empty($_SESSION['error_msg']))) {
         $v_docroot = escapeshellarg($_POST['v_docroot']);
         exec (VESTA_CMD."v-change-web-domain-docroot ".$v_username." ".$v_domain." ".$v_docroot." 'no'", $output, $return_var);
         check_return_code($return_var, $output);
