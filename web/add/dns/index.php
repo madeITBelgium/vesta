@@ -17,7 +17,6 @@ if (!empty($_POST['ok'])) {
 
     // Check empty fields
     if (empty($_POST['v_domain'])) $errors[] = __('domain');
-    if (empty($_POST['v_ip'])) $errors[] = __('ip');
     if (!empty($errors[0])) {
         foreach ($errors as $i => $error) {
             if ( $i == 0 ) {
@@ -34,6 +33,7 @@ if (!empty($_POST['ok'])) {
     $v_domain = escapeshellarg($v_domain);
     $v_domain = strtolower($v_domain);
     $v_ip = escapeshellarg($_POST['v_ip']);
+    $v_ipv6 = escapeshellarg($_POST['v_ipv6']);
     $v_ns1 = escapeshellarg($_POST['v_ns1']);
     $v_ns2 = escapeshellarg($_POST['v_ns2']);
     $v_ns3 = escapeshellarg($_POST['v_ns3']);
@@ -42,10 +42,18 @@ if (!empty($_POST['ok'])) {
     $v_ns6 = escapeshellarg($_POST['v_ns6']);
     $v_ns7 = escapeshellarg($_POST['v_ns7']);
     $v_ns8 = escapeshellarg($_POST['v_ns8']);
+    
+    if(empty($v_ip)) {
+        $v_ip = 'no';
+    }
+    
+    if(empty($v_ipv6)) {
+        $v_ipv6 = 'no';
+    }
 
     // Add dns domain
     if (empty($_SESSION['error_msg'])) {
-        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_ip." ".$v_ns1." ".$v_ns2." ".$v_ns3." ".$v_ns4." ".$v_ns5."  ".$v_ns6."  ".$v_ns7." ".$v_ns8." no", $output, $return_var);
+        exec (VESTA_CMD."v-add-dns-domain ".$user." ".$v_domain." ".$v_ip." ".$v_ipv6." ".$v_ns1." ".$v_ns2." ".$v_ns3." ".$v_ns4." ".$v_ns5."  ".$v_ns6."  ".$v_ns7." ".$v_ns8." no", $output, $return_var);
         check_return_code($return_var,$output);
         unset($output);
     }
