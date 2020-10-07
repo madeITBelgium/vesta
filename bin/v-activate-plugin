@@ -50,7 +50,7 @@ if [ "$ACTIVE" == "no" ]; then
     date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
     # Adding record
-    echo "PLUGIN='$PLUGIN' NAME='$NAME' KEY='$KEY' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+    echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
     
     #Notify activation
     wget -q https://www.tpweb.org/api/vesta/1.0/plugin/notify/$plugin?type=activation > /dev/null

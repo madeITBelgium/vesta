@@ -4,7 +4,7 @@ session_start();
 
 define('VESTA_CMD', '/usr/bin/sudo /usr/local/vesta/bin/');
 define('VESTA_PLUGIN_CMD', '/usr/bin/sudo /usr/local/vesta/plugin/');
-define('JS_LATEST_UPDATE', '1491697868');
+define('JS_LATEST_UPDATE', '20201007');
 
 $i = 0;
 

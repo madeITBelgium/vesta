@@ -11,7 +11,6 @@ NEWRELEASE=""
 if [ "$VERSION" = "0.9.8" ]; then
     #Convert to made I.T.
     bash /usr/local/vesta/upd/add_ipv6.sh
-    bash /usr/local/vesta/upd/add_plugin.sh
     VERSION="0.0.1"
     sed -i "s/VERSION=.*/VERSION='0.0.1'/g" /usr/local/vesta/conf/vesta.conf
 fi

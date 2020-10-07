@@ -99,6 +99,26 @@ VE.callbacks.click.do_delete = function(evt, elm) {
      VE.helpers.createConfirmationDialog(dialog_elm, '', url);
 }
 
+/*
+ * Activate action
+ */
+VE.callbacks.click.do_activate = function(evt, elm) {
+     var ref = elm.hasClass('actions-panel') ? elm : elm.parents('.actions-panel');
+     var url = $('input[name="activate_url"]', ref).val();
+     var dialog_elm = ref.find('.confirmation-text-suspention');
+     VE.helpers.createConfirmationDialog(dialog_elm, '', url);
+}
+
+/*
+ * deactivate action
+ */
+VE.callbacks.click.do_deactivate = function(evt, elm) {
+     var ref = elm.hasClass('actions-panel') ? elm : elm.parents('.actions-panel');
+     var url = $('input[name="deactivate_url"]', ref).val();
+     var dialog_elm = ref.find('.confirmation-text-suspention');
+     VE.helpers.createConfirmationDialog(dialog_elm, '', url);
+}
+
 
 /*
  * Create dialog box on the fly

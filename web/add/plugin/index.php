@@ -23,7 +23,7 @@ if (!empty($_POST['ok'])) {
 
     // Check empty fields
     if (empty($_POST['v_plugin'])) $errors[] = __('plugin');
-    if (empty($_POST['v_key'])) $errors[] = __('key');
+    
     if (!empty($errors[0])) {
         foreach ($errors as $i => $error) {
             if ( $i == 0 ) {

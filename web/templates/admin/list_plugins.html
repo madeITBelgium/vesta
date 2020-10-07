@@ -56,12 +56,12 @@
                         ++$i;
                         if ($value['ACTIVE'] == 'no') {
                             $status = 'suspended';
-                            $spnd_action = 'Activate' ;
-                            $spnd_confirmation = 'UNSUSPEND_DOMAIN_CONFIRMATION' ;
+                            $spnd_action = 'activate' ;
+                            $spnd_confirmation = 'ACTIVATE_PLUGIN_CONFIRMATION' ;
                         } else {
                             $status = 'active';
-                            $spnd_action = 'Deactivate' ;
-                            $spnd_confirmation = 'SUSPEND_DOMAIN_CONFIRMATION' ;
+                            $spnd_action = 'deactivate' ;
+                            $spnd_confirmation = 'DEACTIVATE_PLUGIN_CONFIRMATION' ;
                         }
                     ?>
 
@@ -75,30 +75,31 @@ id="plugin-unit-<?=$i?>"  sort-name="<?=$key?>">
           <!-- l-unit-toolbar__col -->
           <div class="l-unit-toolbar__col l-unit-toolbar__col--right noselect">
             <div class="actions-panel clearfix">
-              <div class="actions-panel__col actions-panel__edit shortcut-enter" key-action="href"><a href="/edit/plugin/?domain=<?=$key?>"><?=__('edit')?> <i></i></a><span class="shortcut enter">&nbsp;&#8629;</span></div>
               <div class="actions-panel__col actions-panel__suspend shortcut-s" key-action="js">
                 <a id="<?=$spnd_action ?>_link_<?=$i?>" class="data-controls do_<?=$spnd_action?>">
                   <?=__($spnd_action)?> <i class="do_<?=$spnd_action?>"></i>
-                  <input type="hidden" name="<?=$spnd_action?>_url" value="/<?=$spnd_action?>/plugin/?domain=<?=$key?>&token=<?=$_SESSION['token']?>" />
+                  <input type="hidden" name="<?=$spnd_action?>_url" value="/<?=$spnd_action?>/plugin/?plugin=<?=$key?>&token=<?=$_SESSION['token']?>" />
                   <div id="<?=$spnd_action?>_dialog_<?=$i?>" class="confirmation-text-suspention hidden" title="<?=__('Confirmation')?>">
                     <p class="confirmation"><?=__($spnd_confirmation,$key)?></p>
                   </div>
                 </a>
                 <span class="shortcut">&nbsp;S</span>
               </div>
-              <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
-                <a id="delete_link_<?=$i?>" class="data-controls do_delete">
-                  <?=__('delete')?> <i class="do_delete"></i>
-                  <input type="hidden" name="delete_url" value="/delete/plugin/?plugin=<?=$key?>&token=<?=$_SESSION['token']?>" />
-                  <div id="delete_dialog_<?=$i?>" class="confirmation-text-delete hidden" title="<?=__('Confirmation')?>">
-                    <p class="confirmation"><?=__('DELETE_DOMAIN_CONFIRMATION',$key)?></p>
+              <?php if($status === 'suspended') { ?>
+                  <div class="actions-panel__col actions-panel__delete shortcut-delete" key-action="js">
+                    <a id="delete_link_<?=$i?>" class="data-controls do_delete">
+                      <?=__('delete')?> <i class="do_delete"></i>
+                      <input type="hidden" name="delete_url" value="/delete/plugin/?plugin=<?=$key?>&token=<?=$_SESSION['token']?>" />
+                      <div id="delete_dialog_<?=$i?>" class="confirmation-text-delete hidden" title="<?=__('Confirmation')?>">
+                        <p class="confirmation"><?=__('DELETE_DOMAIN_CONFIRMATION',$key)?></p>
+                      </div>
+                    </a>
+                    <span class="shortcut delete">&nbsp;Del</span>
                   </div>
-                </a>
-                <span class="shortcut delete">&nbsp;Del</span>
-              </div>
+              <?php } ?>
               <?php if($value['BUILDNUMBER'] < $value['LATEST_BUILDNUMBER']) { ?>
                 <div class="actions-panel__col actions-panel__update shortcut-u" key-action="href">
-                  <a href="/update/plugin/?pkg=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('update')?><i></i></a><span class="shortcut">&nbsp;U</span>
+                  <a href="/update/plugin/?plugin=<?=$key?>&token=<?=$_SESSION['token']?>"><?=__('update')?><i></i></a><span class="shortcut">&nbsp;U</span>
                 </div>
               <?php } ?>
 
