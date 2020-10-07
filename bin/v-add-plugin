@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add plugin
-# options: PLUGIN KEY [RESTART]
+# options: PLUGIN [RESTART]
 #
 # The function adds the plugin to the vestaCP installation
 
@@ -11,7 +11,6 @@
 
 # Argument definition
 plugin=$1
-key=$2
 restart="${2-yes}"
 
 # Includes
@@ -23,9 +22,8 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
-check_args '2' "$#" 'PLUGIN KEY [RESTART]'
+check_args '1' "$#" 'PLUGIN [RESTART]'
 is_format_valid 'plugin'
-is_format_valid 'key'
 #is_object_valid 'plugin' 'PLUGIN' "$plugin" #Change to is_plugin_not_installed
 
 
@@ -34,10 +32,10 @@ is_format_valid 'key'
 #----------------------------------------------------------#
 
 # Get plugin DATA from web
-pluginData=$(wget -qO- http://cp.tpweb.org/api/get-plugin/$plugin?key=$key&output=bash)
+pluginData=$(wget -qO- https://www.tpweb.org/api/vesta/1.0/plugin/$plugin)
 eval $(echo $pluginData | grep "PLUGIN='$plugin'")
 
-if [ -z $DOWNLOAD_URL ]; then
+if [ -z $INSTALL_TYPE ]; then
     echo "Plugin not found"
     exit $E_NOTEXIST;
 fi
@@ -50,14 +48,27 @@ if [ -d $VESTA/plugin/$PLUGIN ]; then
     exit $E_EXIST;
 fi
 
-wget -q $DOWNLOAD_URL -O $plugin.zip
-unzip $plugin.zip > /dev/null
-rm -f $plugin.zip
+if [ "$INSTALL_TYPE" = "git" ] || [ "$INSTALL_TYPE" = "git-directory" ]; then 
+    tmpdir=$(mktemp -d)
+    cd $tmpdir
+    git clone $INSTALL_GIT plugin > /dev/null
+    
+    if [ "$INSTALL_TYPE" = "git" ]; then
+        mv $tmpdir/plugin $VESTA/plugin/$PLUGIN
+    fi
+    
+    if [ "$INSTALL_TYPE" = "git-directory" ]; then
+        mv $tmpdir/plugin/$GITHUB_FOLDER $VESTA/plugin/$PLUGIN
+    fi
+    rm -rf $tmpdir
+    cd $VESTA/plugin/$PLUGIN
+fi
 
 # Changing file owner & permission
 chmod 750 $VESTA/plugin/$PLUGIN
 
 if [ -f "$VESTA/plugin/$PLUGIN/install/install.sh" ]; then
+    cd $VESTA/plugin/$PLUGIN/install
     bash $VESTA/plugin/$PLUGIN/install/install.sh
 fi
 
@@ -72,7 +83,7 @@ date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding plugin in plugin.conf
 sed -i "/PLUGIN='$PLUGIN'/d" $VESTA/conf/plugin.conf
-echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
 
 #----------------------------------------------------------#
 #                       Vesta                              #

@@ -29,7 +29,6 @@ json_list() {
         "BUILDNUMBER": "'$BUILDNUMBER'",
         "LATEST_VERSION": "'$LATEST_VERSION'",
         "LATEST_BUILDNUMBER": "'$LATEST_BUILDNUMBER'",
-        "KEY": "'$KEY'",
         "ACTIVE": "'$ACTIVE'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -47,11 +46,11 @@ json_list() {
 # SHELL list function
 shell_list() {
     IFS=$'\n'
-    echo "PLUGIN   NAME   VERSION   LAST VERSION   KEY   ACTIVE   DATE"
-    echo "------   ----   -------   ------------   ---   ------   ----"
+    echo "PLUGIN   NAME   VERSION   LAST VERSION   ACTIVE   DATE"
+    echo "------   ----   -------   ------------   ------   ----"
     while read str; do
         eval $str
-        echo "$PLUGIN $NAME $VERSION $LATEST_VERSION $KEY $ACTIVE $DATE"
+        echo "$PLUGIN $NAME $VERSION $LATEST_VERSION $ACTIVE $DATE"
     done < <(cat $VESTA/conf/plugin.conf)
 }
 
@@ -60,17 +59,17 @@ plain_list() {
     IFS=$'\n'
     while read str; do
         eval $str
-        echo -ne "PLUGIN\t$NAME\t$VERSION\t$LATEST_VERSION\t$KEY\t$ACTIVE\t$TIME\t$DATE"
+        echo -ne "PLUGIN\t$NAME\t$VERSION\t$LATEST_VERSION\t$ACTIVE\t$TIME\t$DATE"
     done < <(cat $VESTA/conf/plugin.conf)
 }
 
 # CSV list function
 csv_list() {
     IFS=$'\n'
-    echo "PLUGIN,NAME,VERSION,LAST VERSION,KEY,ACTIVE,TIME,DATE"
+    echo "PLUGIN,NAME,VERSION,LAST VERSION,ACTIVE,TIME,DATE"
     while read str; do
         eval $str
-        echo "$PLUGIN,\"$NAME\",$VERSION,$LATEST_VERSION,$KEY,$ACTIVE,$TIME,$DATE"
+        echo "$PLUGIN,\"$NAME\",$VERSION,$LATEST_VERSION,$ACTIVE,$TIME,$DATE"
     done < <(cat $VESTA/conf/plugin.conf)
 }
 

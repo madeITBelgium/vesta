@@ -19,13 +19,12 @@ source $VESTA/func/main.sh
 # JSON list function
 json_list() {
     echo '{'
-    echo '    "'PLUGIN'": {
+    echo '    "'$PLUGIN'": {
         "NAME": "'$NAME'",
         "VERSION": "'$VERSION'",
         "BUILDNUMBER": "'$BUILDNUMBER'",
         "LATEST_VERSION": "'$LATEST_VERSION'",
         "LATEST_BUILDNUMBER": "'$LATEST_BUILDNUMBER'",
-        "KEY": "'$KEY'",
         "ACTIVE": "'$ACTIVE'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -41,7 +40,6 @@ shell_list() {
     echo "BUILDNUMBER:           $BUILDNUMBER"
     echo "LATEST VERSION:        $LATEST_VERSION"
     echo "LATEST BUILDNUMBER:    $LATEST_BUILDNUMBER"
-    echo "KEY:                   $KEY"
     echo "ACTIVE:                $ACTIVE"
     echo "TIME:                  $TIME"
     echo "DATE:                  $DATE"
@@ -49,15 +47,15 @@ shell_list() {
 
 # PLAIN list function
 plain_list() {
-    echo -ne "$PLUGIN\t$NAME\t$VERSION\t$LAST_VERSION\t$KEY\t$ACTIVE\t"
+    echo -ne "$PLUGIN\t$NAME\t$VERSION\t$LATEST_VERSION\t$ACTIVE\t"
     echo -e "$TIME\t$DATE"
 }
 
 # CSV list function
 csv_list() {
-    echo -n "PLUGIN,NAME,VERSION,LAST VERSION,KEY,ACTIVE,"
+    echo -n "PLUGIN,NAME,VERSION,LAST VERSION,ACTIVE,"
     echo "TIME,DATE"
-    echo -n "$PLUGIN,$NAME,$VERSION,$LATEST_VERSION,$KEY,$ACTIVE,"
+    echo -n "$PLUGIN,$NAME,$VERSION,$LATEST_VERSION,$ACTIVE,"
     echo "$TIME,$DATE"
 }
 

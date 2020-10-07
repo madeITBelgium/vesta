@@ -1,4 +1,4 @@
 #!/bin/bash
 
-chmod 644 /var/log/httpd
-chmod 644 /var/log/httpd/domains
+chmod 755 /var/log/httpd
+chmod 755 /var/log/httpd/domains

@@ -28,7 +28,6 @@ json_list() {
         "NAME": "'$NAME'",
         "VERSION": "'$VERSION'",
         "BUILDNUMBER": "'$BUILDNUMBER'",
-        "KEY": "'$KEY'",
         "ACTIVE": "'$ACTIVE'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -46,11 +45,11 @@ json_list() {
 # SHELL list function
 shell_list() {
     IFS=$'\n'
-    echo "PLUGIN   NAME   VERSION   BUILDNUMBER   KEY   ACTIVE   DATE"
-    echo "------   ----   -------   -----------   ---   ------   ----"
+    echo "PLUGIN   NAME   VERSION   BUILDNUMBER   ACTIVE   DATE"
+    echo "------   ----   -------   -----------   ------   ----"
     while read str; do
         eval $str
-        echo "$PLUGIN '$NAME' $VERSION $BUILDNUMBER '$KEY' $ACTIVE $DATE"
+        echo "$PLUGIN '$NAME' $VERSION $BUILDNUMBER $ACTIVE $DATE"
     done < <(cat $VESTA/conf/search_plugin.conf)
 }
 
@@ -59,17 +58,17 @@ plain_list() {
     IFS=$'\n'
     while read str; do
         eval $str
-        echo -ne "PLUGIN\t$NAME\t$VERSION\t$BUILDNUMBER\t$KEY\t$ACTIVE\t$TIME\t$DATE"
+        echo -ne "PLUGIN\t$NAME\t$VERSION\t$BUILDNUMBER\t$ACTIVE\t$TIME\t$DATE"
     done < <(cat $VESTA/conf/search_plugin.conf)
 }
 
 # CSV list function
 csv_list() {
     IFS=$'\n'
-    echo "PLUGIN,NAME,VERSION,BUILDNUMBER,KEY,ACTIVE,TIME,DATE"
+    echo "PLUGIN,NAME,VERSION,BUILDNUMBER,ACTIVE,TIME,DATE"
     while read str; do
         eval $str
-        echo "$PLUGIN,\"$NAME\",$VERSION,$BUILDNUMBER,$KEY,$ACTIVE,$TIME,$DATE"
+        echo "$PLUGIN,\"$NAME\",$VERSION,$BUILDNUMBER,$ACTIVE,$TIME,$DATE"
     done < <(cat $VESTA/conf/search_plugin.conf)
 }
 
@@ -85,7 +84,7 @@ check_args '1' "$#" 'KEYWORD [FORMAT]'
 #                       Action                             #
 #----------------------------------------------------------#
 
-wget http://cp.tpweb.org/plugin/search/$plugin?output=bash -q -O - > $VESTA/conf/search_plugin.conf
+wget https://www.tpweb.org/api/vesta/1.0/plugin?q=$plugin -q -O - > $VESTA/conf/search_plugin.conf
 
 # Listing data
 case $format in
