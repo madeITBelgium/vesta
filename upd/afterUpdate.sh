@@ -223,6 +223,8 @@ if [ "$VERSION" = "0.0.24" ]; then
     bash /usr/local/vesta/bin/fix_httpd_permission.sh
     bash /usr/local/vesta/bin/fix_backup_rotation.sh
     sed -i "s/VERSION=.*/VERSION='0.0.25'/g" /usr/local/vesta/conf/vesta.conf
+    
+    NEWRELEASE="$NEWRELEASE \n This version adds a plugin system to your control panel! Read more on https://www.tpweb.org"
 fi
 
 
