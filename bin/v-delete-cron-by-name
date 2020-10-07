@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: delete vesta autoupdate cron job
-# options: NONE
+# info: delete cronjob by command
+# options: USER TEXT
 #
-# The function deletes vesta autoupdate cron job.
+# The function deletes the cronjob by command
 
 
 #----------------------------------------------------------#
@@ -10,7 +10,8 @@
 #----------------------------------------------------------#
 
 # Argument definition
-user=admin
+user=$1
+text=$2
 
 # Includes
 source $VESTA/func/main.sh
@@ -21,8 +22,12 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
+check_args '2' "$#" 'USER TEXT'
+is_format_valid 'user'
 is_system_enabled "$CRON_SYSTEM" 'CRON_SYSTEM'
-check_cron=$(grep 'v-update-sys-vesta-all' $USER_DATA/cron.conf)
+is_object_valid 'user' 'USER' "$user"
+
+check_cron=$(grep "$text" $USER_DATA/cron.conf)
 if [ -z "$check_cron" ]; then
     exit
 fi
@@ -34,8 +39,7 @@ fi
 
 
 # Deleting job
-job=$(echo $check_cron|tr ' ' "\n"|grep JOB|cut -f 2 -d "'")
-sed -i "/JOB='$job' /d" $USER_DATA/cron.conf
+sed -i "/$text/d" $USER_DATA/cron.conf
 
 # Sorting jobs by id
 sort_cron_jobs

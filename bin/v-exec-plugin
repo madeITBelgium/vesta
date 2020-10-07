@@ -1,0 +1,66 @@
+#!/bin/bash
+# info: add plugin
+# options: PLUGIN [RESTART]
+#
+# The function adds the plugin to the vestaCP installation
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+plugin=$1
+command=$2
+parmaters=${@:3}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+check_args '1' "$#" 'PLUGIN COMMAND [PARAMETER1] [PARAMETER2] ...'
+is_format_valid 'plugin'
+#is_object_valid 'plugin' 'PLUGIN' "$plugin" #Change to is_plugin_not_installed
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# Get plugin DATA from web
+if [ ! -d $VESTA/plugin/$plugin ]; then
+    echo "Plugin not installed"
+    exit $E_NOTEXIST;
+fi
+
+eval $(grep "PLUGIN='$plugin'" $VESTA/conf/plugin.conf)
+
+if [ "$ACTIVE" != "yes" ];
+then
+    echo "Plugin is not active"
+    exit $E_SUSPENDED;
+fi
+
+cd $VESTA/plugin/$PLUGIN
+if [ ! -f "$VESTA/plugin/$PLUGIN/bin/$command" ];
+then
+    echo "Plugin command not exists"
+    exit $E_NOTEXIST;
+fi
+
+bash $VESTA/plugin/$PLUGIN/bin/$command $parmaters
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_history "Execute plugin command $PLUGIN -> $command"
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,6 +1,6 @@
 #!/bin/bash
 # info: add plugin
-# options: PLUGIN [KEY]
+# options: PLUGIN [KEY] [RESTART]
 #
 # The function adds the plugin to the vestaCP installation
 
@@ -11,7 +11,6 @@
 
 # Argument definition
 plugin=$1
-key=$2
 
 # Includes
 source $VESTA/func/main.sh
@@ -22,18 +21,24 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 #                    Verifications                         #
 #----------------------------------------------------------#
-check_args '1' "$#" 'PLUGIN [KEY]'
+check_args '1' "$#" 'PLUGIN [RESTART]'
 is_format_valid 'plugin'
-#is_object_valid 'plugin' 'PLUGIN' "$plugin" #Change to is_plugin_not_installed
+#is_object_valid 'plugin' 'PLUGIN' "plugin" #Change to is_plugin_not_active
 
 
 #----------------------------------------------------------#
 #                       Action                             #
 #----------------------------------------------------------#
 
+# Get plugin DATA
+line=$(grep "PLUGIN='$plugin'" $VESTA/conf/plugin.conf)
+eval $line
+CUR_VERSION=$VERSION
+
+
 # Get plugin DATA from web
-pluginData=$(wget -qO- https://www.tpweb.org/api/vesta/1.0/plugin/$plugin)
-eval $(echo $pluginData | grep "PLUGIN='$plugin'")
+pluginData=$(wget -qO- https://www.tpweb.org/api/vesta/1.0/plugin/$PLUGIN)
+eval $(echo $pluginData | grep "PLUGIN='$PLUGIN'")
 
 if [ -z $INSTALL_TYPE ]; then
     echo "Plugin not found"
@@ -43,10 +48,7 @@ fi
 # Creating domain directories
 mkdir -p $VESTA/plugin
 cd $VESTA/plugin
-if [ -d $VESTA/plugin/$PLUGIN ]; then
-    echo "Plugin already installed"
-    exit $E_EXIST;
-fi
+rm -rf $VESTA/plugin/$PLUGIN
 
 if [ "$INSTALL_TYPE" = "git" ] || [ "$INSTALL_TYPE" = "git-directory" ]; then 
     tmpdir=$(mktemp -d)
@@ -67,9 +69,9 @@ fi
 # Changing file owner & permission
 chmod 750 $VESTA/plugin/$PLUGIN
 
-if [ -f "$VESTA/plugin/$PLUGIN/install/install.sh" ]; then
+if [ -f "$VESTA/plugin/$PLUGIN/install/update.sh" ]; then
     cd $VESTA/plugin/$PLUGIN/install
-    bash $VESTA/plugin/$PLUGIN/install/install.sh
+    bash $VESTA/plugin/$PLUGIN/install/update.sh $CUR_VERSION $VERSION
 fi
 
 #----------------------------------------------------------#
@@ -83,17 +85,17 @@ date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
 # Adding plugin in plugin.conf
 sed -i "/PLUGIN='$PLUGIN'/d" $VESTA/conf/plugin.conf
-echo "PLUGIN='$PLUGIN' NAME='$NAME' KEY='$key' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+echo "PLUGIN='$PLUGIN' NAME='$NAME' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' ACTIVE='$ACTIVE' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
 
 #Notify activation
-wget -q https://www.tpweb.org/api/vesta/1.0/plugin/notify/$PLUGIN?type=add&version=$VERSION > /dev/null 2 &> 1
-
+wget -q https://www.tpweb.org/api/vesta/1.0/plugin/notify/$PLUGIN?type=update&from=$CUR_VERSION&to=$VERSION > /dev/null
+    
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
 # Logging
-log_history "added plugin $PLUGIN"
+log_history "Update plugin $PLUGIN from $CUR_VERSION to $VERSION"
 log_event "$OK" "$ARGUMENTS"
 
 exit

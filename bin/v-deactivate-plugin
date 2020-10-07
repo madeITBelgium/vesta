@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: Activate plugin
+# info: Deactivate plugin
 # options: PLUGIN
 #
-# The function activates the plugin to the vestaCP installation
+# The function deactivate the plugin to the vestaCP installation
 
 
 #----------------------------------------------------------#
@@ -33,12 +33,10 @@ is_format_valid 'plugin'
 line=$(grep "PLUGIN='$plugin'" $VESTA/conf/plugin.conf)
 eval $line
 
-if [ "$ACTIVE" == "no" ]; then
-    #Check key online
-
+if [ "$ACTIVE" == "yes" ]; then
     #Execute plugin install script
-    if [ -f "$VESTA/plugin/$PLUGIN/install/install.sh" ]; then
-        bash $VESTA/plugin/$PLUGIN/install/install.sh
+    if [ -f "$VESTA/plugin/$PLUGIN/install/uninstall.sh" ]; then
+        bash $VESTA/plugin/$PLUGIN/install/uninstall.sh
     fi
 
     # Deleting old record
@@ -50,10 +48,10 @@ if [ "$ACTIVE" == "no" ]; then
     date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
     # Adding record
-    echo "PLUGIN='$PLUGIN' NAME='$NAME' KEY='$KEY' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
+    echo "PLUGIN='$PLUGIN' NAME='$NAME' KEY='$KEY' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='no' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
     
     #Notify activation
-    wget -q https://www.tpweb.org/api/vesta/1.0/plugin/notify/$plugin?type=activation > /dev/null
+    wget -q https://www.tpweb.org/api/vesta/1.0/plugin/notify/$plugin?type=deactivation > /dev/null
 fi
 
 #----------------------------------------------------------#
@@ -61,7 +59,7 @@ fi
 #----------------------------------------------------------#
 
 # Logging
-log_history "Activate plugin $PLUGIN"
+log_history "Deactivate plugin $PLUGIN"
 log_event "$OK" "$ARGUMENTS"
 
 exit

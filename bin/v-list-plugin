@@ -23,7 +23,7 @@ json_list() {
         "NAME": "'$NAME'",
         "VERSION": "'$VERSION'",
         "BUILDNUMBER": "'$BUILDNUMBER'",
-        "LATEST_VERSION": "'$LATEST_VERSION'",
+        "LATEST_VERSION": "'$CUR_VERSION'",
         "LATEST_BUILDNUMBER": "'$LATEST_BUILDNUMBER'",
         "ACTIVE": "'$ACTIVE'",
         "TIME": "'$TIME'",
@@ -53,7 +53,7 @@ plain_list() {
 
 # CSV list function
 csv_list() {
-    echo -n "PLUGIN,NAME,VERSION,LAST VERSION,ACTIVE,"
+    echo -n "PLUGIN,NAME,VERSION,LATEST_VERSION,ACTIVE,"
     echo "TIME,DATE"
     echo -n "$PLUGIN,$NAME,$VERSION,$LATEST_VERSION,$ACTIVE,"
     echo "$TIME,$DATE"

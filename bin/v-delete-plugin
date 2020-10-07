@@ -1,8 +1,8 @@
 #!/bin/bash
-# info: Activate plugin
+# info: add plugin
 # options: PLUGIN
 #
-# The function activates the plugin to the vestaCP installation
+# The function deactivate the plugin to the vestaCP installation
 
 
 #----------------------------------------------------------#
@@ -30,38 +30,34 @@ is_format_valid 'plugin'
 #                       Action                             #
 #----------------------------------------------------------#
 
+if [ ! -d $VESTA/plugin/$plugin ]; then
+    exit;
+fi
+
 line=$(grep "PLUGIN='$plugin'" $VESTA/conf/plugin.conf)
 eval $line
 
-if [ "$ACTIVE" == "no" ]; then
-    #Check key online
-
-    #Execute plugin install script
-    if [ -f "$VESTA/plugin/$PLUGIN/install/install.sh" ]; then
-        bash $VESTA/plugin/$PLUGIN/install/install.sh
-    fi
-
-    # Deleting old record
-    sed -i "/^PLUGIN='$PLUGIN'/d" $VESTA/conf/plugin.conf
-
-    # Generating timestamp
-    time_n_date=$(date +'%T %F')
-    time=$(echo "$time_n_date" |cut -f 1 -d \ )
-    date=$(echo "$time_n_date" |cut -f 2 -d \ )
-
-    # Adding record
-    echo "PLUGIN='$PLUGIN' NAME='$NAME' KEY='$KEY' VERSION='$VERSION' BUILDNUMBER='$BUILDNUMBER' LATEST_VERSION='$VERSION' LATEST_BUILDNUMBER='$BUILDNUMBER' KEY='$KEY' ACTIVE='yes' TIME='$time' DATE='$date'" >> $VESTA/conf/plugin.conf
-    
-    #Notify activation
-    wget -q https://www.tpweb.org/api/vesta/1.0/plugin/notify/$plugin?type=activation > /dev/null
+if [ "$ACTIVE" == "yes" ]; then
+    echo "Plugin is active"
+    exit $E_EXIST;
 fi
+
+# Deleting old record
+sed -i "/^PLUGIN='$PLUGIN'/d" $VESTA/conf/plugin.conf
+
+#Delete plugin files
+rm -rf $VESTA/plugin/$PLUGIN
+
+#Notify activation
+wget -q https://www.tpweb.org/api/vesta/1.0/plugin/notify/$plugin?type=delete > /dev/null
+
 
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
 
 # Logging
-log_history "Activate plugin $PLUGIN"
+log_history "Delete plugin $PLUGIN"
 log_event "$OK" "$ARGUMENTS"
 
 exit
