@@ -163,6 +163,11 @@ prepare_web_domain_values() {
         docroot="$VESTA/data/templates/web/suspend"
         sdocroot="$VESTA/data/templates/web/suspend"
     fi
+    
+    if [ "$PROXY" = 'proxy' ]; then 
+        docroot="$DOCROOT"
+        sdocroot="$DOCROOT"
+    fi
 }
 
 # Add web config

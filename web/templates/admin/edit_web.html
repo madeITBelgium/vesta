@@ -167,7 +167,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <select class="vst-list" name="v_proxy_template">
+                                                <select class="vst-list" name="v_proxy_template" onchange="changeProxy(this.value)">
                                                     <?php
                                                         foreach ($proxy_templates as $key => $value) {
                                                             echo "\t\t\t\t<option value=\"".htmlentities($value)."\"";
@@ -182,6 +182,7 @@
                                                         }
                                                     ?>
                                                 </select>
+                                                <script>function changeProxy(val) { document.getElementById('docroot-txt').innerHTML = (val != 'proxy') ? "<?php echo __('Document root');?>" : "<?php echo __('Proxy URL: (ex: https://www.example.com)');?>"; }</script>
                                             </td>
                                         </tr>
                                         <tr>
@@ -200,8 +201,8 @@
                             <?php } ?>
                             <?php if ($v_ssl_home == 'same') { ?>
                                 <tr>
-                                    <td class="vst-text step-top">
-                                        <?php print __('Document root');?>
+                                    <td class="vst-text step-top" id="docroot-txt">
+                                        <?php print $v_proxy_template == 'proxy' ? __('Proxy URL: (ex: https://www.example.com)') : __('Document root'); ?>
                                     </td>
                                 </tr>
                                 <tr>
@@ -379,7 +380,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input type="text" size="20" class="vst-input" name="v_stats_user" value="<?=htmlentities(trim($v_stats_user, "'"))?>">
+                                                <input type="text" size="20" class="vst-input" name="v_stats_user" value="<?=htmlentities(trim($v_stats_user, "'"))?>"><!-- ' -->
                                             </td>
                                         </tr>
                                         <tr>
@@ -389,7 +390,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input type="text" size="20" class="vst-input password" name="v_stats_password" value="<?=htmlentities(trim($v_stats_password, "'"))?>" id="v_password">
+                                                <input type="text" size="20" class="vst-input password" name="v_stats_password" value="<?=htmlentities(trim($v_stats_password, "'"))?>" id="v_password"><!-- ' -->
                                             </td>
                                         </tr>
                                     </table>
@@ -439,7 +440,7 @@
                                         </tr>
                                         <tr>
                                             <td class="step-left">
-                                                <input type="text" class="vst-input v-ftp-user-psw password" name="v_ftp_user[<?php print $i ?>][v_ftp_password]" value="<?=htmlentities(trim($v_ftp_password, "'"))?>">
+                                                <input type="text" class="vst-input v-ftp-user-psw password" name="v_ftp_user[<?php print $i ?>][v_ftp_password]" value="<?=htmlentities(trim($v_ftp_password, "'"))?>"><!-- ' -->
                                             </td>
                                         </tr>
 
@@ -450,9 +451,9 @@
                                         </tr>
                                         <tr>
                                             <td class="step-left">
-                                                <input type="hidden" class="vst-input v-ftp-pre-path" name="v_ftp_pre_path" value="<?php print !empty($v_ftp_pre_path) ? htmlentities(trim($v_ftp_pre_path, "'")) : '/'; ?>">
-                                                <input type="hidden"  class="vst-input v-ftp-path" name="v_ftp_user[<?php print $i ?>][v_ftp_path_prev]" value="<?php if (!empty($v_ftp_path)) echo ($v_ftp_path[0] != '/' ? '/' : '').htmlentities(trim($v_ftp_path, "'")) ?>">
-                                                <input type="text"  class="vst-input v-ftp-path" name="v_ftp_user[<?php print $i ?>][v_ftp_path]" value="<?php if (!empty($v_ftp_path)) echo ($v_ftp_path[0] != '/' ? '/' : '').htmlentities(trim($v_ftp_path, "'")); ?>">
+                                                <input type="hidden" class="vst-input v-ftp-pre-path" name="v_ftp_pre_path" value="<?php print !empty($v_ftp_pre_path) ? htmlentities(trim($v_ftp_pre_path, "'")) : '/'; ?>"><!-- ' -->
+                                                <input type="hidden"  class="vst-input v-ftp-path" name="v_ftp_user[<?php print $i ?>][v_ftp_path_prev]" value="<?php if (!empty($v_ftp_path)) echo ($v_ftp_path[0] != '/' ? '/' : '').htmlentities(trim($v_ftp_path, "'")) ?>"><!-- ' -->
+                                                <input type="text"  class="vst-input v-ftp-path" name="v_ftp_user[<?php print $i ?>][v_ftp_path]" value="<?php if (!empty($v_ftp_path)) echo ($v_ftp_path[0] != '/' ? '/' : '').htmlentities(trim($v_ftp_path, "'")); ?>"><!-- ' -->
                                                 <br /><span class="ftp-path-prefix"><?=htmlentities(trim($v_ftp_pre_path, "'"))?></span><span class="ftp-path-value v-ftp-path-hint"></span>
                                             </td>
                                         </tr>

@@ -54,11 +54,41 @@ get_domain_values 'web'
 local_ip=$(get_real_ip $IP)
 ipv6=$IP6
 
+change_proxy=false
+is_proxy=false
+if [ "$PROXY" = 'proxy' ] && [ "$template" != 'proxy' ]; then
+    //Add Apache config & change docroot
+    change_proxy=true
+fi
+if [ "$template" = 'proxy' ]; then
+    is_proxy=true
+fi
+
 PROXY="$template"
 PROXY_EXT="$extentions"
 
+if [ $is_proxy ] && [ $change_proxy ]; then
+    tempdocroot="http://example.com"
+    DOCROOT=$tempdocroot
+    update_object_value 'web' 'DOMAIN' "$domain" '$DOCROOT' "$tempdocroot"
+elif [ !$is_proxy ] && [ $change_proxy ]; then
+    tempdocroot="public_html"
+    DOCROOT=$tempdocroot
+    update_object_value 'web' 'DOMAIN' "$domain" '$DOCROOT' "$tempdocroot"
+fi
+
 # Preparing domain variables
 prepare_web_domain_values
+
+if [ "$PROXY" = "proxy" ]; then
+    # Deleting vhost configuration
+    del_web_config "$WEB_SYSTEM" "$TPL.tpl"
+
+    # Deleting SSL configuration and certificates
+    if [ "$SSL" = 'yes' ]; then
+        del_web_config "$WEB_SYSTEM" "$TPL.stpl"
+    fi
+fi
 
 # Adding proxy config
 add_web_config "$PROXY_SYSTEM" "$PROXY.tpl"

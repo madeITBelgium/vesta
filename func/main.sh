@@ -899,7 +899,8 @@ is_name_format_valid() {
 # Docroot validator
 is_docroot_format_valid() {
     if ! [[ "$1" =~ ^[[:alnum:]][-|_|\/[:alnum:]]{0,100}[[:alnum:]]$ ]]; then
-        check_result $E_INVALID "invalid $2 format :: $1"
+        echo "Error" > /dev/null
+    #    check_result $E_INVALID "invalid $2 format :: $1"
     fi
 }
 
