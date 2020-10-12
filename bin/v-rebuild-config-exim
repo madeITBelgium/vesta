@@ -38,6 +38,16 @@ gpasswd -a exim mail > /dev/null 2>&1
 cp -f $vestacp/exim/exim.conf /etc/exim/exim.conf
 cp -f $vestacp/exim/dnsbl.conf /etc/exim/dnsbl.conf
 cp -f $vestacp/exim/spam-blocks.conf /etc/exim/spam-blocks.conf
+if [ ! -f "/etc/exim/ses-domains.conf" ]; then
+    cp -f $vestacp/exim/ses-domains.conf /etc/exim/ses-domains.conf
+fi
+if [ ! -f "/etc/exim/ses-senders.conf" ]; then
+    cp -f $vestacp/exim/ses-senders.conf /etc/exim/ses-senders.conf
+fi
+if [ ! -f "/etc/exim/ses-settings.conf" ]; then
+    cp -f $vestacp/exim/ses-settings.conf /etc/exim/ses-settings.conf
+fi
+
 touch /etc/exim/white-blocks.conf
 
 if [ "$ANTISPAM_SYSTEM" = 'spamassassin' ]; then
