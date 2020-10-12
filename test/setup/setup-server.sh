@@ -61,10 +61,13 @@ done
 chmod 600 $THISDIR/sshkey.txt
 ssh-keyscan -H $dropletIpv4 >> ~/.ssh/known_hosts
 
+cat  ~/.ssh/config
 echo "Host $dropletIpv4" >> ~/.ssh/config
 echo "User root" >> ~/.ssh/config
 echo "Port 22" >> ~/.ssh/config
 echo "IdentityFile $THISDIR/sshkey.txt" >> ~/.ssh/config
+
+cat ~/.ssh/config
  
 echo "Install VestaCP by Made I.T."
 ssh -i $THISDIR/sshkey.txt root@$dropletIpv4 "curl -O http://cp.madeit.be/vst-install-rhel.sh"
