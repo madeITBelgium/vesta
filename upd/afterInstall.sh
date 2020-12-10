@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -e '/usr/local/vesta/conf/vesta.conf' ]; then
+    exit 0
+fi
+
 if [ ! -e "/etc/profile.d/vesta.sh" ]; then
     echo "export VESTA='$VESTA'" > /etc/profile.d/vesta.sh
     chmod 755 /etc/profile.d/vesta.sh

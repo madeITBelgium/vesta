@@ -46,6 +46,13 @@ case $(head -n1 /etc/issue | cut -f 1 -d ' ') in
     *)          type="rhel" ;;
 esac
 
+if [ "$type" = 'rhel' ]; then
+    release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
+    if [ "$release" -eq 8 ]; then
+        type="rhel-8"
+    fi
+fi
+
 # Check wget
 if [ -e '/usr/bin/wget' ]; then
     wget http://cp.madeit.be/vst-install-$type.sh -O vst-install-$type.sh

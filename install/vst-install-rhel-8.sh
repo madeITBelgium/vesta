@@ -21,23 +21,14 @@ vestacp="$VESTA/install/os-configs/$VERSION/$release"
 # Defining software pack for all distros
 software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     curl dovecot e2fsprogs exim expect fail2ban flex freetype ftp GeoIP httpd
-    ImageMagick iptables-services jwhois lsof mailx mariadb mariadb-server mc
-    mod_fcgid mod_ruid2 mod_ssl net-tools ntp openssh-clients pcre php
+    ImageMagick iptables-services whois lsof mailx mariadb mariadb-server mc
+    mod_fcgid mod_ruid2 mod_ssl net-tools chrony openssh-clients pcre php
     php-bcmath php-cli php-common php-fpm php-gd php-imap php-mbstring
     php-mcrypt phpMyAdmin php-mysql php-pdo phpPgAdmin php-pgsql php-soap
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
     postgresql-server proftpd roundcubemail rrdtool rsyslog screen
     spamassassin sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
-    vim-common vsftpd webalizer which zip yum-utils"
-
-# Fix for old releases
-if [ "$release" -lt 7 ]; then
-    software=$(echo "$software" |sed -e "s/mariadb/mysql/g")
-    software=$(echo "$software" |sed -e "s/clamav-server/clamd/")
-    software=$(echo "$software" |sed -e "s/clamav-update//")
-    software=$(echo "$software" |sed -e "s/iptables-services//")
-    software="$software mod_extract_forwarded"
-fi
+    vim-common vsftpd which zip compat-openssl10"
 
 # Defining help function
 help() {
@@ -343,11 +334,7 @@ fi
 
 # Database stack
 if [ "$mysql" = 'yes' ]; then
-    if [ $release -ge 7 ]; then
-        echo '   - MariaDB Database Server'
-    else
-        echo '   - MySQL Database Server'
-    fi
+    echo '   - MariaDB Database Server'
 fi
 if [ "$postgresql" = 'yes' ]; then
     echo '   - PostgreSQL Database Server'
@@ -439,11 +426,7 @@ sleep 5
 
 # Checking swap on small instances
 if [ -z "$(swapon -s)" ] && [ $memory -lt 4000000 ]; then
-    if [ "$release" -ge 7 ]; then
-        sudo dd if=/dev/zero of=/swapfile count=1024 bs=1MiB
-    else
-        fallocate -l 1G /swapfile
-    fi
+    fallocate -l 1G /swapfile
     chmod 600 /swapfile
     mkswap /swapfile
     swapon /swapfile
@@ -456,18 +439,40 @@ fi
 #----------------------------------------------------------#
 
 # Updating system
-yum -y update
+dnf -y update
 check_result $? 'yum update failed'
 
+sudo dnf -y install dnf-plugins-core
+
 # Installing EPEL repository
-yum install epel-release -y
+dnf install -y epel-release
 check_result $? "Can't install EPEL repository"
+
+# Install Raven repository
+dnf -y install https://pkgs.dyn.su/el8/base/x86_64/raven-release-1.0-1.el8.noarch.rpm
+check_result $? "Can't install Raven repository"
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/raven.repo
+
+# Install PowerTools repository
+dnf config-manager --set-enabled PowerTools
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
+
 
 # Installing Remi repository
 if [ "$remi" = 'yes' ] && [ ! -e "/etc/yum.repos.d/remi.repo" ]; then
     rpm -Uvh http://rpms.remirepo.net/enterprise/remi-release-$release.rpm
     check_result $? "Can't install REMI repository"
     sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/remi.repo
+fi
+
+if [ "$release" -lt 8 ]; then
+    # Installing Nginx repository
+    nrepo="/etc/yum.repos.d/nginx.repo"
+    echo "[nginx]" > $nrepo
+    echo "name=nginx repo" >> $nrepo
+    echo "baseurl=http://nginx.org/packages/centos/$release/\$basearch/" >> $nrepo
+    echo "gpgcheck=0" >> $nrepo
+    echo "enabled=1" >> $nrepo
 fi
 
 # Installing Vesta repository
@@ -634,19 +639,9 @@ fi
 
 # Installing rpm packages
 #PHP 7.4
-yum-config-manager --enable remi-php74
+dnf module install php:remi-7.4 -y
 
-yum install -y $software
-if [ $? -ne 0 ]; then
-    if [ "$remi" = 'yes' ]; then
-        yum -y --disablerepo=* \
-            --enablerepo="BaseOS,nginx,epel,vesta,remi*" \
-            install $software
-    else
-        yum -y --disablerepo=* --enablerepo="BaseOS,nginx,epel,vesta" \
-            install $software
-    fi
-fi
+dnf install -y $software
 check_result $? "yum install failed"
 
 #----------------------------------------------------------#
@@ -677,11 +672,12 @@ fi
 service iptables stop
 service ip6tables stop
 
-# Configuring NTP synchronization
-echo '#!/bin/sh' > /etc/cron.daily/ntpdate
-echo "$(which ntpdate) -s pool.ntp.org" >> /etc/cron.daily/ntpdate
-chmod 775 /etc/cron.daily/ntpdate
-ntpdate -s pool.ntp.org
+# Configuring NTP/chrony synchronization - TODO
+systemctl enable chronyd
+#echo '#!/bin/sh' > /etc/cron.daily/ntpdate
+#echo "$(which ntpdate) -s pool.ntp.org" >> /etc/cron.daily/ntpdate
+#chmod 775 /etc/cron.daily/ntpdate
+#ntpdate -s pool.ntp.org
 
 # Disabling webalizer routine
 rm -f /etc/cron.daily/00webalizer
@@ -759,7 +755,7 @@ if [ "$apache" = 'yes' ] && [ "$nginx" = 'no' ] ; then
     echo "WEB_PORT='80'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
     echo "WEB_SSL='mod_ssl'"  >> $VESTA/conf/vesta.conf
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+    echo "STATS_SYSTEM='awstats'" >> $VESTA/conf/vesta.conf
 fi
 if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
     echo "WEB_SYSTEM='httpd'" >> $VESTA/conf/vesta.conf
@@ -770,7 +766,7 @@ if [ "$apache" = 'yes' ] && [ "$nginx"  = 'yes' ] ; then
     echo "PROXY_SYSTEM='nginx'" >> $VESTA/conf/vesta.conf
     echo "PROXY_PORT='80'" >> $VESTA/conf/vesta.conf
     echo "PROXY_SSL_PORT='443'" >> $VESTA/conf/vesta.conf
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+    echo "STATS_SYSTEM='awstats'" >> $VESTA/conf/vesta.conf
 fi
 if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     echo "WEB_SYSTEM='nginx'" >> $VESTA/conf/vesta.conf
@@ -780,7 +776,7 @@ if [ "$apache" = 'no' ] && [ "$nginx"  = 'yes' ]; then
     if [ "$phpfpm" = 'yes' ]; then
         echo "WEB_BACKEND='php-fpm'" >> $VESTA/conf/vesta.conf
     fi
-    echo "STATS_SYSTEM='webalizer,awstats'" >> $VESTA/conf/vesta.conf
+    echo "STATS_SYSTEM='awstats'" >> $VESTA/conf/vesta.conf
 fi
 
 # FTP stack
@@ -892,22 +888,22 @@ if [ "$nginx" = 'yes' ]; then
     cp -f $vestacp/logrotate/nginx /etc/logrotate.d/
     echo > /etc/nginx/conf.d/vesta.conf
     mkdir -p /var/log/nginx/domains
-    if [ "$release" -ge 7 ]; then
-        mkdir /etc/systemd/system/nginx.service.d/
-        echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
-        echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
-    fi
+    
+    mkdir /etc/systemd/system/nginx.service.d/
+    echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
+    echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
+        
     chkconfig nginx on
+    systemctl enable nginx
     service nginx start
     check_result $? "nginx start failed"
 
     # Workaround for OpenVZ/Virtuozzo
-    if [ "$release" -ge 7 ] && [ -e "/proc/vz/veinfo" ]; then
+    if [ -e "/proc/vz/veinfo" ]; then
         echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
         echo "sleep 3 && service nginx restart" >> /etc/rc.local
     fi
 fi
-
 
 #----------------------------------------------------------#
 #                    Configure Apache                      #
@@ -919,11 +915,8 @@ if [ "$apache" = 'yes'  ]; then
     cp -f $vestacp/httpd/ssl.conf /etc/httpd/conf.d/
     cp -f $vestacp/httpd/ruid2.conf /etc/httpd/conf.d/
     cp -f $vestacp/logrotate/httpd /etc/logrotate.d/
-    if [ $release -lt 7 ]; then
-        cd /etc/httpd/conf.d
-        echo "MEFaccept 127.0.0.1" >> mod_extract_forwarded.conf
-        echo > proxy_ajp.conf
-    fi
+    rm /etc/httpd/conf.modules.d/10-proxy_h2.conf
+    
     if [ -e "/etc/httpd/conf.modules.d/00-dav.conf" ]; then
         cd /etc/httpd/conf.modules.d
         sed -i "s/^/#/" 00-dav.conf 00-lua.conf 00-proxy.conf
@@ -936,17 +929,17 @@ if [ "$apache" = 'yes'  ]; then
     chmod a+x /var/log/httpd
     mkdir -p /var/log/httpd/domains
     chmod 754 /var/log/httpd/domains
-    if [ "$release" -ge 7 ]; then
-        mkdir /etc/systemd/system/httpd.service.d/
-        echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
-        echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
-    fi
+    
+    mkdir /etc/systemd/system/httpd.service.d/
+    echo "[Service]" > /etc/systemd/system/httpd.service.d/limits.conf
+    echo "LimitNOFILE=500000" >> /etc/systemd/system/httpd.service.d/limits.conf
+    
     chkconfig httpd on
     service httpd start
     check_result $? "httpd start failed"
 
     # Workaround for OpenVZ/Virtuozzo
-    if [ "$release" -ge 7 ] && [ -e "/proc/vz/veinfo" ]; then
+    if [ -e "/proc/vz/veinfo" ]; then
         echo "#Vesta: workraround for networkmanager" >> /etc/rc.local
         echo "sleep 2 && service httpd restart" >> /etc/rc.local
     fi
@@ -1024,11 +1017,7 @@ if [ "$mysql" = 'yes' ]; then
     chown mysql:mysql /var/lib/mysql
     mkdir -p /etc/my.cnf.d
 
-    if [ $release -lt 7 ]; then
-        service='mysqld'
-    else
-        service='mariadb'
-    fi
+    service='mariadb'
 
     cp -f $vestacp/$service/$mycnf /etc/my.cnf
     chkconfig $service on
@@ -1075,18 +1064,12 @@ fi
 
 if [ "$postgresql" = 'yes' ]; then
     ppass=$(gen_pass)
-    if [ $release -eq 5 ]; then
-        service postgresql start
-        sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$ppass'"
-        service postgresql stop
-        cp -f $vestacp/postgresql/pg_hba.conf /var/lib/pgsql/data/
-        service postgresql start
-    else
-        service postgresql initdb
-        cp -f $vestacp/postgresql/pg_hba.conf /var/lib/pgsql/data/
-        service postgresql start
-        sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$ppass'"
-    fi
+    
+    service postgresql initdb
+    cp -f $vestacp/postgresql/pg_hba.conf /var/lib/pgsql/data/
+    service postgresql start
+    sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$ppass'"
+        
     # Configuring phpPgAdmin
     if [ "$apache" = 'yes' ]; then
         cp -f $vestacp/pga/phpPgAdmin.conf /etc/httpd/conf.d/
@@ -1175,15 +1158,15 @@ if [ "$clamd" = 'yes' ]; then
     mkdir -p /var/log/clamav /var/run/clamav
     chown clam:clam /var/log/clamav /var/run/clamav
     chown -R clam:clam /var/lib/clamav
-    if [ "$release" -ge 7 ]; then
-        cp -f $vestacp/clamav/clamd.service /usr/lib/systemd/system/
-        systemctl --system daemon-reload
-    fi
+    
+    cp -f $vestacp/clamav/clamd.service /usr/lib/systemd/system/
+    systemctl --system daemon-reload
+        
     /usr/bin/freshclam
-    if [ "$release" -ge 7 ]; then
-        sed -i "s/nofork/foreground/" /usr/lib/systemd/system/clamd.service
-        systemctl daemon-reload
-    fi
+    
+    sed -i "s/nofork/foreground/" /usr/lib/systemd/system/clamd.service
+    systemctl daemon-reload
+        
     chkconfig clamd on
     service clamd start
     #check_result $? "clamd start failed"
@@ -1198,13 +1181,12 @@ if [ "$spamd" = 'yes' ]; then
     chkconfig spamassassin on
     service spamassassin start
     check_result $? "spamassassin start failed"
-    if [ "$release" -ge 7 ]; then
-        groupadd -g 1001 spamd
-        useradd -u 1001 -g spamd -s /sbin/nologin -d \
-            /var/lib/spamassassin spamd
-        mkdir /var/lib/spamassassin
-        chown spamd:spamd /var/lib/spamassassin
-    fi
+    
+    groupadd -g 1001 spamd
+    useradd -u 1001 -g spamd -s /sbin/nologin -d \
+        /var/lib/spamassassin spamd
+    mkdir /var/lib/spamassassin
+    chown spamd:spamd /var/lib/spamassassin
 fi
 
 

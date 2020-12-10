@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -e '/usr/local/vesta/conf/vesta.conf' ]; then
+    exit 0
+fi
+
 source /etc/profile.d/vesta.sh
 source /usr/local/vesta/func/main.sh
 source /usr/local/vesta/conf/vesta.conf
