@@ -263,7 +263,7 @@ if [[ "$status" -ne 200 ]]; then
 fi
 
 # Downloading signed certificate / STEP 7
-curl -s "$certificate" -o $ssl_dir/$domain.pem	answer=$(query_le_v2 "$certificate" "" "$nonce" "$ssl_dir/$domain.pem")
+curl -s "$certificate" -o $ssl_dir/$domain.pem	answer=$(query_le_v2 "$certificate" "" "$nonce" "$ssl_dir/certificate.pem")
 status=$(echo "$answer"|grep HTTP/ |tail -n1 |cut -f 2 -d ' ')
 if [[ "$status" -ne 200 ]]; then
     [ -d "$ssl_dir" ] && rm -rf "$ssl_dir"
