@@ -212,14 +212,14 @@ rebuild_web_domain_conf() {
     chown root:$user /var/log/$WEB_SYSTEM/domains/$domain.*
 
     # Adding vhost configuration
-    if [ "$PROXY" = 'proxy' ]; then
+    if [ "$PROXY" != 'proxy' ]; then
         conf="$HOMEDIR/$user/conf/web/$WEB_SYSTEM.conf"
         add_web_config "$WEB_SYSTEM" "$TPL.tpl"
     fi
 
     # Adding SSL vhost configuration
     if [ "$SSL" = 'yes' ]; then
-        if [ "$PROXY" = 'proxy' ]; then
+        if [ "$PROXY" != 'proxy' ]; then
             conf="$HOMEDIR/$user/conf/web/s$WEB_SYSTEM.conf"
             add_web_config "$WEB_SYSTEM" "$TPL.stpl"
         fi
