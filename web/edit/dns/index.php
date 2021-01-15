@@ -105,7 +105,7 @@ if ((!empty($_POST['save'])) && (!empty($_GET['domain'])) && (empty($_GET['recor
     }
 
     // Change domain template
-    if (($v_template != $_POST['v_template']) && (empty($_SESSION['error_msg']))) {
+    if (isset($_POST['v_template']) && ($v_template != $_POST['v_template']) && (empty($_SESSION['error_msg']))) {
         $v_template = escapeshellarg($_POST['v_template']);
         exec (VESTA_CMD."v-change-dns-domain-tpl ".$v_username." ".$v_domain." ".$v_template." no", $output, $return_var);
         check_return_code($return_var,$output);
