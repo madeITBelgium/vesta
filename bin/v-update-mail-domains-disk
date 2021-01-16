@@ -36,6 +36,8 @@ fi
 
 # Starting loop
 for domain in $(search_objects 'mail' 'SUSPENDED' "no" 'DOMAIN'); do
+    format_domain
+    format_domain_idn
     dom_diks=0
     accounts=$(search_objects "mail/$domain_idn" 'SUSPENDED' "no" 'ACCOUNT')
     for account in $accounts; do
