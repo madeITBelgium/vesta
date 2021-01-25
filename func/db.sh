@@ -55,7 +55,11 @@ mysql_query() {
 
 mysql_dump() {
     err="/tmp/e.mysql"
-    mysqldump --defaults-file=$mycnf --single-transaction --max_allowed_packet=100M -r $1 $2 2> $err
+    extraParams=""
+    if [ -f "$VESTA/conf/mysql-backup.params" ]; then
+        extraParams=$(cat $VESTA/conf/mysql-backup.params)
+    fi
+    mysqldump --defaults-file=$mycnf $extraParams --single-transaction --max_allowed_packet=100M -r $1 $2 2> $err
     if [ '0' -ne "$?" ]; then
         rm -rf $tmpdir
         if [ "$notifyError" != 'no' ]; then
