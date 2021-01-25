@@ -28,7 +28,7 @@ software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
     postgresql-server proftpd roundcubemail rrdtool rsyslog screen
     spamassassin sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
-    vim-common vsftpd which zip compat-openssl10"
+    vim-common vsftpd which zip compat-openssl10 libpng15"
 
 # Defining help function
 help() {
