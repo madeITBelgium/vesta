@@ -771,7 +771,7 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.0.25'" >> $VESTA/conf/vesta.conf
+echo "VERSION='0.0.26'" >> $VESTA/conf/vesta.conf
 
 #Letsencrypt
 echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf
