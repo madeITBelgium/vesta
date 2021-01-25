@@ -28,7 +28,7 @@ mysql_connect() {
     mysql_out=$(mktemp)
     mysql --defaults-file=$mycnf -e 'SELECT VERSION()' > $mysql_out 2>&1
     if [ '0' -ne "$?" ]; then
-        if [ "$notify" != 'no' ]; then
+        if [ "$notifyError" != 'no' ]; then
             echo -e "Can't connect to MySQL $HOST\n$(cat $mysql_out)" |\
                 $SENDMAIL -s "$subj" $email
         fi
@@ -58,7 +58,7 @@ mysql_dump() {
     mysqldump --defaults-file=$mycnf --single-transaction --max_allowed_packet=100M -r $1 $2 2> $err
     if [ '0' -ne "$?" ]; then
         rm -rf $tmpdir
-        if [ "$notify" != 'no' ]; then
+        if [ "$notifyError" != 'no' ]; then
             echo -e "Can't dump database $database\n$(cat $err)" |\
                 $SENDMAIL -s "$subj" $email
         fi
@@ -81,7 +81,7 @@ psql_connect() {
 
     psql -h $HOST -U $USER -c "SELECT VERSION()" > /dev/null 2>/tmp/e.psql
     if [ '0' -ne "$?" ]; then
-        if [ "$notify" != 'no' ]; then
+        if [ "$notifyError" != 'no' ]; then
             echo -e "Can't connect to PostgreSQL $HOST\n$(cat /tmp/e.psql)" |\
                 $SENDMAIL -s "$subj" $email
         fi
@@ -102,7 +102,7 @@ psql_dump() {
     pg_dump -h $HOST -U $USER -c --inserts -O -x -f $1 $2 2>/tmp/e.psql
     if [ '0' -ne "$?" ]; then
         rm -rf $tmpdir
-        if [ "$notify" != 'no' ]; then
+        if [ "$notifyError" != 'no' ]; then
             echo -e "Can't dump database $database\n$(cat /tmp/e.psql)" |\
                 $SENDMAIL -s "$subj" $email
         fi

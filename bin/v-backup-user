@@ -15,6 +15,7 @@ source /etc/profile
 # Argument definition
 user=$1
 notify=${2-no}
+notifyError=${3-yes}
 
 # Includes
 source $VESTA/func/main.sh
@@ -27,7 +28,7 @@ source $VESTA/conf/vesta.conf
 #                    Verifications                         #
 #----------------------------------------------------------#
 
-check_args '1' "$#" 'USER [NOTIFY]'
+check_args '1' "$#" 'USER [NOTIFY] [NOTIFYERROR]'
 is_format_valid 'user'
 is_system_enabled "$BACKUP_SYSTEM" 'BACKUP_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
@@ -65,7 +66,7 @@ while [ "$la" -ge "$BACKUP_LA_LIMIT" ]; do
     sleep 60
     if [ "$i" -ge "15" ]; then
         la_error="LoadAverage $la is above threshold"
-        echo "$la_error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$la_error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result $E_LA "$la_error"
     fi
@@ -81,7 +82,7 @@ fi
 tmpdir=$(mktemp -p $BACKUP_TEMP -d)
 
 if [ "$?" -ne 0 ]; then
-    echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notify
+    echo "Can't create tmp dir $tmpdir" |$SENDMAIL -s "$subj" $email $notifyError
     check_result $E_NOTEXIST "can't create tmp dir"
 fi
 
@@ -568,7 +569,7 @@ local_backup(){
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
-        echo "Not enough disk space" |$SENDMAIL -s "$subj" $email $notify
+        echo "Not enough disk space" |$SENDMAIL -s "$subj" $email $notifyError
         check_result "$E_DISK" "Not enough dsk space"
     fi
 
@@ -603,7 +604,7 @@ ftp_backup() {
         error="ftp.backup.conf doesn't exist"
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
-        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result "$E_NOTEXIST" "$error"
     fi
@@ -621,7 +622,7 @@ ftp_backup() {
         error="Can't parse ftp backup configuration"
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
-        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result "$E_PARSING" "$error"
     fi
@@ -636,7 +637,7 @@ ftp_backup() {
         error="Error: can't login to ftp ftp://$USERNAME@$HOST"
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
-        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result "$E_CONNECT" "$error"
     fi
@@ -654,7 +655,7 @@ ftp_backup() {
         error="Can't create ftp backup folder ftp://$HOST$BPATH"
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
-        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result "$E_FTP" "$error"
     fi
@@ -768,7 +769,7 @@ sftp_backup() {
         error="Can't open sftp.backup.conf"
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
-        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result "$E_NOTEXIST" "$error"
     fi
@@ -786,7 +787,7 @@ sftp_backup() {
         error="Can't parse sftp backup configuration"
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
-        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result "$E_PARSING" "$error"
     fi
@@ -811,7 +812,7 @@ sftp_backup() {
         esac
         rm -rf $tmpdir
         rm -f $BACKUP/$user.log
-        echo "$error" |$SENDMAIL -s "$subj" $email $notify
+        echo "$error" |$SENDMAIL -s "$subj" $email $notifyError
         sed -i "/ $user /d" $VESTA/data/queue/backup.pipe
         check_result "$rc" "$error"
     fi
