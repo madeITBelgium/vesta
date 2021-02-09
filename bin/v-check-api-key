@@ -19,6 +19,11 @@ time_n_date=$(date +'%T %F')
 time=$(echo "$time_n_date" |cut -f 1 -d \ )
 date=$(echo "$time_n_date" |cut -f 2 -d \ )
 
+if [[ -z $key || ${#key} -lt 16 ]]; then
+     echo "Error: not valid keys"
+     echo "$date $time api $ip failed to login" >> $VESTA/log/auth.log
+     exit 9
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #

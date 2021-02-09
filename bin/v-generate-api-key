@@ -23,6 +23,7 @@ HASH=$(keygen)
 
 if [ ! -d ${KEYS} ]; then
   mkdir ${KEYS}
+  chmod 0770 ${KEYS}
 fi
 
 if [[ -e ${KEYS}${HASH} ]] ; then
