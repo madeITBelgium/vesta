@@ -72,7 +72,7 @@ find_user_by_domainname() {
     OLD_IFS=$IFS
     IFS=$'\n'
     for list_user in $(v-list-users | tail -n +3 | awk '{print $1}'); do
-        if [ ! -z "$(v-list-web-domains $list_user | tail -n +3 | awk '{print $1}' | grep $1)" ];
+        if [ ! -z "$(v-list-web-domains $list_user | tail -n +3 | awk '{print $1}' | grep "^$1")" ];
         then
             usr=$list_user
         fi
