@@ -179,6 +179,11 @@ add_web_config() {
         confv6="$HOMEDIR/$user/conf/web/$domain.$1.ssl.ipv6.conf"
     fi
     
+    if [ "$1" == "nginx" ]; then
+        aliases="${aliases//\*/~^(.*)}"
+        aliases_idn="${aliases_idn//\*/~^(.*)}"
+    fi
+    
     domain_idn=$domain
     format_domain_idn
     
