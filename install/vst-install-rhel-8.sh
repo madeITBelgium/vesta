@@ -188,8 +188,8 @@ done
 
 # Defining default software stack
 set_default_value 'nginx' 'yes'
-set_default_value 'apache' 'yes'
-set_default_value 'phpfpm' 'no'
+set_default_value 'apache' 'no'
+set_default_value 'phpfpm' 'yes'
 set_default_value 'vsftpd' 'yes'
 set_default_value 'proftpd' 'no'
 set_default_value 'named' 'yes'
@@ -450,9 +450,9 @@ dnf install -y epel-release
 check_result $? "Can't install EPEL repository"
 
 # Install Raven repository
-dnf -y install https://pkgs.dyn.su/el8/base/x86_64/raven-release-1.0-1.el8.noarch.rpm
-check_result $? "Can't install Raven repository"
-sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/raven.repo
+#dnf -y install https://pkgs.dyn.su/el8/base/x86_64/raven-release-1.0-1.el8.noarch.rpm
+#check_result $? "Can't install Raven repository"
+#sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/raven.repo
 
 # Install PowerTools repository
 dnf config-manager --set-enabled PowerTools
