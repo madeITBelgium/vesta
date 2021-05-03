@@ -11,6 +11,7 @@ CHOST='cp.madeit.be'
 REPO='rhel'
 VERSION='rhel'
 VESTA='/usr/local/vesta'
+VESTAVERSION='0.0.27'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
@@ -829,7 +830,7 @@ echo "BACKUP_SYSTEM='local'" >> $VESTA/conf/vesta.conf
 echo "LANGUAGE='$lang'" >> $VESTA/conf/vesta.conf
 
 # Version
-echo "VERSION='0.0.26'" >> $VESTA/conf/vesta.conf
+echo "VERSION='$VESTAVERSION'" >> $VESTA/conf/vesta.conf
 
 #Letsencrypt
 echo "LETSENCRYPT='no'" >> $VESTA/conf/vesta.conf
