@@ -31,7 +31,7 @@ format_domain_idn
 #----------------------------------------------------------#
 
 check_args '3' "$#" 'USER DOMAIN DOCROOT [RESTART]'
-is_format_valid 'user' 'domain' 'docroot'
+is_format_valid 'user' 'domain'
 is_system_enabled "$WEB_SYSTEM" 'WEB_SYSTEM'
 is_object_valid 'user' 'USER' "$user"
 is_object_unsuspended 'user' 'USER' "$user"
@@ -48,6 +48,13 @@ local_ip=$(get_real_ip $IP)
 ipv6=$IP6
 tempdocroot=$docroot
 DOCROOT=$docroot
+
+if [ "$PROXY" = "proxy" ]; then
+    url=$docroot
+    is_format_valid 'url'
+else
+    is_format_valid 'docroot'
+fi
 
 # Preparing domain variables
 prepare_web_domain_values

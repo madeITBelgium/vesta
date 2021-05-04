@@ -913,10 +913,19 @@ is_name_format_valid() {
 # Docroot validator
 is_docroot_format_valid() {
     if ! [[ "$1" =~ ^[[:alnum:]][-|_|\/[:alnum:]]{0,100}[[:alnum:]]$ ]]; then
-        echo "Error" > /dev/null
-    #    check_result $E_INVALID "invalid $2 format :: $1"
+        check_result $E_INVALID "invalid $2 format :: $1"
     fi
 }
+
+# URL validator
+is_url_format_valid() {
+    regex='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+    if ! [[ "$1" =~ $regex ]]; then
+        check_result $E_INVALID "invalid $2 format :: $1"
+    fi
+}
+
+
 
 # Object validator
 is_object_format_valid() {
@@ -1027,6 +1036,7 @@ is_format_valid() {
                 template)       is_object_format_valid "$arg" "$arg_name" ;;
                 ttl)            is_int_format_valid "$arg" 'ttl';;
                 user)           is_user_format_valid "$arg" $arg_name;;
+                url)            is_url_format_valid "$arg" $arg_name ;;
                 wday)           is_cron_format_valid "$arg" $arg_name ;;
                 plugin)         is_name_format_valid "$arg" 'object';;
                 key)         	is_name_format_valid "$arg" 'object';;
