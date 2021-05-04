@@ -639,8 +639,8 @@ fi
 
 
 # Installing rpm packages
-#PHP 7.4
-dnf module install php:remi-7.4 -y
+#PHP 8.0
+dnf module install php:remi-8.0 -y
 
 dnf install -y $software
 check_result $? "yum install failed"
