@@ -3,8 +3,9 @@
 user="$1"
 domain="$2"
 ip="$3"
-home_dir="$4"
-docroot="$5"
+ip6="$4"
+home_dir="$5"
+docroot="$6"
 
 wrapper_script="#!/bin/sh
 PHPRC=/usr/local/lib

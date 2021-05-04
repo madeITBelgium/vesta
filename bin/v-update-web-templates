@@ -46,7 +46,7 @@ fi
 # Defining original path
 vestacp="$VESTA/install/os-configs/$version/$release"
 
-cp -rf $vestacp/templates $VESTA/data/
+cp -rf $vestacp/templates/web $VESTA/data/templates/
 
 # Rebuilding web domains
 for user in $($BIN/v-list-sys-users plain); do

@@ -23,20 +23,20 @@ vestacp="$VESTA/install/os-configs/$VERSION/$release"
 software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     curl dovecot e2fsprogs exim expect fail2ban flex freetype ftp GeoIP httpd
     ImageMagick iptables-services whois lsof mailx mariadb mariadb-server mc
-    mod_fcgid mod_ruid2 mod_ssl net-tools chrony openssh-clients pcre php
+    mod_fcgid mod_ssl net-tools chrony openssh-clients pcre php
     php-bcmath php-cli php-common php-fpm php-gd php-imap php-mbstring
     php-mcrypt phpMyAdmin php-mysql php-pdo phpPgAdmin php-pgsql php-soap
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
     postgresql-server proftpd roundcubemail rrdtool rsyslog screen
     spamassassin sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
-    vim-common vsftpd which zip compat-openssl10 libpng15"
+    vim-common vsftpd which zip compat-openssl10 libpng15 util-linux-user git nano"
 
 # Defining help function
 help() {
     echo "Usage: $0 [OPTIONS]
-  -a, --apache            Install Apache        [yes|no]  default: yes
+  -a, --apache            Install Apache        [yes|no]  default: no
   -n, --nginx             Install Nginx         [yes|no]  default: yes
-  -w, --phpfpm            Install PHP-FPM       [yes|no]  default: no
+  -w, --phpfpm            Install PHP-FPM       [yes|no]  default: yes
   -v, --vsftpd            Install Vsftpd        [yes|no]  default: yes
   -j, --proftpd           Install ProFTPD       [yes|no]  default: no
   -k, --named             Install Bind          [yes|no]  default: yes
@@ -448,11 +448,6 @@ sudo dnf -y install dnf-plugins-core
 # Installing EPEL repository
 dnf install -y epel-release
 check_result $? "Can't install EPEL repository"
-
-# Install Raven repository
-#dnf -y install https://pkgs.dyn.su/el8/base/x86_64/raven-release-1.0-1.el8.noarch.rpm
-#check_result $? "Can't install Raven repository"
-#sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/raven.repo
 
 # Install PowerTools repository
 dnf config-manager --set-enabled PowerTools
