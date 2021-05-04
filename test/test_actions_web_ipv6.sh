@@ -74,14 +74,14 @@ fi
 echo_result "WEB: Duplicate web alias check" "$retval" "$tmpfile" "$cmd"
 
 # Add web domain stats
-cmd="v-add-web-domain-stats $user $domain webalizer"
+cmd="v-add-web-domain-stats $user $domain awstats"
 $cmd > $tmpfile 2>&1
-echo_result "WEB: Enabling webalizer" "$?" "$tmpfile" "$cmd"
+echo_result "WEB: Enabling awstats" "$?" "$tmpfile" "$cmd"
 
 # Add web domain stats 
 cmd="v-add-web-domain-stats-user $user $domain test m3g4p4ssw0rd"
 $cmd > $tmpfile 2>&1
-echo_result "WEB: Adding webalizer uzer" "$?" "$tmpfile" "$cmd"
+echo_result "WEB: Adding awstats uzer" "$?" "$tmpfile" "$cmd"
 
 # Suspend web domain
 cmd="v-suspend-web-domain $user $domain"

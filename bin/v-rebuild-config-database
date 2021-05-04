@@ -49,6 +49,7 @@ fi
 mkdir -p /var/lib/mysql
 chown mysql:mysql /var/lib/mysql
 mkdir -p /etc/my.cnf.d
+release=$(grep -o "[0-9]" /etc/redhat-release |head -n1)
 
 if [ $release -ne 7 ]; then
     service='mysqld'

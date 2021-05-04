@@ -62,9 +62,9 @@ $cmd > $tmpfile 2>&1
 echo_result "REBUILD CONFIG: exim" "$?" "$tmpfile" "$cmd"
 
 # httpd
-cmd="v-rebuild-config-httpd"
-$cmd > $tmpfile 2>&1
-echo_result "REBUILD CONFIG: httpd" "$?" "$tmpfile" "$cmd"
+#cmd="v-rebuild-config-httpd"
+#$cmd > $tmpfile 2>&1
+#echo_result "REBUILD CONFIG: httpd" "$?" "$tmpfile" "$cmd"
 
 # logrotate
 cmd="v-rebuild-config-logrotate"
@@ -72,9 +72,9 @@ $cmd > $tmpfile 2>&1
 echo_result "REBUILD CONFIG: logrotate" "$?" "$tmpfile" "$cmd"
 
 # nginx
-cmd="v-rebuild-config-nginx"
-$cmd > $tmpfile 2>&1
-echo_result "REBUILD CONFIG: nginx" "$?" "$tmpfile" "$cmd"
+#cmd="v-rebuild-config-nginx"
+#$cmd > $tmpfile 2>&1
+#echo_result "REBUILD CONFIG: nginx" "$?" "$tmpfile" "$cmd"
 
 rm $tmpfile
 

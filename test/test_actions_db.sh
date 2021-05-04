@@ -54,24 +54,24 @@ echo_result "DB: Adding database $database $database_user $database_pass" "$?" "
 
 
 # add long database name (should error)
-databaselong="websitewithverylongname"
-databaselonguser="websitewithverylongname"
-cmd="v-add-database $user $databaselong $databaselonguser $database_pass"
-$cmd > $tmpfile 2>&1
-if [ "$?" -eq 2 ]; then
-    retval=0
-else
-    retval=1
-fi
-echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cmd"
+#databaselong="websitewithverylongname"
+#databaselonguser="websitewithverylongname"
+#cmd="v-add-database $user $databaselong $databaselonguser $database_pass"
+#$cmd > $tmpfile 2>&1
+#if [ "$?" -eq 2 ]; then
+#    retval=0
+#else
+#    retval=1
+#fi
+#echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cmd"
 
 # Test upgrade MySQL
-bash $VESTA/upd/upgrade_mysql.sh
+#bash $VESTA/upd/upgrade_mysql.sh
 
 #Add long database name
-cmd="v-add-database $user $databaselong $databaselonguser $database_pass"
-$cmd > $tmpfile 2>&1
-echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cmd"
+#cmd="v-add-database $user $databaselong $databaselonguser $database_pass"
+#$cmd > $tmpfile 2>&1
+#echo_result "DB: Add database with long database name" "$retval" "$tmpfile" "$cmd"
 
 v-list-databases $user
 
@@ -81,9 +81,9 @@ $cmd > $tmpfile 2>&1
 echo_result "DB: Delete database testu_123_$database" "$?" "$tmpfile" "$cmd"
 
 # Add delete database
-cmd="v-delete-database $user testu_123_$databaselong"
-$cmd > $tmpfile 2>&1
-echo_result "DB: Delete database testu_123_$databaselong" "$?" "$tmpfile" "$cmd"
+#cmd="v-delete-database $user testu_123_$databaselong"
+#$cmd > $tmpfile 2>&1
+#echo_result "DB: Delete database testu_123_$databaselong" "$?" "$tmpfile" "$cmd"
 
 
 exit $OUTPUT
