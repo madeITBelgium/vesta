@@ -1,4 +1,4 @@
-[Vesta Control Panel Fork (CentOS 7)](http://vestacp.com/)
+[Vesta Control Panel Fork (CentOS 7 & 8)](http://vestacp.com/)
 ==================================================
 
 [![Build Status](https://travis-ci.org/madeITBelgium/vesta.svg?branch=master)](https://travis-ci.org/madeITBelgium/vesta)
@@ -42,7 +42,9 @@ License
 ----------------------------
 Vesta is licensed under  [GPL v3 ](https://github.com/madeITBelgium/vesta/blob/master/LICENSE) license
 
-
+CentOS 8 Support
+----------------------------
+before using this repo on centOS 8 please read #75
 
 Extra features
 ----------------------------
