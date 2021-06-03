@@ -452,6 +452,7 @@ check_result $? "Can't install EPEL repository"
 # Install PowerTools repository
 dnf config-manager --set-enabled PowerTools
 sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/almalinux-powertools.repo
 
 
 # Installing Remi repository
