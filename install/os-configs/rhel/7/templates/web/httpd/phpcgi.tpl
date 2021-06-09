@@ -11,6 +11,9 @@
     CustomLog /var/log/httpd/domains/%domain%.bytes bytes
     CustomLog /var/log/httpd/domains/%domain%.access.log combined
     ErrorLog /var/log/httpd/domains/%domain%.error.log
+    
+    AllowEncodedSlashes NoDecode
+    
     <Directory %docroot%>
         AllowOverride All
         Options +Includes -Indexes +ExecCGI

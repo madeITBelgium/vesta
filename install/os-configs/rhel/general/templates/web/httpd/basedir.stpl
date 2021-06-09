@@ -11,6 +11,9 @@
     CustomLog /var/log/%web_system%/domains/%domain%.bytes bytes
     CustomLog /var/log/%web_system%/domains/%domain%.log combined
     ErrorLog /var/log/%web_system%/domains/%domain%.error.log
+    
+    AllowEncodedSlashes NoDecode
+    
     <Directory %sdocroot%>
         AllowOverride All
         SSLRequireSSL
