@@ -776,33 +776,22 @@ is_mail_new() {
 
 # Delete mail ssl configuartion
 del_mail_ssl_config() {
-    conf="/etc/dovecot/conf.d/10-ssl.conf"
+    
+    # Remove old mail certificates
+    rm -f $HOMEDIR/$user/conf/mail/$domain/ssl/*
 
-    get_mail_config_lines $conf
-    sed -i "$top_line,$bottom_line d" $conf
+    # Remove dovecot configuration
+    rm -f /etc/dovecot/conf.d/domains/$domain.conf
+
+    # Remove SSL certificates
+    rm -f $HOMEDIR/$user/conf/mail/$domain/ssl/*
+    rm -f /usr/local/vesta/ssl/mail/mail.$domain.*
 }
 
-get_mail_config_lines() {
-    v_domain=""
-    if [ ! -z $domain_idn ]; then
-        v_domain=$domain_idn
-    else
-        domain_idn=$domain
-        format_domain_idn
-        v_domain=$domain_idn
-    fi
-    if [ -z "$v_domain" ]; then
-        check_result $E_PARSING "V_DOMAIN in get_mail_config_lines is empty"
-    fi
-
-    vhost_lines=$(grep -ni "local_name ${v_domain} {" $1)
-    vhost_lines=$(echo "$vhost_lines" |cut -f 1 -d : |cut -f 1 -d \-)
-    if [ -z "$vhost_lines" ]; then
-        check_result $E_PARSING "can't parse config $1"
-    fi
-
-    top_line=$vhost_lines
-    bottom_line=$((top_line + 4))
+# Delete generated certificates from user configuration data directory
+del_mail_ssl_certificates(){
+    rm -f $USER_DATA/ssl/mail.$domain.*
+    rm -f $HOMEDIR/$user/conf/mail/$domain/ssl/*
 }
 
 #----------------------------------------------------------#

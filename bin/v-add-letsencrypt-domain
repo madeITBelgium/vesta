@@ -261,6 +261,14 @@ if [ "$?" -ne '0' ]; then
     check_result $? "SSL install" >/dev/null
 fi
 
+#Check if domain his mail domain
+str=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
+if [  ! -z "$str" ]; then
+    domain_found='yes'
+    $BIN/v-delete-mail-domain-ssl $user $domain
+    $BIN/v-add-web-domain-ssl $user $domain $ssl_dir
+fi
+
 # Adding LE autorenew cronjob
 if [ -z "$(grep v-update-lets $VESTA/data/users/admin/cron.conf)" ]; then
     min=$(generate_password '012345' '2')
