@@ -9,7 +9,7 @@ server {
     error_page  404 403 = /errors/404.php;
     add_header  "X-UA-Compatible" "IE=Edge";
 
-    access_log  /var/log/nginx/domains/%domain%.log combined;
+    access_log  /var/log/nginx/domains/%domain%.access.log combined;
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
 
