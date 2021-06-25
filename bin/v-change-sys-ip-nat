@@ -54,7 +54,7 @@ if [ ! -z "$old" ] && [ ! -z "$WEB_SYSTEM" ]; then
     for user in $(ls $VESTA/data/users/); do
         $BIN/v-rebuild-web-domains $user no
     done
-    $BIN/v-restart-dns $restart
+    $BIN/v-restart-web $restart
 fi
 
 # Updating DNS configs

@@ -462,15 +462,15 @@ if [ "$remi" = 'yes' ] && [ ! -e "/etc/yum.repos.d/remi.repo" ]; then
     sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/remi.repo
 fi
 
-if [ "$release" -lt 8 ]; then
-    # Installing Nginx repository
-    nrepo="/etc/yum.repos.d/nginx.repo"
-    echo "[nginx]" > $nrepo
-    echo "name=nginx repo" >> $nrepo
-    echo "baseurl=http://nginx.org/packages/centos/$release/\$basearch/" >> $nrepo
-    echo "gpgcheck=0" >> $nrepo
-    echo "enabled=1" >> $nrepo
-fi
+# Installing Nginx repository
+nrepo="/etc/yum.repos.d/nginx.repo"
+echo "[nginx-stable]" > $nrepo
+echo "name=nginx stable repo" >> $nrepo
+echo "baseurl=http://nginx.org/packages/centos/\$releasever/\$basearch/" >> $nrepo
+echo "gpgcheck=1" >> $nrepo
+echo "enabled=1" >> $nrepo
+echo "gpgkey=https://nginx.org/keys/nginx_signing.key" >> $nrepo
+echo "module_hotfixes=true" >> $nrepo
 
 # Installing Vesta repository
 vrepo='/etc/yum.repos.d/vesta.repo'
