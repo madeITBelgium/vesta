@@ -786,12 +786,12 @@ del_mail_ssl_config() {
     # Remove SSL certificates
     rm -f $HOMEDIR/$user/conf/mail/$domain/ssl/*
     rm -f /usr/local/vesta/ssl/mail/mail.$domain.*
+    rm -f /usr/local/vesta/ssl/mail/$domain.*
 }
 
 # Delete generated certificates from user configuration data directory
 del_mail_ssl_certificates(){
     rm -f $USER_DATA/ssl/mail.$domain.*
-    rm -f $USER_DATA/ssl/$domain.*
     rm -f $HOMEDIR/$user/conf/mail/$domain/ssl/*
 }
 
