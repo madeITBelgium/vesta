@@ -476,7 +476,7 @@ echo "module_hotfixes=true" >> $nrepo
 vrepo='/etc/yum.repos.d/vesta.repo'
 echo "[vesta]" > $vrepo
 echo "name=Vesta - $REPO" >> $vrepo
-echo "baseurl=https://$RHOST/$REPO/$release/\$basearch/" >> $vrepo
+echo "baseurl=https://$RHOST/$REPO/$release/" >> $vrepo
 echo "enabled=1" >> $vrepo
 echo "gpgcheck=0" >> $vrepo
 #echo "gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-VESTA" >> $vrepo
