@@ -13,14 +13,14 @@
 user=$1
 domain=$2
 
-# Additional argument formatting
-format_domain
-format_domain_idn
-
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
 source $VESTA/conf/vesta.conf
+
+# Additional argument formatting
+format_domain
+format_domain_idn
 
 
 #----------------------------------------------------------#

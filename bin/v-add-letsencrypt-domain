@@ -265,8 +265,8 @@ fi
 str=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
 if [  ! -z "$str" ]; then
     domain_found='yes'
-    $BIN/v-delete-mail-domain-ssl $user $domain
-    $BIN/v-add-web-domain-ssl $user $domain $ssl_dir
+    $BIN/v-delete-mail-domain-ssl $user $domain >/dev/null 2>&1
+    $BIN/v-add-mail-domain-ssl $user $domain $ssl_dir
 fi
 
 # Adding LE autorenew cronjob
