@@ -244,6 +244,13 @@ if [ "$VERSION" = "0.0.26" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.27'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
+if [ "$VERSION" = "0.0.27" ]; then
+    VERSION="0.0.28"
+    bash /usr/local/vesta/bin/fix_httpd_permission.sh
+    bash /usr/local/vesta/bin/v-rebuild-config-exim
+    sed -i "s/VERSION=.*/VERSION='0.0.28'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
 
 
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
