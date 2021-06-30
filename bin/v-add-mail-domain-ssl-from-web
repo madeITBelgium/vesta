@@ -115,7 +115,8 @@ chown -R $MAIL_USER:mail $HOMEDIR/$user/conf/mail/$domain/ssl
 chmod 0644 $HOMEDIR/$user/conf/mail/$domain/ssl/*
 chown -h $user:mail $HOMEDIR/$user/conf/mail/$domain/ssl/*
 chmod -R 0644 /usr/local/vesta/ssl/mail/*
-chown -h $user:mail /usr/local/vesta/ssl/mail/*
+chown -h $user:mail /usr/local/vesta/ssl/mail/mail.$domain.*
+chown -h $user:mail /usr/local/vesta/ssl/mail/$domain.*
 
 #----------------------------------------------------------#
 #                       Vesta                              #
