@@ -120,8 +120,8 @@ if [ "$type" != 'local' ];then
         check_result $? "s3cmd command not found"  $E_NOTEXIST
     fi
     
-    host "$host" >/dev/null 2>&1
-    check_result $? "host connection failed" "$E_CONNECT"
+    #host "$host" >/dev/null 2>&1
+    #check_result $? "host connection failed" "$E_CONNECT"
 fi
 
 
