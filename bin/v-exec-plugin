@@ -9,6 +9,10 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
+# Importing system environment  as we run this script
+# mostly by cron wich not read it by itself
+source /etc/profile
+
 # Argument definition
 plugin=$1
 command=$2
