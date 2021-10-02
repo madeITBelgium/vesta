@@ -52,3 +52,10 @@ filter = wordpress-soft
 logpath = /var/log/messages
 maxretry = 5
 action   = vesta[name=WEB]
+
+[wordpress-extra]
+enabled = true
+filter = wordpress-extra
+logpath = /var/log/messages
+maxretry = 3
+action   = vesta[name=WEB]
