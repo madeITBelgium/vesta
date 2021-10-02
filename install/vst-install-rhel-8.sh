@@ -450,9 +450,10 @@ dnf install -y epel-release
 check_result $? "Can't install EPEL repository"
 
 # Install PowerTools repository
-dnf config-manager --set-enabled PowerTools
-sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/CentOS-Linux-PowerTools.repo
-sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/almalinux-powertools.repo
+dnf config-manager --set-enabled PowerTools > /dev/null 2>&1
+dnf config-manager --set-enabled powertools > /dev/null 2>&1
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/CentOS-Linux-PowerTools.repo > /dev/null 2>&1
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/almalinux-powertools.repo > /dev/null 2>&1
 
 
 # Installing Remi repository
@@ -464,9 +465,9 @@ fi
 
 # Installing Nginx repository
 nrepo="/etc/yum.repos.d/nginx.repo"
-echo "[nginx-stable]" > $nrepo
-echo "name=nginx stable repo" >> $nrepo
-echo "baseurl=http://nginx.org/packages/centos/\$releasever/\$basearch/" >> $nrepo
+echo "[nginx-mainline]" >> $nrepo
+echo "name=nginx mainline repo" >> $nrepo
+echo "baseurl=http://nginx.org/packages/mainline/centos/\$releasever/\$basearch/" >> $nrepo
 echo "gpgcheck=1" >> $nrepo
 echo "enabled=1" >> $nrepo
 echo "gpgkey=https://nginx.org/keys/nginx_signing.key" >> $nrepo
