@@ -38,11 +38,17 @@ action  = vesta[name=VESTA]
 logpath = /var/log/vesta/auth.log
 maxretry = 5
 
-[wordpress-iptables]
+[wordpress-hard]
 enabled = true
-filter  = wordpress
-action  = vesta[name=WEB]
-logpath = /var/log/httpd/domains/*.access.log
-findtime = 600
-maxretry = 100
-bantime = 300     # ban for 5min
+filter = wordpress-hard
+logpath = /var/log/messages
+maxretry = 1
+action   = vesta[name=WEB]
+bantime = 3600
+
+[wordpress-soft]
+enabled = true
+filter = wordpress-soft
+logpath = /var/log/messages
+maxretry = 5
+action   = vesta[name=WEB]
