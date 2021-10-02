@@ -9,8 +9,7 @@
 #                    Variable&Function                     #
 #----------------------------------------------------------#
 
-# Importing system environment  as we run this script
-# mostly by cron wich not read it by itself
+# Importing system environment as we run this script by cron.
 source /etc/profile
 
 # Argument definition
