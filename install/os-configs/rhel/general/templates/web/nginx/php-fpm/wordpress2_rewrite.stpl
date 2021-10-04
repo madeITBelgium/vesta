@@ -10,7 +10,7 @@ server {
     ssl_certificate      %ssl_pem%;
     ssl_certificate_key  %ssl_key%;
 
-    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_before*;
+    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_before*;
     
     location = /favicon.ico {
         log_not_found off;
