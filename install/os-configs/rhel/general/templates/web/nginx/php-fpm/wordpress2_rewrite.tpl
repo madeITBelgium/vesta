@@ -6,6 +6,9 @@ server {
     access_log  /var/log/nginx/domains/%domain%.access.log combined;
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
+    
+    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_before*;
+    
     location = /favicon.ico {
         log_not_found off;
         access_log off;
