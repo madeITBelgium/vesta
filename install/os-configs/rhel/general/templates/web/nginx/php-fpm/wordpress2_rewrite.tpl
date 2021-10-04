@@ -25,10 +25,6 @@ server {
             rewrite ^(.+)$ /index.php last;
         }
 
-        location ~* ^.+\.(jpeg|jpg|png|gif|bmp|ico|svg|css|js)$ {
-            expires     max;
-        }
-
         location ~ [^/]\.php(/|$) {
             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
             if (!-f $document_root$fastcgi_script_name) {
@@ -49,7 +45,7 @@ server {
         alias   %home%/%user%/web/%domain%/document_errors/;
     }
 
-    location ~* "/\.(htaccess|htpasswd)$" {
+    location ~* \.(htaccess|htpasswd)$ {
         deny    all;
         return  404;
     }
