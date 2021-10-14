@@ -257,8 +257,13 @@ if [ "$VERSION" = "0.0.28" ]; then
 fi
 
 if [ "$VERSION" = "0.0.29" ]; then
-    VERSION="0.0.29"
+    VERSION="0.0.30"
     sed -i "s/VERSION=.*/VERSION='0.0.30'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
+if [ "$VERSION" = "0.0.30" ]; then
+    VERSION="0.0.31"
+    sed -i "s/VERSION=.*/VERSION='0.0.31'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then

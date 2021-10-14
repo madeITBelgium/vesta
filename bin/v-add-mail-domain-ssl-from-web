@@ -59,6 +59,7 @@ is_object_unsuspended 'mail' 'DOMAIN' "$domain"
 is_object_value_empty 'mail' 'DOMAIN' "$domain" '$SSL'
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
+ssl_dir="$USER_DATA/ssl/"
 is_web_domain_cert_valid
 
 #----------------------------------------------------------#
@@ -104,6 +105,11 @@ echo "  ssl_key = <$HOMEDIR/$user/conf/mail/$domain/ssl/$domain.key" >> /etc/dov
 echo "}" >> /etc/dovecot/conf.d/domains/$domain.conf
 
 # Add domain SSL configuration to exim4
+rm -f /usr/local/vesta/ssl/mail/mail.$domain.crt
+rm -f /usr/local/vesta/ssl/mail/mail.$domain.key
+rm -f /usr/local/vesta/ssl/mail/$domain.crt
+rm -f /usr/local/vesta/ssl/mail/$domain.key
+
 ln -s $HOMEDIR/$user/conf/mail/$domain/ssl/$domain.pem /usr/local/vesta/ssl/mail/mail.$domain.crt
 ln -s $HOMEDIR/$user/conf/mail/$domain/ssl/$domain.key /usr/local/vesta/ssl/mail/mail.$domain.key
 ln -s $HOMEDIR/$user/conf/mail/$domain/ssl/$domain.pem /usr/local/vesta/ssl/mail/$domain.crt

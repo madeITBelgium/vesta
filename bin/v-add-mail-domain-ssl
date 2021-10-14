@@ -122,6 +122,11 @@ echo "  ssl_key = <$HOMEDIR/$user/conf/mail/$domain/ssl/$domain.key" >> /etc/dov
 echo "}" >> /etc/dovecot/conf.d/domains/$domain.conf
 
 # Add domain SSL configuration to exim4
+rm -f /usr/local/vesta/ssl/mail/mail.$domain.crt
+rm -f /usr/local/vesta/ssl/mail/mail.$domain.key
+rm -f /usr/local/vesta/ssl/mail/$domain.crt
+rm -f /usr/local/vesta/ssl/mail/$domain.key
+
 ln -s $HOMEDIR/$user/conf/mail/$domain/ssl/$domain.pem /usr/local/vesta/ssl/mail/mail.$domain.crt
 ln -s $HOMEDIR/$user/conf/mail/$domain/ssl/$domain.key /usr/local/vesta/ssl/mail/mail.$domain.key
 ln -s $HOMEDIR/$user/conf/mail/$domain/ssl/$domain.pem /usr/local/vesta/ssl/mail/$domain.crt
