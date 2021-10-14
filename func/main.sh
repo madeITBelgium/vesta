@@ -1089,7 +1089,6 @@ format_aliases() {
     fi
 }
 
-<<<<<<< HEAD
 # Get next record ID
 get_next_record_id() {
 	CONF_FILE=$1
@@ -1123,7 +1122,8 @@ get_server_os_version() {
     if [ "$os" = "debian" ]; then
         echo $(cat /etc/debian_version|grep -o [0-9]|head -n1)
     fi
-=======
+}
+
 alter_web_counter() {
     user=$1
     domain=$2
@@ -1200,5 +1200,4 @@ send_email_to_admin() {
         return;
     fi
     echo "$2" | $SENDMAIL -s "$1" "$email" 'yes'
->>>>>>> upstream/master
 }
