@@ -184,13 +184,14 @@ if [ "$type" = 'sftp' ]; then
 fi
 
 if [ "$type" = 's3' ]; then
-    options=(--region="$host" --access_key="$user" --secret_key="$password")
+    options=(--access_key="$user" --secret_key="$password" --host="$host" --host-bucket="$bucket" --no-check-certificate)
     if [[ ! "$path" =~ /$ ]]; then
         path="${path}/"
     fi
     if [[ ! "$path" =~ ^/ ]]; then
         path="/${path}"
     fi
+    
     echo | s3cmd ${options[@]} put - s3://$bucket${path}vst.bK76A9SUkt > /dev/null 2>&1
     rc=$?
     if [[ "$rc" != 0 ]]; then
