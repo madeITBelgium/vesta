@@ -73,6 +73,7 @@ is_object_unsuspended 'user' 'USER' "$user"
 is_object_valid 'web' 'DOMAIN' "$domain"
 is_object_unsuspended 'web' 'DOMAIN' "$domain"
 get_domain_values 'web'
+
 # check if alias is the letsencrypt wildcard domain, if not, make the normal checks
 if [[ "$aliases" != "*.$domain" ]]; then
     for alias in $(echo "$aliases" |tr ',' '\n' |sort -u); do
@@ -148,17 +149,18 @@ for auth in $authz; do
         check_result $E_CONNECT "Let's Encrypt acme/authz bad status $status"
     fi
 
-    # Accepting challenge / STEP 4
+    # Configuring challenge / STEP 4
     if [ "$wildcard" = 'yes'  ]; then
         record=$(printf "%s" "$token.$THUMB" |\
             openssl dgst -sha256 -binary |encode_base64)
         old_records=$($BIN/v-list-dns-records $user $domain plain|grep 'TXT')
         old_records=$(echo "$old_records" |grep _acme-challenge |cut -f 1)
         for old_record in $old_records; do
-            $BIN/v-delete-dns-record $user $domain $old_record
+            $BIN/v-delete-dns-record "$user" "$domain" "$old_record"
         done
-        $BIN/v-add-dns-record $user $domain "_acme-challenge" "TXT" $record
-        check_result $? "DNS _acme-challenge record wasn't created"
+        $BIN/v-add-dns-record "$user" "$domain" "_acme-challenge" "TXT" "$record"
+        exitstatus=$?
+        check_result $exitstatus "DNS _acme-challenge record wasn't created"
     else
         if [ "$WEB_SYSTEM" = 'nginx' ] || [ ! -z "$PROXY_SYSTEM" ]; then
             conf="$HOMEDIR/$user/conf/web/nginx.$domain.conf_letsencrypt"
@@ -175,16 +177,15 @@ for auth in $authz; do
             fi
             $BIN/v-restart-proxy
             check_result $? "Proxy restart failed" >/dev/null
-
         else
             well_known="$HOMEDIR/$user/web/$domain/public_html/.well-known"
             acme_challenge="$well_known/acme-challenge"
             mkdir -p $acme_challenge
             echo "$token.$THUMB" > $acme_challenge/$token
             chown -R $user:$user $well_known
+            # $BIN/v-restart-web
+            # check_result $? "Web restart failed" >/dev/null
         fi
-        $BIN/v-restart-web
-        check_result $? "Web restart failed" >/dev/null
     fi
 
     # Requesting ACME validation / STEP 5
@@ -211,7 +212,8 @@ for auth in $authz; do
         if [ "$i" -gt 10 ]; then
             check_result $E_CONNECT "Let's Encrypt domain validation timeout"
         fi
-        sleep $((i*2))
+        sleeping=$((i*2))
+        sleep $sleeping
     done
     if [ "$validation" = 'invalid' ]; then
         check_result $E_CONNECT "Let's Encrypt domain verification failed"
@@ -242,23 +244,29 @@ if [[ "$status" -ne 200 ]]; then
 fi
 
 # Splitting up downloaded pem
-crt_end=$(grep -n END $ssl_dir/$domain.pem |head -n1 |cut -f1 -d:)
+crt_end=$(grep -n 'END CERTIFICATE' $ssl_dir/$domain.pem |head -n1 |cut -f1 -d:)
 head -n $crt_end $ssl_dir/$domain.pem > $ssl_dir/$domain.crt
 
 pem_lines=$(wc -l $ssl_dir/$domain.pem |cut -f 1 -d ' ')
-ca_end=$(grep -n  "BEGIN" $ssl_dir/$domain.pem |tail -n1 |cut -f 1 -d :)
+ca_end=$(grep -n 'BEGIN CERTIFICATE' $ssl_dir/$domain.pem |tail -n1 |cut -f 1 -d :)
 ca_end=$(( pem_lines - crt_end + 1 ))
 tail -n $ca_end $ssl_dir/$domain.pem > $ssl_dir/$domain.ca
+
+# Temporary fix for double "END CERTIFICATE"
+if [[ $(head -n 1 $ssl_dir/$domain.ca) = "-----END CERTIFICATE-----" ]]; then
+    sed -i '1,2d' $ssl_dir/$domain.ca
+fi
 
 # Adding SSL
 ssl_home=$(search_objects 'web' 'LETSENCRYPT' 'yes' 'SSL_HOME')
 $BIN/v-delete-web-domain-ssl $user $domain >/dev/null 2>&1
 $BIN/v-add-web-domain-ssl $user $domain $ssl_dir $ssl_home
-if [ "$?" -ne '0' ]; then
+exitstatus=$?
+if [ "$exitstatus" -ne '0' ]; then
     touch $VESTA/data/queue/letsencrypt.pipe
     sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
     send_notice 'LETSENCRYPT' "$domain certificate installation failed"
-    check_result $? "SSL install" >/dev/null
+    check_result $exitstatus "SSL install" >/dev/null
 fi
 
 #Check if domain his mail domain
@@ -283,7 +291,6 @@ if [ -z "$LETSENCRYPT" ]; then
 fi
 update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'yes'
 
-
 #----------------------------------------------------------#
 #                       Vesta                              #
 #----------------------------------------------------------#
@@ -294,7 +301,6 @@ sed -i "/ $domain /d" $VESTA/data/queue/letsencrypt.pipe
 
 # Notifying user
 send_notice 'LETSENCRYPT' "$domain SSL has been installed successfully"
-
 
 # Logging
 log_event "$OK" "$ARGUMENTS"

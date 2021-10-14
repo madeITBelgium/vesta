@@ -304,7 +304,7 @@ is_dir_symlink() {
      fi
  }
 
-  # Check if directory exists
+# Check if directory exists
  if_dir_exists() {
      if [[ -d "$1" ]]; then
          check_result $E_FORBIDEN "$1 directory exists"
@@ -991,6 +991,7 @@ is_format_valid() {
                 host)           is_object_format_valid "$arg" "$arg_name" ;;
                 hour)           is_cron_format_valid "$arg" $arg_name ;;
                 id)             is_int_format_valid "$arg" 'id' ;;
+                interface)      is_interface_format_valid "$arg" ;;
                 ip)             is_ip_format_valid "$arg" ;;
                 ipv6)           is_ipv6_format_valid "$arg" ;;
                 ip46)           is_ip46_format_valid "$arg" ;;
@@ -1088,6 +1089,7 @@ format_aliases() {
     fi
 }
 
+<<<<<<< HEAD
 # Get next record ID
 get_next_record_id() {
 	CONF_FILE=$1
@@ -1121,4 +1123,82 @@ get_server_os_version() {
     if [ "$os" = "debian" ]; then
         echo $(cat /etc/debian_version|grep -o [0-9]|head -n1)
     fi
+=======
+alter_web_counter() {
+    user=$1
+    domain=$2
+    USER_DATA=$VESTA/data/users/$user
+    
+    varc=$3
+    vard="\$${varc}"
+    counter=$(get_object_value 'web' 'DOMAIN' "$domain" "$vard")
+    
+    if [ -z "$counter" ]; then
+        add_object_key "web" 'DOMAIN' "$domain" "$varc" "TIME"
+        counter=0
+    fi
+    
+    ((counter++))
+    backup_counter=$counter
+    
+    update_object_value 'web' 'DOMAIN' "$domain" "$vard" "$counter"
+    counter=$backup_counter
+    
+    echo $counter
+}
+
+reset_web_counter() {
+    user=$1
+    domain=$2
+    USER_DATA=$VESTA/data/users/$user
+    
+    varc=$3
+    vard="\$${varc}"
+
+    update_object_value 'web' 'DOMAIN' "$domain" "$vard" "0"
+}
+
+get_web_counter() {
+    user=$1
+    domain=$2
+    USER_DATA=$VESTA/data/users/$user
+    
+    varc=$3
+    vard="\$${varc}"
+    counter=$(get_object_value 'web' 'DOMAIN' "$domain" "$vard")
+
+    if [ -z "$counter" ]; then
+        counter=0
+    fi
+
+    echo $counter
+}
+
+# Simple chmod wrapper that skips symlink files after glob expand
+# Taken from HestiaCP
+no_symlink_chmod() {
+    local filemode=$1; shift;
+
+    for i in "$@"; do
+        [[ -L ${i} ]] && continue
+
+        chmod "${filemode}" "${i}"
+    done
+}
+
+# $1 = subject
+# $2 = body
+send_email_to_admin() {
+    email=$(grep CONTACT /usr/local/vesta/data/users/admin/user.conf)
+    email=$(echo "$email" | cut -f 2 -d "'")
+    if [ -z "$email" ]; then
+        if [ ! -z "$NOTIFY_ADMIN_FULL_BACKUP" ]; then
+            email=$NOTIFY_ADMIN_FULL_BACKUP
+        fi
+    fi
+    if [ -z "$email" ]; then
+        return;
+    fi
+    echo "$2" | $SENDMAIL -s "$1" "$email" 'yes'
+>>>>>>> upstream/master
 }

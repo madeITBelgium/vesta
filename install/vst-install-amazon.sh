@@ -33,28 +33,29 @@ software="nginx httpd mod_ssl mod_ruid2 mod_fcgid mod_extract_forwarded
 # Defining help function
 help() {
     echo "Usage: $0 [OPTIONS]
-  -a, --apache            Install Apache        [yes|no]  default: yes
-  -n, --nginx             Install Nginx         [yes|no]  default: yes
-  -w, --phpfpm            Install PHP-FPM       [yes|no]  default: no
-  -v, --vsftpd            Install Vsftpd        [yes|no]  default: yes
-  -j, --proftpd           Install ProFTPD       [yes|no]  default: no
-  -k, --named             Install Bind          [yes|no]  default: yes
-  -m, --mysql             Install MySQL         [yes|no]  default: yes
-  -g, --postgresql        Install PostgreSQL    [yes|no]  default: no
-  -d, --mongodb           Install MongoDB       [yes|no]  unsupported
-  -x, --exim              Install Exim          [yes|no]  default: yes
-  -z, --dovecot           Install Dovecot       [yes|no]  default: yes
-  -c, --clamav            Install ClamAV        [yes|no]  default: yes
-  -t, --spamassassin      Install SpamAssassin  [yes|no]  default: yes
-  -i, --iptables          Install Iptables      [yes|no]  default: yes
-  -b, --fail2ban          Install Fail2ban      [yes|no]  default: yes
-  -r, --remi              Install Remi repo     [yes|no]  default: yes
-  -o, --softaculous       Install Softaculous   [yes|no]  default: yes
-  -q, --quota             Filesystem Quota      [yes|no]  default: no
+  -a, --apache            Install Apache           [yes|no]  default: yes
+  -n, --nginx             Install Nginx            [yes|no]  default: yes
+  -w, --phpfpm            Install PHP-FPM          [yes|no]  default: no
+  -v, --vsftpd            Install Vsftpd           [yes|no]  default: yes
+  -j, --proftpd           Install ProFTPD          [yes|no]  default: no
+  -k, --named             Install Bind             [yes|no]  default: yes
+  -m, --mysql             Install MySQL            [yes|no]  default: yes
+  -g, --postgresql        Install PostgreSQL       [yes|no]  default: no
+  -x, --exim              Install Exim             [yes|no]  default: yes
+  -z, --dovecot           Install Dovecot          [yes|no]  default: yes
+  -c, --clamav            Install ClamAV           [yes|no]  default: yes
+  -t, --spamassassin      Install SpamAssassin     [yes|no]  default: yes
+  -i, --iptables          Install Iptables         [yes|no]  default: yes
+  -b, --fail2ban          Install Fail2ban         [yes|no]  default: yes
+  -r, --remi              Install Remi repo        [yes|no]  default: yes
+  -o, --softaculous       Install Softaculous      [yes|no]  default: yes
+  -q, --quota             Filesystem Quota         [yes|no]  default: no
   -l, --lang              Default language                default: en
-  -y, --interactive       Interactive install   [yes|no]  default: yes
+  -y, --interactive       Interactive install      [yes|no]  default: yes
   -s, --hostname          Set hostname
+  -u, --ssl               Add LE SSL for hostname  [yes|no]  default: no
   -e, --email             Set admin email
+  -d, --port              Set Vesta port
   -p, --password          Set admin password
   -f, --force             Force installation
   -h, --help              Print this help
@@ -128,7 +129,6 @@ for arg; do
         --named)                args="${args}-k " ;;
         --mysql)                args="${args}-m " ;;
         --postgresql)           args="${args}-g " ;;
-        --mongodb)              args="${args}-d " ;;
         --exim)                 args="${args}-x " ;;
         --dovecot)              args="${args}-z " ;;
         --clamav)               args="${args}-c " ;;
@@ -141,7 +141,9 @@ for arg; do
         --lang)                 args="${args}-l " ;;
         --interactive)          args="${args}-y " ;;
         --hostname)             args="${args}-s " ;;
+        --ssl)                  args="${args}-u " ;;
         --email)                args="${args}-e " ;;
+        --port)                 args="${args}-d " ;;
         --password)             args="${args}-p " ;;
         --force)                args="${args}-f " ;;
         --help)                 args="${args}-h " ;;
@@ -152,7 +154,7 @@ done
 eval set -- "$args"
 
 # Parsing arguments
-while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
+while getopts "a:n:w:v:j:k:m:g:x:z:c:t:i:b:r:o:q:l:y:s:u:e:d:p:fh" Option; do
     case $Option in
         a) apache=$OPTARG ;;            # Apache
         n) nginx=$OPTARG ;;             # Nginx
@@ -162,7 +164,6 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         k) named=$OPTARG ;;             # Named
         m) mysql=$OPTARG ;;             # MySQL
         g) postgresql=$OPTARG ;;        # PostgreSQL
-        d) mongodb=$OPTARG ;;           # MongoDB (unsupported)
         x) exim=$OPTARG ;;              # Exim
         z) dovecot=$OPTARG ;;           # Dovecot
         c) clamd=$OPTARG ;;             # ClamAV
@@ -175,7 +176,9 @@ while getopts "a:n:w:v:j:k:m:g:d:x:z:c:t:i:b:r:o:q:l:y:s:e:p:fh" Option; do
         l) lang=$OPTARG ;;              # Language
         y) interactive=$OPTARG ;;       # Interactive install
         s) servername=$OPTARG ;;        # Hostname
+        u) ssl=$OPTARG ;;               # Add Let's Encrypt SSL for hostname
         e) email=$OPTARG ;;             # Admin email
+        d) port=$OPTARG ;;              # Vesta port
         p) vpass=$OPTARG ;;             # Admin password
         f) force='yes' ;;               # Force install
         h) help ;;                      # Help
@@ -208,6 +211,7 @@ set_default_value 'remi' 'yes'
 set_default_value 'softaculous' 'yes'
 set_default_value 'quota' 'no'
 set_default_value 'interactive' 'yes'
+set_default_value 'ssl' 'no'
 set_default_lang 'en'
 
 # Checking software conflicts
@@ -353,6 +357,11 @@ if [ "$proftpd" = 'yes' ]; then
     echo '   - ProFTPD FTP Server'
 fi
 
+# LE SSL for hostname
+if [ "$ssl" = 'yes' ]; then
+    echo '   - LE SSL for hostname'
+fi
+
 # Softaculous
 if [ "$softaculous" = 'yes' ]; then
     echo '   - Softaculous Plugin'
@@ -378,6 +387,11 @@ if [ "$interactive" = 'yes' ]; then
     # Asking for contact email
     if [ -z "$email" ]; then
         read -p 'Please enter admin email address: ' email
+    fi
+
+     # Asking for Vesta port
+    if [ -z "$port" ]; then
+        read -p 'Please enter Vesta port number (press enter for 8083): ' port
     fi
 
     # Asking to set FQDN hostname
@@ -411,6 +425,11 @@ fi
 # Set email if it wasn't set
 if [ -z "$email" ]; then
     email="admin@$servername"
+fi
+
+# Set port if it wasn't set
+if [ -z "$port" ]; then
+    port="8083"
 fi
 
 # Defining backup directory
@@ -1332,22 +1351,79 @@ $VESTA/upd/add_notifications.sh
 # Adding cronjob for autoupdates
 $VESTA/bin/v-add-cron-vesta-autoupdate
 
+if [ "$port" != "8083" ]; then
+    echo "=== Set Vesta port: $port"
+    $VESTA/bin/v-change-vesta-port $port
+fi
+
+echo "NOTIFY_ADMIN_FULL_BACKUP='$email'" >> $VESTA/conf/vesta.conf
 
 #----------------------------------------------------------#
 #                   Vesta Access Info                      #
 #----------------------------------------------------------#
 
-# Comparing hostname and IP
+# Comparing hostname and ip
+
+if [ "$ssl" = 'no' ]; then
 host_ip=$(host $servername |head -n 1 |awk '{print $NF}')
 if [ "$host_ip" = "$ip" ]; then
     ip="$servername"
+fi
+fi
+
+if [ "$ssl" = 'yes' ]; then
+make_ssl=0
+host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
+if [ "$host_ip" != "$pub_ip" ]; then
+    echo "***** PROBLEM: Hostname $servername is not pointing to your server (IP address $ip)"
+    echo "Without pointing your hostname to your IP, LetsEncrypt SSL will not be generated for your server hostname."
+    echo "Try to setup an A record in your DNS, pointing your hostname $servername to IP address $ip and then press ENTER."
+    echo "(or register ns1.$servername and ns2.$servername as DNS Nameservers and put those Nameservers on $servername domain)"
+    echo "If we detect that hostname is still not pointing to your IP, installer will not add LetsEncrypt SSL certificate to your hosting panel (unsigned SSL will be used instead)."
+    read -p "To force to try anyway to add LetsEncrypt, press f and then ENTER." answer
+    host_ip=$(host $servername | head -n 1 | awk '{print $NF}')
+fi
+if [ "$answer" = "f" ]; then
+    make_ssl=1
+fi
+if [ "$host_ip" = "$ip" ]; then
+    ip="$servername"
+    make_ssl=1
+fi
+
+if [ $make_ssl -eq 1 ]; then
+    # Check if www is also pointing to our IP
+    www_host="www.$servername"
+    www_host_ip=$(host $www_host | head -n 1 | awk '{print $NF}')
+    if [ "$www_host_ip" != "$pub_ip" ]; then
+        if [ "$named" = 'yes' ]; then
+            echo "=== Deleting www to server hostname"
+            $VESTA/bin/v-delete-web-domain-alias 'admin' "$servername" "$www_host" 'no'
+            $VESTA/bin/v-delete-dns-on-web-alias 'admin' "$servername" "$www_host" 'no'
+        fi
+        www_host=""
+   fi
+fi
+
+echo "==="
+echo "Hostname $servername is pointing to $host_ip"
+
+if [ $make_ssl -eq 1 ]; then
+    echo "=== Generating HOSTNAME SSL"
+    $VESTA/bin/v-add-letsencrypt-domain 'admin' "$servername" "$www_host" 'yes'
+    $VESTA/bin/v-update-host-certificate 'admin' "$servername"
+else
+    echo "We will not generate SSL because of this"
+fi
+echo "==="
+echo "UPDATE_HOSTNAME_SSL='yes'" >> $VESTA/conf/vesta.conf
 fi
 
 # Sending notification to admin email
 echo -e "Congratulations, you have just successfully installed \
 Vesta Control Panel
 
-    https://$ip:8083
+    https://$ip:$port
     username: admin
     password: $vpass
 

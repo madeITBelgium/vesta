@@ -23,6 +23,7 @@ source $VESTA/conf/vesta.conf
 #----------------------------------------------------------#
 
 lecounter=0
+hostname=$(hostname)
 
 # Checking user certificates
 for user in $($BIN/v-list-users plain |cut -f 1); do
