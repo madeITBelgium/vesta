@@ -925,7 +925,7 @@ s3_backup() {
     echo -e "$(date "+%F %T") Uploading $user.$date.tar ..."
     if [ "$localbackup" = 'yes' ]; then
         cd $BACKUP
-        s3cmd ${options[@]} put $user.$backup_new_date.tar s3://$BUCKET${BPATH}/$user.$backup_new_date.tar > /dev/null 2>&1
+        s3cmd ${options[@]} put $user.$backup_new_date.tar s3://$BUCKET${BPATH}$user.$backup_new_date.tar > /dev/null 2>&1
         rc=$?
         if [ "$rc" -ne 0 ]; then
             echo "$(date "+%F %T") s3cmd failed to upload $user.$backup_new_date.tar" |tee -a $BACKUP/$user.log
