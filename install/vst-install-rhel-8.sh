@@ -890,6 +890,10 @@ if [ "$nginx" = 'yes' ]; then
     mkdir /etc/systemd/system/nginx.service.d/
     echo "[Service]" > /etc/systemd/system/nginx.service.d/limits.conf
     echo "LimitNOFILE=500000" >> /etc/systemd/system/nginx.service.d/limits.conf
+    
+    mkdir -p /etc/nginx/certs
+    wget -O /etc/nginx/certs/lets-encrypt-x3-cross-signed.pem "https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem"
+    openssl dhparam -out /etc/nginx/certs/dhparam.pem 4096
         
     chkconfig nginx on
     systemctl enable nginx
