@@ -29,6 +29,11 @@ is_system_enabled "$DB_SYSTEM" 'DB_SYSTEM'
 #                       Action                             #
 #----------------------------------------------------------#
 
+vst_backups="/root/vst_install_backups/$(date +%s)"
+mkdir -p $vst_backups
+cd $vst_backups
+cp -r /etc/named.conf $vst_backups/named.conf >/dev/null 2>&1
+
 os=$(get_server_os)
 version=$(get_server_os_version)
 vestacp="$VESTA/install/os-configs/$os/$version"

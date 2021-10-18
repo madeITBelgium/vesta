@@ -28,6 +28,12 @@ is_system_enabled "$MAIL_SYSTEM" 'MAIL_SYSTEM'
 #                       Action                             #
 #----------------------------------------------------------#
 
+vst_backups="/root/vst_install_backups/$(date +%s)"
+mkdir -p $vst_backups
+cd $vst_backups
+mkdir dovecot
+cp -r /etc/dovecot/* $vst_backups/dovecot >/dev/null 2>&1
+
 os=$(get_server_os)
 version=$(get_server_os_version)
 vestacp="$VESTA/install/os-configs/$os/$version"

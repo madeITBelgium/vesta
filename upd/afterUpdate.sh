@@ -266,6 +266,27 @@ if [ "$VERSION" = "0.0.30" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.31'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
+if [ "$VERSION" = "0.0.31" ]; then
+    VERSION="0.0.32"
+    bash /usr/local/vesta/bin/v-rebuild-config-fail2ban
+    
+    mkdir -p /etc/nginx/certs
+    wget -O /etc/nginx/certs/lets-encrypt-x3-cross-signed.pem "https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem" > /dev/null 
+    if [ $? -eq 0 ]; then
+        sed -i "s/#ssl_trusted_certificate/ssl_trusted_certificate/g" /etc/nginx/nginx.conf
+    fi
+    openssl dhparam -out /etc/nginx/certs/dhparam.pem 4096 > /dev/null 
+    if [ $? -eq 0 ]; then
+        sed -i "s/#ssl_dhparam/ssl_dhparam/g" /etc/nginx/nginx.conf
+    fi
+    
+    /usr/local/vesta/bin/v-rebuild-config-nginx
+    /usr/local/vesta/bin/v-update-web-templates
+    
+    NEWRELEASE="$NEWRELEASE \n This version improved WordPress fail2ban integration. By using the wp-fail2ban plugin (https://wordpress.org/plugins/wp-fail2ban/)."
+    sed -i "s/VERSION=.*/VERSION='0.0.32'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
     command="sudo $VESTA/bin/v-notify-sys-status > /dev/null"
     

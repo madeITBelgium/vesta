@@ -28,6 +28,12 @@ is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
 #                       Action                             #
 #----------------------------------------------------------#
 
+vst_backups="/root/vst_install_backups/$(date +%s)"
+mkdir -p $vst_backups
+cd $vst_backups
+mkdir fail2ban
+cp -r /etc/fail2ban/* $vst_backups/fail2ban >/dev/null 2>&1
+
 os=$(get_server_os)
 version=$(get_server_os_version)
 vestacp="$VESTA/install/os-configs/$os/$version"
