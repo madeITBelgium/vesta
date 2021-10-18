@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -e '/usr/local/vesta/conf/vesta.conf' ]; then
+if [ ! -e '/usr/local/vesta/conf/vesta.conf' ]; then
     exit 0
 fi
 
