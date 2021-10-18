@@ -6,7 +6,7 @@ logpath  = /var/log/secure
 maxretry = 5
 
 [vsftpd-iptables]
-enabled  = false
+enabled  = true
 filter   = vsftpd
 action   = vesta[name=FTP]
 logpath  = /var/log/vsftpd.log
@@ -25,7 +25,7 @@ action  = vesta[name=MAIL]
 logpath = /var/log/dovecot.log
 
 [mysqld-iptables]
-enabled  = false
+enabled  = true
 filter   = mysqld-auth
 action   = vesta[name=DB]
 logpath  = /var/log/mysqld.log
@@ -37,3 +37,17 @@ filter  = vesta
 action  = vesta[name=VESTA]
 logpath = /var/log/vesta/auth.log
 maxretry = 5
+
+[wordpress-hard]
+enabled = true
+filter = wordpress-hard
+logpath = /var/log/messages
+maxretry = 1
+action   = vesta[name=WEB]
+
+[wordpress-soft]
+enabled = true
+filter = wordpress-soft
+logpath = /var/log/messages
+maxretry = 5
+action   = vesta[name=WEB]
