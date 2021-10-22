@@ -21,6 +21,12 @@ source $VESTA/conf/vesta.conf
 #                       Action                             #
 #----------------------------------------------------------#
 
+vst_backups="/root/vst_install_backups/$(date +%s)"
+mkdir -p $vst_backups
+cd $vst_backups
+mkdir templates
+cp -r $VESTA/data/templates/ $vst_backups/templates >/dev/null 2>&1
+
 # Detcing OS
 case $(head -n1 /etc/issue |cut -f 1 -d ' ') in
     Debian)     version="debian" ;;
