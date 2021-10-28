@@ -100,29 +100,29 @@ for user in $($BIN/v-list-users plain |cut -f 1); do
             fi
         fi
     done
+done
     
-    #Vesta SSL
-    source $VESTA/conf/vesta.conf
-    if [ "$LETSENCRYPT" = "yes" ]; then
-        crt="$VESTA/ssl/certificate.crt"
-        if [ ! -f $crt ]; then
-            echo "Vesta Let Encrypt renew failed"
-        else
-            crt_data=$(openssl x509 -text -in $crt)
-            not_after=$(echo "$crt_data" |grep "Not After" |cut -f 2,3,4 -d :)
-            expiration=$(date -d "$not_after" +%s)
-            now=$(date +%s)
-            seconds_valid=$((expiration - now))
-            days_valid=$((seconds_valid / 86400))
-            if [[ "$days_valid" -lt 31 ]]; then
-                msg=$($BIN/v-add-letsencrypt-vesta)
-                if [ $? -ne 0 ]; then
-                    echo "Vesta: $msg"
-                fi
+#Vesta SSL
+source $VESTA/conf/vesta.conf
+if [ "$LETSENCRYPT" = "yes" ]; then
+    crt="$VESTA/ssl/certificate.crt"
+    if [ ! -f $crt ]; then
+        echo "Vesta Let Encrypt renew failed"
+    else
+        crt_data=$(openssl x509 -text -in $crt)
+        not_after=$(echo "$crt_data" |grep "Not After" |cut -f 2,3,4 -d :)
+        expiration=$(date -d "$not_after" +%s)
+        now=$(date +%s)
+        seconds_valid=$((expiration - now))
+        days_valid=$((seconds_valid / 86400))
+        if [[ "$days_valid" -lt 31 ]]; then
+            msg=$($BIN/v-add-letsencrypt-vesta)
+            if [ $? -ne 0 ]; then
+                echo "Vesta: $msg"
             fi
         fi
     fi
-done
+fi
 
 #----------------------------------------------------------#
 #                       Vesta                              #
