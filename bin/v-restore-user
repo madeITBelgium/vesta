@@ -57,6 +57,7 @@ ftpc() {
     quote USER $USERNAME
     quote PASS $PASSWORD
     binary
+    lcd $BACKUP
     $1
     $2
     $3

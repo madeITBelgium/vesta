@@ -1,0 +1,38 @@
+$whiteBackground: #ececec;
+$primary: #2c54ac;
+$primaryLight: #2e5bb1;
+$primaryActive: #1e5cb2;
+$secondary: #fcac04;
+$secondaryLight: #f8b014;
+$secondaryActive: #fdb51c;
+$textColor: #555;
+
+.edit-web {
+  .ssl-support {
+    .additional-info {
+      display: flex;
+      flex-direction: column;
+
+      span {
+        &:nth-child(1) {
+          width: 120px;
+        }
+
+        &:nth-child(2) {
+          width: max-content;
+        }
+      }
+    }
+
+    a.generate-csr {
+      text-transform: initial;
+      text-decoration: none;
+      color: $primary;
+      font-weight: bold;
+
+      &:hover {
+        color: $secondaryLight;
+      }
+    }
+  }
+}
