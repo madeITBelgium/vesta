@@ -16,6 +16,7 @@ pm.status_path = /status
 
 php_admin_value[upload_tmp_dir] = /home/%user%/tmp
 php_admin_value[session.save_path] = /home/%user%/tmp
+php_admin_value[sendmail_path] ="/usr/sbin/sendmail -t -i -f info@%domain%"
 
 env[HOSTNAME] = $HOSTNAME
 env[PATH] = /usr/local/bin:/usr/bin:/bin
