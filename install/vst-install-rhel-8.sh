@@ -11,7 +11,7 @@ CHOST='cp.madeit.be'
 REPO='rhel'
 VERSION='rhel'
 VESTA='/usr/local/vesta'
-VESTAVERSION='0.0.32'
+VESTAVERSION='0.0.35'
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])
 arch=$(uname -i)
 os=$(cut -f 1 -d ' ' /etc/redhat-release)
@@ -454,7 +454,8 @@ dnf config-manager --set-enabled PowerTools > /dev/null 2>&1
 dnf config-manager --set-enabled powertools > /dev/null 2>&1
 sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/CentOS-Linux-PowerTools.repo > /dev/null 2>&1
 sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/almalinux-powertools.repo > /dev/null 2>&1
-
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/Rocky-PowerTools.repo > /dev/null 2>&1
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/rocky-powertools.repo > /dev/null 2>&1
 
 # Installing Remi repository
 if [ "$remi" = 'yes' ] && [ ! -e "/etc/yum.repos.d/remi.repo" ]; then
