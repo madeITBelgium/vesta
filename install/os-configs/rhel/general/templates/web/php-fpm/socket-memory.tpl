@@ -18,9 +18,9 @@ php_admin_value[upload_tmp_dir] = /home/%user%/tmp
 php_admin_value[session.save_path] = /home/%user%/tmp
 
 php_admin_value[upload_max_filesize] = 16M
-php_admin_value[max_execution_time] = 60
+php_admin_value[max_execution_time] = 600
 php_admin_value[post_max_size] = 16M
-php_admin_value[memory_limit] = 256M
+php_admin_value[memory_limit] = 1G
 php_admin_value[sendmail_path] "/usr/sbin/sendmail -t -i -f info@%domain_idn%"
 
 env[HOSTNAME] = $HOSTNAME

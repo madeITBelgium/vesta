@@ -294,6 +294,13 @@ if [ "$VERSION" = "0.0.32" ]; then
 fi
 
 
+if [ "$VERSION" = "0.0.34" ]; then
+    VERSION="0.0.35"
+    /usr/local/vesta/bin/v-update-web-templates
+    sed -i "s/VERSION=.*/VERSION='0.0.35'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
+
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
     command="sudo $VESTA/bin/v-notify-sys-status > /dev/null"
     
