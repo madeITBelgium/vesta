@@ -1029,8 +1029,7 @@ is_format_valid() {
                 rtype)          is_dns_type_format_valid "$arg" ;;
                 type)         	is_name_format_valid "$arg" 'object';;
                 rule)           is_int_format_valid "$arg" "rule id" ;;
-                soa)            is_domain_format_valid "$arg" 'SOA' ;;	
-                #missing command: is_format_valid_shell
+                soa)            is_domain_format_valid "$arg" 'SOA' ;;
                 shell)          is_format_valid_shell "$arg" ;;
                 stats_pass)     is_password_format_valid "$arg" ;;
                 stats_user)     is_user_format_valid "$arg" "$arg_name" ;;
@@ -1041,6 +1040,7 @@ is_format_valid() {
                 wday)           is_cron_format_valid "$arg" $arg_name ;;
                 plugin)         is_name_format_valid "$arg" 'object';;
                 key)         	is_name_format_valid "$arg" 'object';;
+                ip_country_name)  	is_name_format_valid "$arg" $arg_name;;
             esac
         fi
     done

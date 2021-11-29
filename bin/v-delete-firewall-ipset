@@ -1,0 +1,65 @@
+#!/bin/bash
+# info: delete firewall ipset
+# options: NAME
+#
+# example: v-delete-firewall-ipset country-nl
+#
+# The function removes ipset from system and from vesta
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+ip_name=${1}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'NAME'
+is_format_valid 'ip_country_name' $ip_name
+is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+
+IPSET_BIN="$(which ipset)"
+IPSET_PATH="$VESTA/data/firewall/ipset"
+IPSET_FILE="${ip_name}"
+
+# ipset package is missing
+if [ -z "$IPSET_BIN" ]; then
+    IPSET_BIN="$(which ipset)"
+    check_result $? "ipset binary not found"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+
+sed -i "/LISTNAME='$ip_name'/d" "${IPSET_PATH}.conf"
+rm -f "${IPSET_PATH}/${IPSET_FILE}.iplist"
+
+$BIN/v-update-firewall
+
+if $IPSET_BIN --quiet list "${ip_name}-tmp" >/dev/null; then
+    $IPSET_BIN --quiet destroy "${ip_name}-tmp"
+fi
+
+if $IPSET_BIN --quiet list "${ip_name}" >/dev/null; then
+    $IPSET_BIN --quiet destroy "${ip_name}"
+    check_result $? "ipset ${ip_name} still used by iptables. Cannot remove"
+fi
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

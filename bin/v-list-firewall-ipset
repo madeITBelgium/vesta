@@ -1,0 +1,103 @@
+#!/bin/bash
+# info: List firewall ipset
+# options: [FORMAT]
+#
+# example: v-list-firewall-ipset json
+#
+# The function prints defined ipset lists
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Argument definition
+format=${1-shell}
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+# JSON list function
+json_list() {
+    IFS=$'\n'
+    i=1
+    objects=$(grep LISTNAME $VESTA/data/firewall/ipset.conf |wc -l)
+    echo "{"
+    while read str; do
+        [[ -z "$str" ]] && continue;
+        eval "$str"
+        echo -n '    "'$LISTNAME'": {
+        "SOURCE": "'$SOURCE'",
+        "TIME": "'$TIME'",
+        "DATE": "'$DATE'"
+    }'
+    [[ "$i" -lt "$objects" ]] && echo ',' || echo
+    ((i++))
+    done < <(cat $VESTA/data/firewall/ipset.conf)
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    IFS=$'\n'
+    echo "LISTNAME^SOURCE^TIME^DATE"
+    echo "--------^------^----^----"
+    while read str; do
+        [[ -z "$str" ]] && continue;
+        eval "$str"
+        echo "$LISTNAME^$SOURCE^$TIME^$DATE"
+    done < <(cat $VESTA/data/firewall/ipset.conf)
+}
+
+# PLAIN list function
+plain_list() {
+    IFS=$'\n'
+    while read str; do
+        [[ -z "$str" ]] && continue;
+        eval "$str"
+        echo -ne "$LISTNAME\t$SOURCE\t"
+        echo -e "$TIME\t$DATE"
+    done < <(cat $VESTA/data/firewall/ipset.conf)
+}
+
+# CSV list function
+csv_list() {
+    IFS=$'\n'
+    echo "LISTNAME,SOURCE,SUSPENDED,TIME,DATE"
+    while read str; do
+        [[ -z "$str" ]] && continue;
+        eval "$str"
+        echo -n "$LISTNAME,\"$SOURCE\","
+        echo "$TIME,$DATE"
+    done < <(cat $VESTA/data/firewall/ipset.conf)
+}
+
+[ ! -f "$VESTA/data/firewall/ipset.conf" ] && touch "$VESTA/data/firewall/ipset.conf"
+
+# Listing data
+case $format in
+    json)   json_list ;;
+    plain)  plain_list ;;
+    csv)    csv_list ;;
+    shell)  shell_list |column -t -s '^' ;;
+esac
+
+
+#----------------------------------------------------------#
+#                       VESTA                              #
+#----------------------------------------------------------#
+
+exit

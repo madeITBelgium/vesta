@@ -1,0 +1,117 @@
+#!/bin/bash
+# info: add firewall blocking rule
+# options: IP CHAIN
+#
+# The function adds new blocking rule to system firewall
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Importing system variables
+source /etc/profile
+
+# Argument definition
+ip_name=$1
+data_source=${2}
+
+# Defining absolute path for iptables and modprobe
+iptables="/sbin/iptables"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+check_args '1' "$#" 'NAME [SOURCE]'
+is_format_valid 'ip_country_name' $ip_name
+is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+
+IPSET_BIN="$(which ipset)"
+IPSET_PATH="$VESTA/data/firewall/ipset"
+
+if [ -z "$data_source" ]; then
+    data_source="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/ip2location_country/ip2location_$ip_name.netset"
+fi
+
+if ! echo "$data_source" | egrep -q '^(https?|script|file):'; then
+    check_result "$E_INVALID" "invalid ipset source, valid: (http[s]://|script:|file:)"
+fi
+
+IPSET_FILE="${ip_name}"
+IPSET_MIN_SIZE=10
+
+# ipset missing
+if [ -z "$IPSET_BIN" ]; then
+    IPSET_BIN="$(which ipset)"
+    check_result $? "ipset binary not found"
+fi
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+mkdir -p "$IPSET_PATH"
+# Generate ip lists file if missing or when forced
+if [ ! -f "${IPSET_PATH}/${IPSET_FILE}.iplist" ] || [ "$force" = "yes" ]; then
+    iplist_tempfile=$(mktemp)
+    
+    if [[ "$data_source" =~ ^https?:// ]]; then
+        wget --tries=3 --timeout=15 --read-timeout=15 --waitretry=3 --no-dns-cache --quiet "$data_source" -O "$iplist_tempfile"
+        check_result $? "Downloading ip list"
+    fi
+
+    # Cleanup ip list
+    sed -r -i -e 's/[;#].*$//' -e 's/[ \t]*$//' -e '/^$/d' "$iplist_tempfile"
+    sed -i -r -n -e '/^((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])/p' "$iplist_tempfile"
+    
+    # Validate iplist file size
+    iplist_size=$(sed -r -e '/^#|^$/d' "$iplist_tempfile" | wc -l)
+    [[ "$iplist_size" -le "$IPSET_MIN_SIZE" ]] && check_result "$E_INVALID" "iplist file too small (<${IPSET_MIN_SIZE}), ignoring"
+    mv -f "$iplist_tempfile" "${IPSET_PATH}/${IPSET_FILE}.iplist"
+fi
+
+# Load ipset in kernel
+$IPSET_BIN -quiet create -exist "$ip_name" hash:net family inet
+$IPSET_BIN -quiet destroy "${ip_name}-tmp"
+$IPSET_BIN create "${ip_name}-tmp" -exist hash:net family inet maxelem 1048576
+$IPSET_BIN flush "${ip_name}-tmp"
+
+sed -rn -e '/^#|^$/d'  -e "s/^(.*)/add ${ip_name}-tmp \\1/p" "${IPSET_PATH}/${IPSET_FILE}.iplist" | $IPSET_BIN -quiet restore
+check_result $? "Populating ipset table"
+
+$IPSET_BIN swap "${ip_name}-tmp" "${ip_name}"
+$IPSET_BIN -quiet destroy "${ip_name}-tmp"
+
+# Generating timestamp
+time_n_date=$(date +'%T %F')
+time=$(echo "$time_n_date" |cut -f 1 -d \ )
+date=$(echo "$time_n_date" |cut -f 2 -d \ )
+
+ipset_object='../../data/firewall/ipset'
+if [ ! -f "${IPSET_PATH}.conf" ] || [ -z "$(get_object_value "$ipset_object" 'LISTNAME' "$ip_name" '$LISTNAME')" ]; then
+    # Concatenating rule
+    str="LISTNAME='$ip_name' SOURCE='$data_source'"
+    str="$str TIME='$time' DATE='$date'"
+    echo "$str" >> $VESTA/data/firewall/ipset.conf
+fi
+
+# Changing permissions
+chmod 660 $VESTA/data/firewall/ipset.conf
+chmod 660 "${IPSET_PATH}/${IPSET_FILE}.iplist"
+
+$BIN/v-update-firewall
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit

@@ -1,0 +1,41 @@
+#!/bin/bash
+# info: update firewall ipset
+#
+# example: v-update-firewall-ipset
+#
+# The function creates ipset lists and updates the lists if they are expired or ondemand
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+is_system_enabled "$FIREWALL_SYSTEM" 'FIREWALL_SYSTEM'
+
+ipset_hstobject='../../data/firewall/ipset'
+
+IFS=$'\n'
+while read str; do
+    [[ -z "$str" ]] && continue;
+    eval "$str"
+    $BIN/v-add-firewall-ipset "$LISTNAME" "$SOURCE"
+    
+done < <(cat $VESTA/data/firewall/ipset.conf)
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# Logging
+log_event "$OK" "$ARGUMENTS"
+
+exit
