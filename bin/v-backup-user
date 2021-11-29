@@ -903,44 +903,47 @@ s3_backup() {
     # Defining google settings
     source $VESTA/conf/s3.backup.conf
     
-    # Debug info
-    echo -e "$(date "+%F %T") Remote: s3://$BUCKET${BPATH}$user.$date.tar"
-    options=(--access_key="$USERNAME" --secret_key="$PASSWORD" --host="$HOST" --host-bucket="$BUCKET" --no-check-certificate)
-    
-    
-    # Checking retention
-    if [ "$ROTATE" = 'yes' ]; then
-        backup_list=$(s3cmd ${options[@]} ls s3://$BUCKET${BPATH}$user.* 2>/dev/null)
-        backups_count=$(echo "$backup_list" |wc -l)
-        if [ "$backups_count" -ge "$BACKUPS" ]; then
-            backups_rm_number=$((backups_count - BACKUPS + 1))
-            for backup in $(echo "$backup_list" |head -n $backups_rm_number | awk '{print $4}'); do
-                echo -e "$(date "+%F %T") Roated s3 backup: $backup"
-                s3cmd $options del $backup > /dev/null 2>&1
-            done
-        fi
-    fi
+    exclusion=$(echo -e "$USER_EXCLUDE" |tr ',' '\n' |grep "^$user")
+    if [ -z "$exclusion" ] || [ $(date +%u) -eq 1 ]; then
+        # Debug info
+        echo -e "$(date "+%F %T") Remote: s3://$BUCKET${BPATH}$user.$date.tar"
+        options=(--access_key="$USERNAME" --secret_key="$PASSWORD" --host="$HOST" --host-bucket="$BUCKET" --no-check-certificate)
 
-    # Uploading backup archive
-    echo -e "$(date "+%F %T") Uploading $user.$date.tar ..."
-    if [ "$localbackup" = 'yes' ]; then
-        cd $BACKUP
-        s3cmd ${options[@]} put $user.$backup_new_date.tar s3://$BUCKET${BPATH}$user.$backup_new_date.tar > /dev/null 2>&1
-        rc=$?
-        if [ "$rc" -ne 0 ]; then
-            echo "$(date "+%F %T") s3cmd failed to upload $user.$backup_new_date.tar" |tee -a $BACKUP/$user.log
-            #check_result "$E_CONNECT" "s3cmd failed to upload $user.$backup_new_date.tar"
+
+        # Checking retention
+        if [ "$ROTATE" = 'yes' ]; then
+            backup_list=$(s3cmd ${options[@]} ls s3://$BUCKET${BPATH}$user.* 2>/dev/null)
+            backups_count=$(echo "$backup_list" |wc -l)
+            if [ "$backups_count" -ge "$BACKUPS" ]; then
+                backups_rm_number=$((backups_count - BACKUPS + 1))
+                for backup in $(echo "$backup_list" |head -n $backups_rm_number | awk '{print $4}'); do
+                    echo -e "$(date "+%F %T") Roated s3 backup: $backup"
+                    s3cmd $options del $backup > /dev/null 2>&1
+                done
+            fi
         fi
-    else
-        cd $tmpdir
-        tar -cf $BACKUP/$user.$date.tar .
-        cd $BACKUP/
-        s3cmd ${options[@]} put $user.$backup_new_date.tar s3://$BUCKET${BPATH}$user.$backup_new_date.tar > /dev/null 2>&1
-        rc=$?
-        #rm -f $user.$date.tar
-        if [ "$rc" -ne 0 ]; then
-            echo "$(date "+%F %T") s3cmd failed to upload $user.$backup_new_date.tar" |tee -a $BACKUP/$user.log
-            check_result "$E_CONNECT" "s3cmd failed to upload $user.$backup_new_date.tar"
+
+        # Uploading backup archive
+        echo -e "$(date "+%F %T") Uploading $user.$date.tar ..."
+        if [ "$localbackup" = 'yes' ]; then
+            cd $BACKUP
+            s3cmd ${options[@]} put $user.$backup_new_date.tar s3://$BUCKET${BPATH}$user.$backup_new_date.tar > /dev/null 2>&1
+            rc=$?
+            if [ "$rc" -ne 0 ]; then
+                echo "$(date "+%F %T") s3cmd failed to upload $user.$backup_new_date.tar" |tee -a $BACKUP/$user.log
+                #check_result "$E_CONNECT" "s3cmd failed to upload $user.$backup_new_date.tar"
+            fi
+        else
+            cd $tmpdir
+            tar -cf $BACKUP/$user.$date.tar .
+            cd $BACKUP/
+            s3cmd ${options[@]} put $user.$backup_new_date.tar s3://$BUCKET${BPATH}$user.$backup_new_date.tar > /dev/null 2>&1
+            rc=$?
+            #rm -f $user.$date.tar
+            if [ "$rc" -ne 0 ]; then
+                echo "$(date "+%F %T") s3cmd failed to upload $user.$backup_new_date.tar" |tee -a $BACKUP/$user.log
+                check_result "$E_CONNECT" "s3cmd failed to upload $user.$backup_new_date.tar"
+            fi
         fi
     fi
 }
