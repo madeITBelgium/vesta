@@ -11,6 +11,7 @@ source /usr/local/vesta/conf/vesta.conf
 STARTVERSION=$(echo $VERSION)
 
 NEWRELEASE=""
+NOTES=""
 
 if [ "$VERSION" = "0.9.8" ]; then
     #Convert to made I.T.
@@ -300,6 +301,34 @@ if [ "$VERSION" = "0.0.34" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.35'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
+if [ "$VERSION" = "0.0.35" ]; then
+    VERSION="0.0.36"
+    /usr/local/vesta/bin/v-update-web-templates
+    NOTES="$NOTES We changed the nginx template include mechanisme. Read more about it on: "
+    for user in $($VESTA/bin/v-list-sys-users plain); do
+        #Check to move configs
+        files=$(ls /home/$user/conf/web)
+        for file in $files;
+        do
+            if [ ! -z "$(echo $file | grep conf_letsencrypt)" ]
+            then
+                echo "mv /home/$user/conf/web/$file /home/$user/conf/web/$(echo $file | sed 's/conf_letsencrypt/conf_first_letsencrypt/g')"
+            elif [ ! -z "$(echo $file | grep conf_ | grep -v conf_before_)" ]
+            then
+                link=$(ls -la /home/$user/conf/web/$file | awk '{print $11}')
+                if [ -z "$(echo $link)" ];
+                then
+                    echo "mv /home/$user/conf/web/$file /home/$user/conf/web/$(echo $file | sed 's/.conf_/.conf_after_/g')"
+                else
+                    echo "rm -f /home/$user/conf/web/$file"
+                    echo "ln -s $link /home/$user/conf/web/$(echo $file | sed 's/.conf_/.conf_after_/g')"
+                fi
+            fi
+        done
+    done
+    sed -i "s/VERSION=.*/VERSION='0.0.36'/g" /usr/local/vesta/conf/vesta.conf
+fi
+
 
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
     command="sudo $VESTA/bin/v-notify-sys-status > /dev/null"
@@ -323,11 +352,12 @@ Previous Version: $STARTVERSION
 New Version: $VERSION
 $NEWRELEASE
 
-
 We hope that you enjoy your installation of Vesta. Please \
 feel free to contact us anytime if you have any questions.
 
 Support: https://github.com/madeITBelgium/vesta
+
+$NOTES
 
 --
 Sincerely yours

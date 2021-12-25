@@ -7,6 +7,8 @@ server {
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
     
+    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_first_*;
+
     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
     proxy_redirect          off;
 
@@ -19,6 +21,8 @@ server {
     proxy_send_timeout      720;
     proxy_read_timeout      720;
     send_timeout            720;
+
+    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_before_*;
 
     # Allow "Well-Known URIs" as per RFC 5785
     location ~* ^/.well-known/ {
@@ -62,5 +66,5 @@ server {
     include     /etc/nginx/conf.d/phppgadmin.inc*;
     include     /etc/nginx/conf.d/webmail.inc*;
 
-    include     %home%/%user%/conf/web/nginx.%domain%.conf*;
+    include     %home%/%user%/conf/web/nginx.%domain%.conf_after_*;
 }

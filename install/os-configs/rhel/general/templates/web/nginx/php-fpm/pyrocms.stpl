@@ -10,6 +10,15 @@ server {
     ssl_certificate      %ssl_pem%;
     ssl_certificate_key  %ssl_key%;
 
+    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_first_*;
+
+    add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload';
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Content-Type-Options nosniff;
+    add_header Content-Security-Policy "upgrade-insecure-requests" always;
+
+    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_before_*;
+
     location /installer {
             try_files $uri $uri/ /installer/index.php?$query_string;
         }
@@ -61,5 +70,5 @@ server {
     include     /etc/nginx/conf.d/phppgadmin.inc*;
     include     /etc/nginx/conf.d/webmail.inc*;
 
-    include     %home%/%user%/conf/web/snginx.%domain%.conf*;
+    include     %home%/%user%/conf/web/snginx.%domain%.conf_after_*;
 }

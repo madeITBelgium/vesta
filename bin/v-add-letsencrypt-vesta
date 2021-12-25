@@ -190,8 +190,8 @@ for auth in $authz; do
     # Accepting challenge / STEP 4
     domUser=$(find_user_by_domainname "$checkdomain")
     if [ "$WEB_SYSTEM" = 'nginx' ] || [ ! -z "$PROXY_SYSTEM" ]; then
-        conf="$HOMEDIR/$domUser/conf/web/nginx.$checkdomain.conf_letsencrypt"
-        sconf="$HOMEDIR/$domUser/conf/web/snginx.$checkdomain.conf_letsencrypt"
+        conf="$HOMEDIR/$domUser/conf/web/nginx.$checkdomain.conf_first_letsencrypt"
+        sconf="$HOMEDIR/$domUser/conf/web/snginx.$checkdomain.conf_first_letsencrypt"
 
         echo 'location ~ "^/\.well-known/acme-challenge/(.*)$" {' \
                 > $conf

@@ -5,6 +5,15 @@ server {
     ssl_certificate_key  %ssl_key%;
     error_log   /var/log/httpd/domains/%domain%.error.log error;
 
+    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_first_*;
+
+    add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload';
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Content-Type-Options nosniff;
+    add_header Content-Security-Policy "upgrade-insecure-requests" always;
+
+    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_before_*;
+
     location / {
         proxy_pass      %docroot%;
     }
@@ -19,6 +28,6 @@ server {
     location ~ /\.hg/   {return 404;}
     location ~ /\.bzr/  {return 404;}
 
-    include %home%/%user%/conf/web/snginx.%domain%.conf*;
+    include %home%/%user%/conf/web/snginx.%domain%.conf_after_*;
 }
 

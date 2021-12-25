@@ -7,6 +7,8 @@ server {
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
 
+    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_first_*;
+
     ############################################################################
 
     #   Default encoding
@@ -47,6 +49,8 @@ server {
     error_page 598 = @backend;
 
     ############################################################################
+
+    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_before_*;
 
     location @backend {
         try_files $uri $uri/ /$2$3 /$3 /index.php  =404;
@@ -220,5 +224,5 @@ server {
     include     /etc/nginx/conf.d/phppgadmin.inc*;
     include     /etc/nginx/conf.d/webmail.inc*;
 
-    include     %home%/%user%/conf/web/nginx.%domain%.conf*;
+    include     %home%/%user%/conf/web/nginx.%domain%.conf_after_*;
 }
