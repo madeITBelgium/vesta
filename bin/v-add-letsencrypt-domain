@@ -269,7 +269,7 @@ if [ "$exitstatus" -ne '0' ]; then
     check_result $exitstatus "SSL install" >/dev/null
 fi
 
-#Check if domain his mail domain
+#Check if domain has mail domain
 str=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
 if [  ! -z "$str" ]; then
     domain_found='yes'

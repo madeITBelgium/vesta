@@ -56,6 +56,13 @@ if [ $? -ne 0 ]; then
     check_result $E_RESTART "$MAIL_SYSTEM restart failed"
 fi
 
+# Restart system
+service dovecot restart >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    send_email_report
+    check_result $E_RESTART "dovecot restart failed"
+fi
+
 # Update restart queue
 if [ -e "$VESTA/data/queue/restart.pipe" ]; then
     sed -i "/$SCRIPT/d" $VESTA/data/queue/restart.pipe
