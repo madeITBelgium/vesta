@@ -303,7 +303,7 @@ fi
 
 if [ "$VERSION" = "0.0.35" ]; then
     VERSION="0.0.36"
-    /usr/local/vesta/bin/v-update-web-templates
+    #/usr/local/vesta/bin/v-update-web-templates
     NOTES="$NOTES We changed the nginx template include mechanisme. Read more about it on: "
     for user in $($VESTA/bin/v-list-sys-users plain); do
         #Check to move configs
@@ -312,19 +312,38 @@ if [ "$VERSION" = "0.0.35" ]; then
         do
             if [ ! -z "$(echo $file | grep conf_letsencrypt)" ]
             then
-                echo "mv /home/$user/conf/web/$file /home/$user/conf/web/$(echo $file | sed 's/conf_letsencrypt/conf_first_letsencrypt/g')"
-            elif [ ! -z "$(echo $file | grep conf_ | grep -v conf_before_)" ]
+                if [ -z "$(echo $file | grep snginx)" ]
+                then
+                    mv /home/$user/conf/web/$file /home/$user/conf/web/$(echo $file | sed 's/conf_letsencrypt/conf_first_letsencrypt/g')
+                    rm -f /home/$user/conf/web/s$file
+                    ln -s /home/$user/conf/web/$(echo $file | sed 's/conf_letsencrypt/conf_first_letsencrypt/g') /home/$user/conf/web/s$(echo $file | sed 's/conf_letsencrypt/conf_first_letsencrypt/g')
+                fi
+            elif [ -z "$(echo $file | grep conf_after_)" ] && [ -z "$(echo $file | grep conf_first_letsencrypt)" ] && [ ! -z "$(echo $file | grep conf_ | grep -v conf_before_)" ]
             then
                 link=$(ls -la /home/$user/conf/web/$file | awk '{print $11}')
                 if [ -z "$(echo $link)" ];
                 then
-                    echo "mv /home/$user/conf/web/$file /home/$user/conf/web/$(echo $file | sed 's/.conf_/.conf_after_/g')"
-                else
-                    echo "rm -f /home/$user/conf/web/$file"
-                    echo "ln -s $link /home/$user/conf/web/$(echo $file | sed 's/.conf_/.conf_after_/g')"
+                    mv /home/$user/conf/web/$file /home/$user/conf/web/$(echo $file | sed 's/.conf_/.conf_after_/g')
                 fi
             fi
         done
+        
+        #Move links
+        files=$(ls /home/$user/conf/web)
+        for file in $files;
+        do
+            if [ -z "$(echo $file | grep conf_after_)" ] && [ -z "$(echo $file | grep conf_first_letsencrypt)" ] && [ -z "$(echo $file | grep conf_letsencrypt)" ] && [ ! -z "$(echo $file | grep conf_ | grep -v conf_before_)" ]
+            then
+                link=$(ls -la /home/$user/conf/web/$file | awk '{print $11}')
+                if [ ! -z "$(echo $link)" ];
+                then
+                    rm -f /home/$user/conf/web/$file
+                    ln -s $(echo $link | sed 's/.conf_/.conf_after_/g') /home/$user/conf/web/$(echo $file | sed 's/.conf_/.conf_after_/g')
+                fi
+            fi
+        done
+        
+        $VESTA/bin/v-rebuild-web-domains $user
     done
     sed -i "s/VERSION=.*/VERSION='0.0.36'/g" /usr/local/vesta/conf/vesta.conf
 fi
