@@ -25,6 +25,9 @@ send_email_report() {
     rm -f $tmpfile
 }
 
+nginx_workers() {
+    echo $(ps -ef | grep "nginx: worker process is shutting down" | grep -v grep | wc -l)
+}
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -52,6 +55,15 @@ fi
 # Reload web system
 service $WEB_SYSTEM reload >/dev/null 2>&1
 rc=$?
+
+if [ "$WEB_SYSTEM" = "nginx" ]; then
+    sleep 2
+    # Wait for the number of workers to return to normal.
+    while [ $(nginx_workers) -gt 0 ]
+    do
+        sleep 1;
+    done
+fi
 
 # Workaround for Ubuntu 12.04
 if [ "$WEB_SYSTEM" == 'apache2' ]; then
@@ -82,3 +94,4 @@ fi
 #----------------------------------------------------------#
 
 exit
+
