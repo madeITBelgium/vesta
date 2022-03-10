@@ -42,4 +42,4 @@ $config['plugins'] = array(
     'password',
 );
 
-$config['skin'] = 'larry';
+$config['skin'] = 'elastic';
