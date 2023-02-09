@@ -154,7 +154,7 @@ data="$data MEM='$mem' RTIME='$rtime' SVERSION='$VERSION'"
 if [ ! -z "$WEB_SYSTEM" ] && [ "$WEB_SYSTEM" != 'remote' ]; then
     get_srv_state $WEB_SYSTEM
     data="$data\nNAME='$WEB_SYSTEM' SYSTEM='web server' STATE='$state' CPU='$cpu'"
-    data="$data MEM='$mem' RTIME='$rtime' SVERSION='$($WEB_SYSTEM -v | head -n1 |  grep -o '[0-9.]*')'"
+    data="$data MEM='$mem' RTIME='$rtime' SVERSION='$(echo $($PROXY_SYSTEM -v 2>&1)| head -n1 |  grep -o '[0-9.]*')'"
 fi
 
 # Checking WEB Backend
@@ -279,7 +279,7 @@ fi
 
 # Checking FIREWALL Fail2ban extention
 if [ ! -z "$FIREWALL_EXTENSION" ]; then
-    get_srv_state $FIREWALL_EXTENSION f2b/server script
+    get_srv_state $FIREWALL_EXTENSION fail2ban script
     data="$data\nNAME='$FIREWALL_EXTENSION' SYSTEM='brute-force monitor'"
     data="$data STATE='$state' CPU='$cpu' MEM='$mem' RTIME='$rtime' SVERSION='$(fail2ban-server --version | grep -o '[0-9.]*' | head -n2 | tail -n1)'"
 fi
