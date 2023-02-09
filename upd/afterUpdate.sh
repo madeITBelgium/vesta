@@ -303,7 +303,7 @@ fi
 
 if [ "$VERSION" = "0.0.35" ]; then
     VERSION="0.0.36"
-    #/usr/local/vesta/bin/v-update-web-templates
+    /usr/local/vesta/bin/v-update-web-templates
     NOTES="$NOTES We changed the nginx template include mechanisme. Read more about it on: "
     for user in $($VESTA/bin/v-list-sys-users plain); do
         #Check to move configs
