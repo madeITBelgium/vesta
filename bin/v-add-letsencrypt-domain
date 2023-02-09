@@ -177,14 +177,17 @@ for auth in $authz; do
             fi
             $BIN/v-restart-proxy
             check_result $? "Proxy restart failed" >/dev/null
+            
+            $BIN/v-restart-web
+            check_result $? "Web restart failed" >/dev/null
         else
             well_known="$HOMEDIR/$user/web/$domain/public_html/.well-known"
             acme_challenge="$well_known/acme-challenge"
             mkdir -p $acme_challenge
             echo "$token.$THUMB" > $acme_challenge/$token
             chown -R $user:$user $well_known
-            # $BIN/v-restart-web
-            # check_result $? "Web restart failed" >/dev/null
+            $BIN/v-restart-web
+            check_result $? "Web restart failed" >/dev/null
         fi
     fi
 
@@ -269,7 +272,7 @@ if [ "$exitstatus" -ne '0' ]; then
     check_result $exitstatus "SSL install" >/dev/null
 fi
 
-#Check if domain has mail domain
+#Check if domain his mail domain
 str=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
 if [  ! -z "$str" ]; then
     domain_found='yes'

@@ -51,6 +51,7 @@ if [[ "$MAIL_SYSTEM" =~ exim ]]; then
     done
 
     sed -i "/^$account@$domain_idn:/d" $HOMEDIR/$user/conf/mail/$domain/aliases
+    sed -i "/^$account:/d" $HOMEDIR/$user/conf/mail/$domain/accounts
     sed -i "/^$account:/d" $HOMEDIR/$user/conf/mail/$domain/passwd
     rm -rf $HOMEDIR/$user/mail/$domain/$account
 fi
