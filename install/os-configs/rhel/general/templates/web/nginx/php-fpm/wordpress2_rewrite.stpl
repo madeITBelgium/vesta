@@ -9,9 +9,9 @@ server {
 
     ssl_certificate      %ssl_pem%;
     ssl_certificate_key  %ssl_key%;
-
-    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_first_*;
     
+    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_first_*;
+
     add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload';
     add_header X-Frame-Options SAMEORIGIN;
     add_header X-Content-Type-Options nosniff;

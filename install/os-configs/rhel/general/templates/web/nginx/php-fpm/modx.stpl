@@ -13,17 +13,6 @@ server {
 #   if ($host != '%domain%' ) {
 #       rewrite      ^/(.*)$  https://%domain%/$1  permanent;
 #    }
-
-    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_first_*;
-    
-    add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload';
-    add_header X-Frame-Options SAMEORIGIN;
-    add_header X-Content-Type-Options nosniff;
-    add_header Content-Security-Policy "upgrade-insecure-requests" always;
-
-    include     %home%/%user%/conf/web/snginx.%domain_idn%.conf_before_*;
-    
-    
     location = /favicon.ico {
         log_not_found off;
         access_log off;

@@ -6,15 +6,10 @@ server {
     access_log  /var/log/nginx/domains/%domain%.access.log combined;
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
-
 #   if you need to rewrite www to non-www uncomment bellow
 #   if ($host != '%domain%' ) {
 #       rewrite      ^/(.*)$  http://%domain%/$1  permanent;
 #    }
-
-    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_first_*;
-    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_before_*;
-
     location = /favicon.ico {
         log_not_found off;
         access_log off;
@@ -66,5 +61,5 @@ server {
     include     /etc/nginx/conf.d/phppgadmin.inc*;
     include     /etc/nginx/conf.d/webmail.inc*;
 
-    include     %home%/%user%/conf/web/nginx.%domain%.conf_after_*;
+    include     %home%/%user%/conf/web/nginx.%domain%.conf*;
 }

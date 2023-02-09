@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CURRENTVESION=$(mysql -V | awk '{print $5}' | cut -d- -f1)
-VERSION="10.5"
+VERSION="10.11"
 
 echo "Start upgrading mysql $CURRENTVESION to $VERSION"
 

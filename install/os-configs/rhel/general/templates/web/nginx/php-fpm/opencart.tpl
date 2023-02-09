@@ -6,10 +6,6 @@ server {
     access_log  /var/log/nginx/domains/%domain%.access.log combined;
     access_log  /var/log/nginx/domains/%domain%.bytes bytes;
     error_log   /var/log/nginx/domains/%domain%.error.log error;
-
-    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_first_*;
-    include     %home%/%user%/conf/web/nginx.%domain_idn%.conf_before_*;
-
     location / {
         try_files $uri $uri/ @opencart;
         location ~* ^.+\.(jpeg|jpg|png|gif|bmp|ico|svg|css|js)$ {
@@ -54,5 +50,5 @@ server {
     include     /etc/nginx/conf.d/phppgadmin.inc*;
     include     /etc/nginx/conf.d/webmail.inc*;
 
-    include     %home%/%user%/conf/web/nginx.%domain%.conf_after_*;
+    include     %home%/%user%/conf/web/nginx.%domain%.conf*;
 }

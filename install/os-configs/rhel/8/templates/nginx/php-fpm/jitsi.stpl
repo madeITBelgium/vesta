@@ -1,0 +1,52 @@
+server {
+    listen      %ip%:%web_ssl_port% http2 ssl;
+    server_name %domain_idn% %alias_idn%;
+    ssl_certificate      %ssl_pem%;
+    ssl_certificate_key  %ssl_key%;
+    error_log   /var/log/nginx/domains/%domain%.error.log error;
+
+
+   location / {
+            ssi on;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $http_host;
+
+            proxy_pass http://193.58.112.138:8000/;
+
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+    }
+
+    location ~ ^/(?!(http-bind|external_api\.|xmpp-websocket))([a-zA-Z0-9=_äÄöÖüÜß\?\-]+)$ {
+            rewrite ^/(.*)$ / break;
+    }
+    # BOSH
+    location /http-bind {
+            proxy_pass      http://193.58.112.138:5280/http-bind;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header Host $http_host;
+    }
+    # xmpp websockets
+    location /xmpp-websocket {
+            proxy_pass http://193.58.112.138:5280/xmpp-websocket;
+            proxy_http_version      1.1;
+            proxy_set_header        Upgrade $http_upgrade;
+            proxy_set_header        Connection "upgrade";
+            proxy_set_header        Host $host;
+            tcp_nodelay             on;
+    }
+
+    location @fallback {
+        proxy_pass      http://193.58.112.138:8000;
+    }
+
+    location ~ /\.ht    {return 404;}
+    location ~ /\.svn/  {return 404;}
+    location ~ /\.git/  {return 404;}
+    location ~ /\.hg/   {return 404;}
+    location ~ /\.bzr/  {return 404;}
+
+    include %home%/%user%/conf/web/snginx.%domain%.conf*;
+}
+
