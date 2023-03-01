@@ -124,12 +124,14 @@ $plugins = json_decode(implode('', $output), true);
 unset($output);
 
 $activePlugins = [];
-foreach($plugins as $plugin => $data) {
-    if($data['ACTIVE'] == 'yes') {
-        $activePlugins[$plugin] = $data;
-        $file = '/usr/local/vesta/plugin/' . $plugin . '/web/index.php';
-        if(file_exists($file)) {
-            include $file;
+if(is_array($plugins)) {
+    foreach($plugins as $plugin => $data) {
+        if($data['ACTIVE'] == 'yes') {
+            $activePlugins[$plugin] = $data;
+            $file = '/usr/local/vesta/plugin/' . $plugin . '/web/index.php';
+            if(file_exists($file)) {
+                include $file;
+            }
         }
     }
 }
