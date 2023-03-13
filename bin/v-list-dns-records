@@ -25,7 +25,7 @@ format_domain_idn
 json_list() {
     IFS=$'\n'
     i=1
-    objects=$(grep ID $USER_DATA/dns/$domain_idn.conf |wc -l)
+    objects=$(grep ID $USER_DATA/dns/$domain.conf |wc -l)
     echo "{"
     while read str; do
         eval $str
@@ -46,7 +46,7 @@ json_list() {
             echo
         fi
         ((i++))
-    done < <(cat $USER_DATA/dns/$domain_idn.conf)
+    done < <(cat $USER_DATA/dns/$domain.conf)
     echo '}'
 }
 
@@ -58,7 +58,7 @@ shell_list() {
     while read str; do
         eval $str
         echo "$ID^$RECORD^$TYPE^${VALUE:0:30}^$DATE"
-    done < <(cat $USER_DATA/dns/$domain_idn.conf)
+    done < <(cat $USER_DATA/dns/$domain.conf)
 }
 
 # PLAIN list function
@@ -69,7 +69,7 @@ plain_list() {
         VALUE=$(echo "$VALUE" |sed -e "s/%quote%/\\'/g")
         echo -ne "$ID\t$RECORD\t$TYPE\t$PRIORITY\t$VALUE\t"
         echo -e "$SUSPENDED\t$TIME\t$DATE"
-    done < <(cat $USER_DATA/dns/$domain_idn.conf)
+    done < <(cat $USER_DATA/dns/$domain.conf)
 }
 
 # CSV list function
@@ -81,7 +81,7 @@ csv_list() {
         VALUE=$(echo "$VALUE" |sed -e "s/%quote%/\\'/g")
         echo -n "$ID,$RECORD,$TYPE,$PRIORITY,\"$VALUE\","
         echo "$SUSPENDED,$TIME,$DATE"
-    done < <(cat $USER_DATA/dns/$domain_idn.conf)
+    done < <(cat $USER_DATA/dns/$domain.conf)
 }
 
 
@@ -92,7 +92,7 @@ csv_list() {
 check_args '2' "$#" 'USER DOMAIN [FORMAT]'
 is_format_valid 'user' 'domain'
 is_object_valid 'user' 'USER' "$user"
-is_object_valid 'dns' 'DOMAIN' "$domain_idn"
+is_object_valid 'dns' 'DOMAIN' "$domain"
 
 
 #----------------------------------------------------------#
