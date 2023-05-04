@@ -61,7 +61,7 @@ query_le_v2() {
     # Save http response to file passed as "$4" arg or print to stdout if not provided
     # http response headers are always sent to stdout
     local save_to_file=${4:-"/dev/stdout"}
-    curl --location --user-agent "myVesta" --insecure --retry 5 --retry-connrefused --silent --dump-header /dev/stdout --data "$post_data" "$1" --header "$content" --output "$save_to_file"
+    curl --location --user-agent "Vesta By Made IT" --insecure --retry 5 --retry-connrefused --silent --dump-header /dev/stdout --data "$post_data" "$1" --header "$content" --output "$save_to_file"
  }
 
 
@@ -128,7 +128,7 @@ fi
 # Requesting nonce / STEP 1
 echo "[$(date)] : --- Requesting nonce / STEP 1 ---" >> /usr/local/vesta/log/letsencrypt.log
 echo "[$(date)] : curl -s -I \"$API/directory\"" >> /usr/local/vesta/log/letsencrypt.log
-answer=$(curl --user-agent "myVesta" -s -I "$API/directory")
+answer=$(curl --user-agent "Vesta By Made IT" -s -I "$API/directory")
 echo "[$(date)] : answer=$answer" >> /usr/local/vesta/log/letsencrypt.log
 nonce=$(echo "$answer" |grep -i nonce |cut -f2 -d \ |tr -d '\r\n')
 echo "[$(date)] : nonce=$nonce" >> /usr/local/vesta/log/letsencrypt.log
@@ -297,7 +297,7 @@ for auth in $authz; do
             check_result $E_CONNECT "Let's Encrypt domain validation timeout"
         fi
         echo "[$(date)] : curl: $url2 :" >> /usr/local/vesta/log/letsencrypt.log
-        get_answer=$(curl --user-agent "myVesta" --silent -S "$url2")
+        get_answer=$(curl --user-agent "Vesta By Made IT" --silent -S "$url2")
         echo "[$(date)] : get_answer=$get_answer" >> /usr/local/vesta/log/letsencrypt.log
         sleeping=$((i*2))
         echo "[$(date)] : sleep $sleeping (i=$i)" >> /usr/local/vesta/log/letsencrypt.log
@@ -311,8 +311,8 @@ done
 
 
 # Generating new ssl certificate
-ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "info@$domain" "US" "California"\
-    "San Francisco" "Vesta" "IT" "$aliases" |tail -n1 |awk '{print $2}')
+ssl_dir=$($BIN/v-generate-ssl-cert "$domain" "info@$domain" "BE" "Antwerp" \
+     "Geel" "Made I.T." "IT" "$aliases" |tail -n1 |awk '{print $2}')
 
 # Sending CSR to finalize order / STEP 6
 echo "[$(date)] : --- Sending CSR to finalize order / STEP 6 ---" >> /usr/local/vesta/log/letsencrypt.log
@@ -413,6 +413,13 @@ if [ "$exitstatus" -ne '0' ]; then
     check_result $exitstatus "SSL install" >/dev/null
 fi
 
+# check if domain his mail domain
+ str=$(grep "DOMAIN='$domain'" $USER_DATA/mail.conf)
+ if [  ! -z "$str" ]; then
+     $BIN/v-delete-mail-domain-ssl $user $domain >/dev/null 2>&1
+     $BIN/v-add-mail-domain-ssl $user $domain $ssl_dir
+ fi
+
 # Adding LE autorenew cronjob
 if [ -z "$(grep v-update-lets $VESTA/data/users/admin/cron.conf)" ]; then
     min=$(generate_password '012345' '2')
@@ -427,7 +434,7 @@ if [ -z "$LETSENCRYPT" ]; then
 fi
 update_object_value 'web' 'DOMAIN' "$domain" '$LETSENCRYPT' 'yes'
 
-reset_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT'
+#reset_web_counter "$user" "$domain" 'LETSENCRYPT_FAIL_COUNT'
 
 #----------------------------------------------------------#
 #                       Vesta                              #
