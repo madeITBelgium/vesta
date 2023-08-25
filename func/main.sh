@@ -557,7 +557,7 @@ is_domain_format_valid() {
 # Alias forman validator
 is_alias_format_valid() {
     for object in ${1//,/ }; do
-        exclude="[!|@|#|$|^|&|(|)|+|=|{|}|:|<|>|?|_|/|\|\"|'|;|%|\`| ]"
+        exclude="[!|@|#|$|^|&|(|)|+|=|{|}|:|<|>|?|_|/|\||*\"|'|;|%|\`| ]"
         if [[ "$object" =~ $exclude ]]; then
             check_result $E_INVALID "invalid alias format :: $object"
         fi
