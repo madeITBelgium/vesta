@@ -23,6 +23,7 @@ php_admin_value[post_max_size] = 5G
 php_admin_value[memory_limit] = 5G
 php_admin_value[sendmail_path] ="/usr/sbin/sendmail -t -i -f info@%domain%"
 php_admin_value[max_file_uploads] = 1000
+php_value[newrelic.appname] = "%domain%"
 
 env[HOSTNAME] = $HOSTNAME
 env[PATH] = /usr/local/bin:/usr/bin:/bin
