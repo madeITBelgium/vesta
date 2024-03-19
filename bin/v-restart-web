@@ -26,7 +26,7 @@ send_email_report() {
 }
 
 nginx_workers() {
-    echo $(ps -ef | grep "nginx: worker process is shutting down" | grep -v grep | wc -l)
+    echo $(ps -ef | grep "nginx: worker process is shutting down" | grep -v admin | grep -v grep | wc -l)
 }
 
 #----------------------------------------------------------#
@@ -53,16 +53,23 @@ if [ -z "$WEB_SYSTEM" ] || [ "$WEB_SYSTEM" = 'remote' ]; then
 fi
 
 # Reload web system
-service $WEB_SYSTEM restart >/dev/null 2>&1
+service $WEB_SYSTEM reload >/dev/null 2>&1
 rc=$?
 
 if [ "$WEB_SYSTEM" = "nginx" ]; then
-    sleep 2
+    sleep 5
     # Wait for the number of workers to return to normal.
-    while [ $(nginx_workers) -gt 0 ]
+    counter=0
+    while [ $(nginx_workers) -gt 0 ] && [ $counter -lt 5 ];
     do
+        echo "Waiting for nginx workers to return to normal $(nginx_workers) $counter"
         sleep 1;
+        counter=$((counter+1))
     done
+
+    if [ $(nginx_workers) -gt 0 ]; then
+        kill -9 $(ps -ef | grep "nginx: worker process is shutting down" | grep -v admin | grep -v grep | awk '{print $2}' )
+    fi
 fi
 
 # Workaround for Ubuntu 12.04
