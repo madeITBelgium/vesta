@@ -550,7 +550,7 @@ if [ "$dns" != 'no' ] && [ ! -z "$DNS_SYSTEM" ]; then
 
             # Concatenating dns.conf keys
             str="DOMAIN='$domain' IP='$IP' IP6='$IP6' TPL='$TPL' TTL='$TTL' EXP='$EXP'"
-            str="$str SOA='$SOA' RECORDS='$RECORDS' SUSPENDED='no'"
+            str="$str SOA='$SOA' RECORDS='$RECORDS' DNSSEC='$DNSSEC' SUSPENDED='no'"
             str="$str TIME='$(date +%T)' DATE='$(date +%F)'"
             echo $str >> $USER_DATA/dns.conf
         fi

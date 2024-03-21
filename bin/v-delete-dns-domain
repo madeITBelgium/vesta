@@ -49,6 +49,7 @@ if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
 
     sed -i "/\/$user\/conf\/dns\/$domain.db\"/d" $dns_conf
     rm -f $HOMEDIR/$user/conf/dns/$domain.db
+    rm -f $HOMEDIR/$user/conf/dns/K$domain.+*
 fi
 
 # Updating dns-cluster queue

@@ -19,6 +19,7 @@ restart=$4
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
+source $VESTA/func/rebuild.sh
 source $VESTA/conf/vesta.conf
 
 # Additional argument formatting
@@ -48,8 +49,8 @@ sed -i "/^ID='$id'/d" $USER_DATA/dns/$domain.conf
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
-    update_domain_serial
-    update_domain_zone
+    # Do full rebuild due DNS SEC
+    rebuild_dns_domain_conf
 fi
 
 # Updating dns-cluster queue

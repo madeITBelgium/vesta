@@ -34,6 +34,7 @@ json_list() {
         "SERIAL": "'$SERIAL'",
         "SRC": "'$SRC'",
         "RECORDS": "'$RECORDS'",
+        "DNSSEC": "'$DNSSEC'",
         "SUSPENDED": "'$SUSPENDED'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -52,6 +53,7 @@ shell_list() {
     echo "SOA:            $SOA"
     echo "SERIAL:         $SERIAL"
     echo "RECORDS:        $RECORDS"
+    echo "DNSSEC:         $DNSSEC"
     echo "SUSPENDED:      $SUSPENDED"
     echo "TIME:           $TIME"
     echo "DATE:           $DATE"
@@ -61,13 +63,13 @@ shell_list() {
 # PLAIN list function
 plain_list() {
     echo -ne "$DOMAIN\t$IP\t$IP6\t$TPL\t$TTL\t$EXP\t$SOA\t$SERIAL\t$RECORDS\t"
-    echo -e "$SUSPENDED\t$TIME\t$DATE"
+    echo -e "$DNSSEC\t$SUSPENDED\t$TIME\t$DATE"
 }
 
 # CSV list function
 csv_list() {
-    echo "DOMAIN,IP,IP6,TPL,TTL,EXP,SOA,SERIAL,RECORDS,SUSPENDED,TIME,DATE"
-    echo -n "$DOMAIN,$IP,$IP6,$TPL,$TTL,$EXP,$SOA,$SERIAL,$RECORDS,$SUSPENDED,"
+    echo "DOMAIN,IP,IP6,TPL,TTL,EXP,SOA,SERIAL,RECORDS,DNSSEC,SUSPENDED,TIME,DATE"
+    echo -n "$DOMAIN,$IP,$IP6,$TPL,$TTL,$EXP,$SOA,$SERIAL,$RECORDS,$DNSSEC,$SUSPENDED,"
     echo "$TIME,$DATE"
 }
 

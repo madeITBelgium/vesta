@@ -94,7 +94,13 @@ rebuild_user_conf() {
         chmod 660 $USER_DATA/dns.conf
 
         mkdir -p $HOMEDIR/$user/conf/dns
-        chmod 751 $HOMEDIR/$user/conf/dns
+        chmod 771 $HOMEDIR/$user/conf/dns
+        if [ "$DNS_SYSTEM" = 'named' ]; then
+            dns_group='named'
+        else
+            dns_group='bind'
+        fi
+        chown root:$dns_group $HOMEDIR/$user/conf/dns
         if [ -z "$create_user" ]; then
             $BIN/v-rebuild-dns-domains $user $restart
         fi
@@ -420,6 +426,9 @@ rebuild_dns_domain_conf() {
     # Sorting records
     sort_dns_records
 
+    #Remove old sign files
+    rm -fr  $HOMEDIR/$user/conf/dns/$domain.db.*
+
     # Updating zone
     update_domain_zone
 
@@ -451,12 +460,36 @@ rebuild_dns_domain_conf() {
         fi
         suspended_dns=$((suspended_dns + 1))
     else
-        if [ -z "$(grep /$domain.db $dns_conf)" ]; then
+        sed -i "/dns\/$domain.db/d" $dns_conf
+        if [ "$DNSSEC" = "yes" ]; then
+            named="zone \"$domain_idn\" in {type master; file"
+            named="$named \"$HOMEDIR/$user/conf/dns/$domain.db.signed\";};"
+            echo "$named" >> $dns_conf
+
+            #Generate DNSSEC keys
+            cd $HOMEDIR/$user/conf/dns/
+
+            #Check if keys already exist, do not generate new ones
+            if [ ! -e K$domain*.key ]; then
+                dnssec-keygen -a ECDSAP256SHA256 -b 2048 -n ZONE $domain > /dev/null
+                dnssec-keygen -a ECDSAP256SHA256 -b 4096 -n ZONE -f KSK $domain > /dev/null
+            fi
+
+            #Add keys to zone file
+            for key in `ls K$domain*.key`
+            do
+                echo "\$INCLUDE $key">> $domain.db
+            done
+
+            #Sign zone
+            dnssec-signzone -A -3 $(head -c 1000 /dev/random | sha1sum | cut -b 1-16) -N INCREMENT -o $domain -t $domain.db > /dev/null
+        else
             named="zone \"$domain_idn\" {type master; file"
             named="$named \"$HOMEDIR/$user/conf/dns/$domain.db\";};"
             echo "$named" >> $dns_conf
         fi
     fi
+
     user_domains=$((user_domains + 1))
     records=$(wc -l $USER_DATA/dns/$domain.conf | cut -f 1 -d ' ')
     user_records=$((user_records + records))

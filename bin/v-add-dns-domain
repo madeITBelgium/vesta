@@ -27,10 +27,12 @@ ns6=$10
 ns7=${11}
 ns8=${12}
 restart=${13}
+$dnssec=${14}
 
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
+source $VESTA/func/rebuild.sh
 source $VESTA/conf/vesta.conf
 
 # Additional argument formatting
@@ -63,6 +65,10 @@ is_domain_new 'dns' "$domain"
 is_package_full 'DNS_DOMAINS'
 template=$(get_user_value '$DNS_TEMPLATE')
 is_dns_template_valid $template
+
+if [ -n "$dnssec" ]; then
+    is_boolean_format_valid "$dnssec" 'dnssec'
+fi
 
 if [ ! -z "$ns1" ]; then
     ns1=$(echo $5 |sed -e 's/\.*$//g' -e 's/^\.*//g')
@@ -97,6 +103,9 @@ if [ ! -z "$ns8" ]; then
     is_format_valid 'ns8'
 fi
 
+if [ -z "$dnssec" ]; then
+    dnssec="no"
+fi
 
 #----------------------------------------------------------#
 #                       Action                             #
@@ -154,33 +163,13 @@ records="$(wc -l $USER_DATA/dns/$domain.conf |cut -f 1 -d ' ')"
 # Adding dns.conf record
 dns_rec="DOMAIN='$domain' IP='$ip' IP6='$ipv6' TPL='$template' TTL='$ttl' EXP='$exp'"
 dns_rec="$dns_rec SOA='$soa' SERIAL='$serial' SRC='' RECORDS='$records'"
-dns_rec="$dns_rec SUSPENDED='no' TIME='$time' DATE='$date'"
+dns_rec="$dns_rec DNSSEC='$dnssec' SUSPENDED='no' TIME='$time' DATE='$date'"
 
 echo "$dns_rec" >> $USER_DATA/dns.conf
 chmod 660 $USER_DATA/dns.conf
 
 # Creating system configs
-if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
-    if [ -e '/etc/named.conf' ]; then
-        dns_conf='/etc/named.conf'
-        dns_group='named'
-    else
-        dns_conf='/etc/bind/named.conf'
-        dns_group='bind'
-    fi
-
-    # Adding zone in named.conf
-    named="zone \"$domain_idn\" {type master; file"
-    named="$named \"$HOMEDIR/$user/conf/dns/$domain.db\";};"
-    echo "$named" >> $dns_conf
-
-    # Updating domain dns zone
-    update_domain_zone
-
-    # Changing permissions
-    chmod 640 $HOMEDIR/$user/conf/dns/$domain.db
-    chown root:$dns_group $HOMEDIR/$user/conf/dns/$domain.db
-fi
+build_dns_domain_conf
 
 # Updating dns-cluster queue
 if [ ! -z "$DNS_CLUSTER" ]; then

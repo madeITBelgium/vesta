@@ -305,6 +305,7 @@ if [ ! -z "$DNS_SYSTEM" ] && [ "$DNS" != '*' ]; then
         cp $USER_DATA/dns/$domain.conf vesta/$domain.conf
         if [ "$DNS_SYSTEM" != 'remote' ]; then
             cp $HOMEDIR/$user/conf/dns/$domain.db conf/$domain.db
+            cp $HOMEDIR/$user/conf/dns/K$domain.+* conf/
         fi
     done
 

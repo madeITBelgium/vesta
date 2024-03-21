@@ -348,15 +348,19 @@ if [ "$VERSION" = "0.0.35" ]; then
     sed -i "s/VERSION=.*/VERSION='0.0.36'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
-
 if [ "$VERSION" = "0.0.36" ]; then
     VERSION="0.0.37"
+    
+    NOTES="$NOTES We added DNSSEC support "
+
+    bash /usr/local/vesta/upd/add_dnssec.sh
+
     sed -i "s/VERSION=.*/VERSION='0.0.37'/g" /usr/local/vesta/conf/vesta.conf
 fi
 
 if [ -z "$(grep "v-notify-sys-status" $VESTA/data/users/admin/cron.conf)" ]; then
     command="sudo $VESTA/bin/v-notify-sys-status > /dev/null"
-    
+
     min=$(generate_password '012345' '2')
     hour=$(generate_password '1234567' '1')
     $VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command" 

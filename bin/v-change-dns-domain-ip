@@ -20,6 +20,7 @@ restart=$4
 source $VESTA/func/main.sh
 source $VESTA/func/ip.sh
 source $VESTA/func/domain.sh
+source $VESTA/func/rebuild.sh
 source $VESTA/conf/vesta.conf
 
 # Additional argument formatting
@@ -90,8 +91,8 @@ update_user_value "$user" '$U_DNS_RECORDS' "$records"
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
-    update_domain_serial
-    update_domain_zone
+    # Do full rebuild due DNS SEC
+    rebuild_dns_domain_conf
 fi
 
 # Updating dns-cluster queue

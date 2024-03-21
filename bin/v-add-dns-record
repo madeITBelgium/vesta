@@ -30,6 +30,7 @@ fi
 # Includes
 source $VESTA/func/main.sh
 source $VESTA/func/domain.sh
+source $VESTA/func/rebuild.sh
 source $VESTA/conf/vesta.conf
 
 # Null priority for none MX/SRV records
@@ -38,18 +39,27 @@ if [ "$rtype" != 'MX' ] && [ "$rtype" != 'SRV' ]; then
 fi
 
 # Add trailing dot at the end of NS/CNAME/MX/PTR/SRV record
-if [[ $rtype =~ NS|CNAME|MX|PTR|SRV ]]; then
+if [[ $rtype =~ ^NS|CNAME|MX|PTR|SRV ]]; then
     trailing_dot=$(echo $dvalue | grep "\.$")
     if [ -z "$trailing_dot" ]; then
         dvalue="$dvalue."
     fi
 fi
 
-if [ $rtype != "CAA" ]; then
-    dvalue=${dvalue//\"/}
 
-    if [[ "$dvalue" =~ [\;[:space:]] ]]; then
-        dvalue='"'"$dvalue"'"'
+# Cleanup quotes on dvalue
+# - [CAA] records will be left unchanged
+# - [SRV] will be  stripped of double quotes even when  containing spaces
+# - [DNSKEY] will be  stripped of double quotes even when  containing spaces
+# - Rest of record types will be striped of quotes and the final string
+#   will be enclosed in double quotes if containing spaces or semicolons 
+if [ "$rtype" != "CAA" ]; then
+    dvalue=${dvalue//\"/}
+    # Add support for DS key
+    if [ "$rtype" != "DNSKEY" ] && [ "$rtype" != "DS" ] ; then 
+        if [ "$rtype" != 'SRV' ] && [[ "$dvalue" =~ [\;[:space:]] ]]; then
+            dvalue='"'"$dvalue"'"'
+        fi
     fi
 fi
 
@@ -97,8 +107,8 @@ sort_dns_records
 
 # Updating zone
 if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
-    update_domain_serial
-    update_domain_zone
+    # Do full rebuild due DNS SEC
+    rebuild_dns_domain_conf
 fi
 
 # Updating dns-cluster queue

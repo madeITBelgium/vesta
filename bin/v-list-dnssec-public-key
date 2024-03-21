@@ -1,0 +1,93 @@
+#!/bin/bash
+# info: list public dnssec key 
+# options: USER DOMAIN [FROMAT]
+#
+# example: v-list-dns-public-key admin acme.com
+#
+# This function list the public key to be used with DNSSEC and needs to be added to the domain register.
+
+#----------------------------------------------------------#
+#                Variables & Functions                     #
+#----------------------------------------------------------#
+
+# Argument definition
+user=$1
+domain=$2
+format="${3-shell}"
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/func/domain.sh
+source $VESTA/func/rebuild.sh
+source $VESTA/conf/vesta.conf
+
+#----------------------------------------------------------#
+#                    Verifications                         #
+#----------------------------------------------------------#
+
+format_domain
+format_domain_idn
+
+check_args '2' "$#" 'USER DOMAIN [FORMAT]'
+is_format_valid 'user' 'domain'
+is_object_valid 'user' 'USER' "$user"
+is_object_valid 'dns' 'DOMAIN' "$domain"
+
+# JSON list function
+json_list() {
+    echo '{'
+    i=0
+    objects=$(ls $HOMEDIR/$user/conf/dns/K$domain_idn.+013+*.key |wc -l)
+    for key in `ls $HOMEDIR/$user/conf/dns/K$domain_idn.+013+*.key`
+    do
+        record=$(cat "$key" | grep DNSKEY );
+        type=$(echo "$record" | cut -d' ' -f4)
+        algorithm=$(echo "$record" | cut -d' ' -f6)
+        key="$(echo "$record" | cut -d' ' -f7)$(echo "$record" | cut -d' ' -f8)"
+
+        echo '    {
+        "RECORD": "'$record'",
+        "type": "'$type'",
+        "ALGORITHM": "'$algorithm'",
+        "KEY": "'$key'"
+    }'
+        if [ "$i" -lt "$objects" ]; then
+            echo ','
+        else
+            echo
+        fi
+
+        ((i++))
+    done
+    echo '}'
+}
+
+# SHELL list function
+shell_list() {
+    for key in `ls $HOMEDIR/$user/conf/dns/K$domain_idn.+013+*.key`
+    do
+        record=$(cat "$key" | grep DNSKEY );
+        type=$(echo "$record" | cut -d' ' -f4)
+        algorithm=$(echo "$record" | cut -d' ' -f6)
+        key="$(echo "$record" | cut -d' ' -f7)$(echo "$record" | cut -d' ' -f8)"
+        echo "ALGO $type: $algorithm"
+        echo "KEY $type: $key"
+    done
+}
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+
+eval $(grep "DOMAIN='$domain_idn'" $USER_DATA/dns.conf)
+
+case $format in
+    json)   json_list ;;
+    shell)  shell_list ;;
+esac
+
+#----------------------------------------------------------#
+#                       Hestia                             #
+#----------------------------------------------------------#
+
+exit

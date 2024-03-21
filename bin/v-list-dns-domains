@@ -34,6 +34,7 @@ json_list() {
         "SERIAL": "'$SERIAL'",
         "SRC": "'$SRC'",
         "RECORDS": "'$RECORDS'",
+        "DNSSEC": "'$DNSSEC'",
         "SUSPENDED": "'$SUSPENDED'",
         "TIME": "'$TIME'",
         "DATE": "'$DATE'"
@@ -51,11 +52,11 @@ json_list() {
 # SHELL list function
 shell_list() {
     IFS=$'\n'
-    echo "DOMAIN   IP   IP6   TPL   TTL   REC   SPND   DATE"
-    echo "------   --   ---   ---   ---   ---   ----   ----"
+    echo "DOMAIN   IP   IP6   TPL   TTL   REC   DNSSEC   SPND   DATE"
+    echo "------   --   ---   ---   ---   ---   ------   ----   ----"
     while read str; do
         eval $str
-        echo "$DOMAIN $IP $IP6 $TPL $TTL $RECORDS $SUSPENDED $DATE"
+        echo "$DOMAIN $IP $IP6 $TPL $TTL $RECORDS $DNSSEC $SUSPENDED $DATE"
     done < <(cat $USER_DATA/dns.conf)
 }
 
@@ -66,7 +67,7 @@ plain_list() {
     while read str; do
         eval $str
         echo -ne "$DOMAIN\t$IP\t$IP6\t$TPL\t$TTL\t$EXP\t$SOA\t$SERIAL\t"
-        echo -e "$SRC\t$RECORDS\t$SUSPENDED\t$TIME\t$DATE"
+        echo -e "$SRC\t$RECORDS\t$DNSSEC\t$SUSPENDED\t$TIME\t$DATE"
     done < <(cat $USER_DATA/dns.conf)
 }
 
@@ -74,11 +75,11 @@ plain_list() {
 # CSV list function
 csv_list() {
     IFS=$'\n'
-    echo "DOMAIN,IP,IP6,TPL,TTL,EXP,SOA,SERIAL,SRC,RECORDS,SUSPENDED,TIME,DATE"
+    echo "DOMAIN,IP,IP6,TPL,TTL,EXP,SOA,SERIAL,SRC,RECORDS,DNSSEC,SUSPENDED,TIME,DATE"
     while read str; do
         eval $str
         echo -n "$DOMAIN,$IP,$IP6,$TPL,$TTL,$EXP,$SOA,$SERIAL,"
-        echo "$SRC,$RECORDS,$SUSPENDED,$TIME,$DATE"
+        echo "$SRC,$RECORDS,$DNSSEC,$SUSPENDED,$TIME,$DATE"
     done < <(cat $USER_DATA/dns.conf)
 }
 
