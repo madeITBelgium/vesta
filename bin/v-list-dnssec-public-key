@@ -41,15 +41,26 @@ json_list() {
     for key in `ls $HOMEDIR/$user/conf/dns/K$domain_idn.+013+*.key`
     do
         record=$(cat "$key" | grep DNSKEY );
+        keyid=$(cat "$key" | grep keyid  | tr -cd '[:digit:]')
         type=$(echo "$record" | cut -d' ' -f4)
         algorithm=$(echo "$record" | cut -d' ' -f6)
         key="$(echo "$record" | cut -d' ' -f7)$(echo "$record" | cut -d' ' -f8)"
 
+
+        validFrom=$(cat $HOMEDIR/$user/conf/dns/$domain_idn.db.signed | grep "$keyid $domain" | tail -n 1 | cut -d' ' -f2)
+        validTo=$(cat $HOMEDIR/$user/conf/dns/$domain_idn.db.signed | grep "$keyid $domain" | tail -n 1 | cut -d' ' -f1)
+
+        #trim validTo
+        validTo=$(echo $validTo | cut -d' ' -f1)
+
         echo '    {
+        "ID": "'$keyid'",
         "RECORD": "'$record'",
         "type": "'$type'",
         "ALGORITHM": "'$algorithm'",
-        "KEY": "'$key'"
+        "KEY": "'$key'",
+        "VALID_FROM": "'$validFrom'",
+        "VALID_TO": "'$validTo'"
     }'
         if [ "$i" -lt "$objects" ]; then
             echo ','
@@ -67,11 +78,22 @@ shell_list() {
     for key in `ls $HOMEDIR/$user/conf/dns/K$domain_idn.+013+*.key`
     do
         record=$(cat "$key" | grep DNSKEY );
+        keyid=$(cat "$key" | grep keyid  | tr -cd '[:digit:]')
         type=$(echo "$record" | cut -d' ' -f4)
         algorithm=$(echo "$record" | cut -d' ' -f6)
         key="$(echo "$record" | cut -d' ' -f7)$(echo "$record" | cut -d' ' -f8)"
+
+        validFrom=$(cat $HOMEDIR/$user/conf/dns/$domain_idn.db.signed | grep "$keyid $domain" | tail -n 1 | cut -d' ' -f2)
+        validTo=$(cat $HOMEDIR/$user/conf/dns/$domain_idn.db.signed | grep "$keyid $domain" | tail -n 1 | cut -d' ' -f1)
+
+        #trim validTo
+        validTo=$(echo $validTo | cut -d' ' -f1)
+
         echo "ALGO $type: $algorithm"
         echo "KEY $type: $key"
+        echo "ID $type: $keyid"
+        echo "Valid From $type: $validFrom"
+        echo "Valid To $type: $validTo"
     done
 }
 

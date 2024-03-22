@@ -470,7 +470,7 @@ rebuild_dns_domain_conf() {
             cd $HOMEDIR/$user/conf/dns/
 
             #Check if keys already exist, do not generate new ones
-            if [ ! -e K$domain*.key ]; then
+            if [ ! -e "K$domain*.key" ]; then
                 dnssec-keygen -a ECDSAP256SHA256 -b 2048 -n ZONE $domain > /dev/null
                 dnssec-keygen -a ECDSAP256SHA256 -b 4096 -n ZONE -f KSK $domain > /dev/null
             fi

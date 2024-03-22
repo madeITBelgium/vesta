@@ -1,0 +1,76 @@
+#!/bin/bash
+# info: update the dnssec signed zone
+# options: NONE
+#
+# The function for renew the dnssec signed zone for all users
+
+
+#----------------------------------------------------------#
+#                    Variable&Function                     #
+#----------------------------------------------------------#
+
+# Importing system enviroment  as we run this script
+# mostly by cron wich not read it by itself
+source /etc/profile
+
+# Includes
+source $VESTA/func/main.sh
+source $VESTA/conf/vesta.conf
+
+
+#----------------------------------------------------------#
+#                       Action                             #
+#----------------------------------------------------------#
+convert_to_timestamp() {
+    local date_string="$1"
+
+    # Extract components of the date string
+    local year="${date_string:0:4}"
+    local month="${date_string:4:2}"
+    local day="${date_string:6:2}"
+    local hour="${date_string:8:2}"
+    local minute="${date_string:10:2}"
+    local second="${date_string:12:2}"
+
+    # Create a formatted date string
+    local formatted_date="${year}-${month}-${day} ${hour}:${minute}:${second}"
+
+    # Convert the formatted date string to a timestamp
+    local timestamp=$(date -d "${formatted_date}" +"%s")
+
+    echo $timestamp
+}
+
+# Checking user certificates
+for user in $($BIN/v-list-users plain |cut -f 1); do
+    USER_DATA=$VESTA/data/users/$user
+    lecounter=0
+
+    for domain in $(search_objects 'dns' 'DNSSEC' 'yes' 'DOMAIN'); do
+        spnd=$(is_object_unsuspended 'web' 'DOMAIN' "$domain")
+        if [ ! -z "$spnd" ]; then
+            echo "$domain is suspended"
+        else
+            echo "Signing $domain"
+
+            #Get expiration date
+            validTo=$($BIN/v-list-dnssec-public-key $user $domain | grep "Valid To" | cut -d':' -f2)
+            validTo=$(echo $validTo | cut -d' ' -f1)
+            validTo=$(convert_to_timestamp $validTo)
+
+            #if validTo is whitin 10 days, renew
+            if [ $((validTo - $(date +%s))) -lt 864000 ]; then
+                v-rebuild-dns-domain $user $domain
+            fi
+        fi
+    done
+done
+
+#----------------------------------------------------------#
+#                       Vesta                              #
+#----------------------------------------------------------#
+
+# No Logging
+#log_event "$OK" "$EVENT"
+
+exit

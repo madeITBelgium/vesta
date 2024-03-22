@@ -351,9 +351,14 @@ fi
 if [ "$VERSION" = "0.0.36" ]; then
     VERSION="0.0.37"
     
-    NOTES="$NOTES We added DNSSEC support "
+    NOTES="$NOTES We added DNSSEC support to Vesta Control Panel by Made I.T.."
 
     bash /usr/local/vesta/upd/add_dnssec.sh
+    command="sudo $VESTA/bin/v-update-dnssec-sign > /dev/null"
+
+    min=$(generate_password '012345' '2')
+    hour=$(generate_password '1234567' '1')
+    $VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command" 
 
     sed -i "s/VERSION=.*/VERSION='0.0.37'/g" /usr/local/vesta/conf/vesta.conf
 fi
