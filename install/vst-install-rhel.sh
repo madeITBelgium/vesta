@@ -29,7 +29,7 @@ software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
     postgresql-server proftpd roundcubemail rrdtool rsyslog screen
     spamassassin sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
-    vim-common vsftpd which zip libpng15 util-linux-user git nano perl"
+    vim-common vsftpd which zip libpng15 util-linux-user git nano chkconfig"
 
 # Defining help function
 help() {
@@ -457,6 +457,9 @@ sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/almalinux-powertools.repo > /d
 sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/Rocky-PowerTools.repo > /dev/null 2>&1
 sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/rocky-powertools.repo > /dev/null 2>&1
 
+
+sed -i "s/enabled=0/enabled=1/g" /etc/yum.repos.d/almalinux-crb.repo > /dev/null 2>&1
+
 # Installing Remi repository
 if [ "$remi" = 'yes' ] && [ ! -e "/etc/yum.repos.d/remi.repo" ]; then
     rpm -Uvh http://rpms.remirepo.net/enterprise/remi-release-$release.rpm
@@ -861,8 +864,8 @@ $VESTA/bin/v-generate-ssl-cert $(hostname) $email 'US' 'California' \
 
 # Parsing certificate file
 crt_end=$(grep -n "END CERTIFICATE-" /tmp/vst.pem |cut -f 1 -d:)
-key_start=$(grep -n "BEGIN RSA" /tmp/vst.pem |cut -f 1 -d:)
-key_end=$(grep -n  "END RSA" /tmp/vst.pem |cut -f 1 -d:)
+key_start=$(grep -n "BEGIN PRIVATE KEY" /tmp/vst.pem |cut -f 1 -d:)
+key_end=$(grep -n  "END PRIVATE KEY" /tmp/vst.pem |cut -f 1 -d:)
 
 # Adding SSL certificate
 cd $VESTA/ssl
