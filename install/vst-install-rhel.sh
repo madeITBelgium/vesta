@@ -29,7 +29,7 @@ software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
     postgresql-server proftpd roundcubemail rrdtool rsyslog screen
     spamassassin sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
-    vim-common vsftpd which zip libpng15 util-linux-user git nano"
+    vim-common vsftpd which zip libpng15 util-linux-user git nano perl"
 
 # Defining help function
 help() {
