@@ -22,14 +22,14 @@ vestacp="$VESTA/install/os-configs/$VERSION/$release"
 # Defining software pack for all distros
 software="nginx awstats bc bind bind-libs bind-utils clamav-server clamav-update
     curl dovecot e2fsprogs exim expect fail2ban flex freetype ftp GeoIP httpd
-    ImageMagick iptables-services whois lsof mailx mariadb mariadb-server mc
+    ImageMagick iptables-services whois lsof mariadb mariadb-server mc
     mod_fcgid mod_ssl net-tools chrony openssh-clients pcre php
     php-bcmath php-cli php-common php-fpm php-gd php-imap php-mbstring
     php-mcrypt phpMyAdmin php-mysql php-pdo phpPgAdmin php-pgsql php-soap
     php-tidy php-xml php-xmlrpc postgresql postgresql-contrib
     postgresql-server proftpd roundcubemail rrdtool rsyslog screen
     spamassassin sqlite sudo tar telnet unzip vesta vesta-nginx vesta-php
-    vim-common vsftpd which zip compat-openssl10 libpng15 util-linux-user git nano"
+    vim-common vsftpd which zip libpng15 util-linux-user git nano"
 
 # Defining help function
 help() {
@@ -637,8 +637,8 @@ fi
 
 
 # Installing rpm packages
-#PHP 8.0
-dnf module install php:remi-8.0 -y
+#PHP 8.3
+dnf module install php:remi-8.3 -y
 
 dnf install -y $software
 check_result $? "yum install failed"
