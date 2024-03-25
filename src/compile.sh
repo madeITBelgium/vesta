@@ -136,7 +136,6 @@ for i in $*; do
 		--all)
 			NGINX_B='true'
 			PHP_B='true'
-			WEB_TERMINAL_B='true'
 			VESTA_B='true'
 			;;
 		--nginx)
@@ -204,13 +203,21 @@ fi
 
 # Set Version for compiling
 if [ -f "$SRC_DIR/src/rpm/vesta/vesta.spec" ] && [ "$use_src_folder" == 'true' ]; then
-	BUILD_VER=$(cat $SRC_DIR/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d' ' -f2)
-	NGINX_V=$(cat $SRC_DIR/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d' ' -f2)
-	PHP_V=$(cat $SRC_DIR/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d' ' -f2)
+	BUILD_VER=$(cat $SRC_DIR/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d':' -f2)
+	NGINX_V=$(cat $SRC_DIR/src/rpm/nginx/vesta-nginx.spec | grep "Version:" | cut -d':' -f2)
+	PHP_V=$(cat $SRC_DIR/src/rpm/php/vesta-php.spec | grep "Version:" | cut -d':' -f2)
+
+    NGINX_V=$(echo $NGINX_V | cut -d' ' -f2)
+    BUILD_VER=$(echo $BUILD_VER | cut -d' ' -f2)
+    PHP_V=$(echo $PHP_V | cut -d' ' -f2)
 else
-	BUILD_VER=$(curl -s https://raw.githubusercontent.com/$REPO/$branch/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d' ' -f2)
-	NGINX_V=$(curl -s https://raw.githubusercontent.com/$REPO/$branch/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d' ' -f2)
-	PHP_V=$(curl -s https://raw.githubusercontent.com/$REPO/$branch/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d' ' -f2)
+	BUILD_VER=$(curl -s https://raw.githubusercontent.com/$REPO/$branch/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d':' -f2)
+	NGINX_V=$(curl -s https://raw.githubusercontent.com/$REPO/$branch/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d':' -f2)
+	PHP_V=$(curl -s https://raw.githubusercontent.com/$REPO/$branch/src/rpm/vesta/vesta.spec | grep "Version:" | cut -d':' -f2)
+
+    NGINX_V=$(echo $NGINX_V | cut -d' ' -f2)
+    BUILD_VER=$(echo $BUILD_VER | cut -d' ' -f2)
+    PHP_V=$(echo $PHP_V | cut -d' ' -f2)
 fi
 
 if [ -z "$BUILD_VER" ]; then
@@ -485,7 +492,7 @@ if [ "$NGINX_B" = true ]; then
 		# Build the package
 		echo Building Nginx RPM
 		rpmbuild -bs ~/rpmbuild/SPECS/vesta-nginx.spec
-		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-nginx-$NGINX_V-1.el9.src.rpm
+		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-nginx-$NGINX_V-1.el8.src.rpm
 		cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
 		rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 	fi
@@ -625,7 +632,7 @@ if [ "$PHP_B" = true ]; then
 		# Build RPM package
 		echo Building PHP RPM
 		rpmbuild -bs ~/rpmbuild/SPECS/vesta-php.spec
-		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-php-$PHP_V-1.el9.src.rpm
+		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-php-$PHP_V-1.el8.src.rpm
 		cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
 		rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 	fi
@@ -722,12 +729,12 @@ if [ "$VESTA_B" = true ]; then
 			get_branch_file 'src/rpm/vesta/vesta.service' "$HOME/rpmbuild/SOURCES/vesta.service"
 
 			# Generate source tar.gz
-			tar -czf $HOME/rpmbuild/SOURCES/vesta-$BUILD_VER.tar.gz -C $SRC_DIR/.. vestacp
+			tar -czf $HOME/rpmbuild/SOURCES/vesta-$BUILD_VER.tar.gz -C $SRC_DIR/.. vesta
 
 			# Build RPM package
 			echo Building Vesta RPM
 			rpmbuild -bs ~/rpmbuild/SPECS/vesta.spec
-			mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-$BUILD_VER-1.el9.src.rpm
+			mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-$BUILD_VER-1.el8.src.rpm
 			cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
 			rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 		fi

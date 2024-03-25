@@ -7,7 +7,7 @@
 
 
 Name:           vesta-nginx
-Version:        1.25.1-2
+Version:        1.25.1
 Release:        1%{dist}
 Summary:        Vesta internal nginx web server
 Group:          System Environment/Base
