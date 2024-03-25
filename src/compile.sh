@@ -492,7 +492,7 @@ if [ "$NGINX_B" = true ]; then
 		# Build the package
 		echo Building Nginx RPM
 		rpmbuild -bs ~/rpmbuild/SPECS/vesta-nginx.spec
-		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-nginx-$NGINX_V-1.el8.src.rpm
+		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-nginx-$NGINX_V-*.src.rpm
 		cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
 		rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 	fi
@@ -632,7 +632,7 @@ if [ "$PHP_B" = true ]; then
 		# Build RPM package
 		echo Building PHP RPM
 		rpmbuild -bs ~/rpmbuild/SPECS/vesta-php.spec
-		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-php-$PHP_V-1.el8.src.rpm
+		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-php-$PHP_V-*.src.rpm
 		cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
 		rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 	fi
@@ -734,7 +734,7 @@ if [ "$VESTA_B" = true ]; then
 			# Build RPM package
 			echo Building Vesta RPM
 			rpmbuild -bs ~/rpmbuild/SPECS/vesta.spec
-			mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-$BUILD_VER-1.el8.src.rpm
+			mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-$BUILD_VER-*.src.rpm
 			cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
 			rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 		fi
