@@ -3,7 +3,7 @@
 
 Name:           vesta-php
 Version:        8.2.8
-Release:        1%{dist}
+Release:        1
 Summary:        Vesta internal PHP
 Group:          System Environment/Base
 URL:            https://www.vestacp.com

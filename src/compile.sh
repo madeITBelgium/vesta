@@ -322,7 +322,7 @@ if [ "$VESTA_DEBUG" ]; then
 	echo "Install          : $install"
 	echo "Build RPM        : $BUILD_RPM"
 	echo "Build DEB        : $BUILD_DEB"
-	echo "Vesta version   : $BUILD_VER"
+	echo "Vesta version    : $BUILD_VER"
 	echo "Nginx version    : $NGINX_V"
 	echo "PHP version      : $PHP_V"
 	echo "Architecture     : $BUILD_ARCH"

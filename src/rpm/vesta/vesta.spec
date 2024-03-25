@@ -3,7 +3,7 @@
 
 Name:           vesta
 Version:        0.0.37
-Release:        1%{dist}
+Release:        1
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPLv3
@@ -12,7 +12,7 @@ Source0:        vesta-%{version}.tar.gz
 Source1:        vesta.service
 Vendor:         madeit.be
 Requires:       redhat-release >= 8
-Requires:       bash, chkconfig, gawk, sed, acl, sysstat, (setpriv or util-linux), zstd, jq, jailkit
+Requires:       bash, chkconfig, gawk, sed, acl, sysstat, (setpriv or util-linux), zstd, jq
 Conflicts:      vesta
 Provides:       vesta = %{version}
 BuildRequires:  systemd
