@@ -1,5 +1,5 @@
 %global _hardened_build 1
-%global _prefix         /usr/local/vesta/php
+%global _prefix /usr/local/vesta/php
 
 Name:           vesta-php
 Version:        8.2.8
@@ -17,8 +17,8 @@ Requires:       redhat-release >= 8
 Provides:       vesta-php = %{version}
 BuildRequires:  autoconf, automake, bison, bzip2-devel, gcc, gcc-c++, gnupg2, libtool, make, openssl-devel, re2c
 BuildRequires:  gmp-devel, oniguruma-devel, libzip-devel
-BuildRequires:  pkgconfig(libcurl)  >= 7.61.0
-BuildRequires:  pkgconfig(libxml-2.0)  >= 2.9.7
+BuildRequires:  pkgconfig(libcurl) >= 7.61.0
+BuildRequires:  pkgconfig(libxml-2.0) >= 2.9.7
 BuildRequires:  pkgconfig(sqlite3) >= 3.26.0
 BuildRequires:  systemd
 
@@ -47,47 +47,39 @@ rm -f TSRM/tsrm_win32.h \
 # Disable LTO
 %define _lto_cflags %{nil}
 %endif
-%configure --sysconfdir=%{_prefix}%{_sysconfdir} \
-		--with-libdir=lib/$(arch)-linux-gnu \
-		--enable-fpm --with-fpm-user=admin --with-fpm-group=admin \
-		--with-openssl \
-		--with-mysqli \
-		--with-gettext \
-		--with-curl \
-		--with-zip \
-		--with-gmp \
-		--enable-mbstring
-%make_build
+%configure --sysconfdir=%{_prefix}/etc \
+	--with-libdir=lib/$(arch)-linux-gnu \
+	--enable-fpm --with-fpm-user=admin --with-fpm-group=admin \
+	--with-openssl \
+	--with-mysqli \
+	--with-gettext \
+	--with-curl \
+	--with-zip \
+	--with-gmp \
+	--enable-mbstring
+make %{?_smp_mflags}
 
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
-mkdir -p %{buildroot}%{_unitdir} %{buildroot}/usr/local/vesta/php/{etc,lib}
-%make_install INSTALL_ROOT=$RPM_BUILD_ROOT/usr/local/vesta/php
-%{__install} -m644 %{SOURCE1} %{buildroot}%{_unitdir}/vesta-php.service
-cp %{SOURCE2} %{buildroot}/usr/local/vesta/php/etc/
-cp %{SOURCE3} %{buildroot}/usr/local/vesta/php/lib/
+make install INSTALL_ROOT=$RPM_BUILD_ROOT/usr/local/vesta/php
 
-%clean
-%{__rm} -rf $RPM_BUILD_ROOT
+# Create necessary directory structure
+mkdir -p $RPM_BUILD_ROOT%{_prefix}/bin
 
-%pre
+# Copy PHP executable to the specified location
+cp $RPM_BUILD_ROOT/usr/local/vesta/php/bin/php $RPM_BUILD_ROOT%{_prefix}/bin/
 
-%post
-%systemd_post vesta-php.service
-
-%preun
-%systemd_preun vesta-php.service
-
-%postun
-%systemd_postun_with_restart vesta-php.service
+# Install configuration files
+install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/vesta-php.service
+install -D -m 644 %{SOURCE2} %{buildroot}%{_prefix}/etc/php-fpm.conf
+install -D -m 644 %{SOURCE3} %{buildroot}%{_prefix}/lib/php.ini
 
 %files
 %defattr(-,root,root)
-%attr(755,root,root) /usr/local/vesta/php
-%attr(775,admin,admin) /usr/local/vesta/php/var/log
-%attr(775,admin,admin) /usr/local/vesta/php/var/run
-%config(noreplace) /usr/local/vesta/php/etc/php-fpm.conf
-%config(noreplace) /usr/local/vesta/php/lib/php.ini
+%dir %{_prefix}
+%{_prefix}/bin/php
+%{_prefix}/etc/php-fpm.conf
+%{_prefix}/lib/php.ini
 %{_unitdir}/vesta-php.service
 
 %changelog
