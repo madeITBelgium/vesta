@@ -1,0 +1,15 @@
+[Unit]
+Description=Vesta nginx - administration web server
+Documentation=https://www.tpweb.org
+PartOf=vesta.service
+After=vesta-php.service
+
+[Service]
+Type=forking
+PIDFile=/run/vesta-nginx.pid
+ExecStart=/usr/local/vesta/nginx/sbin/vesta-nginx -c /usr/local/vesta/nginx/conf/nginx.conf
+ExecReload=/bin/sh -c "/bin/kill -s HUP $(/bin/cat /run/vesta-nginx.pid)"
+ExecStop=/bin/sh -c "/bin/kill -s TERM $(/bin/cat /run/vesta-nginx.pid)"
+
+[Install]
+WantedBy=vesta.service

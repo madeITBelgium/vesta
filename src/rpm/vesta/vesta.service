@@ -1,0 +1,15 @@
+[Unit]
+Description=VestaCP web console
+Documentation=https://www.tpweb.org
+Wants=network-online.target
+After=network-online.target
+Requires=vesta-php.service
+Requires=vesta-nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
