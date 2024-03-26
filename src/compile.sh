@@ -96,6 +96,7 @@ usage() {
 	echo "    --keepbuild     Don't delete downloaded source and build folders"
 	echo "    --cross         Compile vesta package for both AMD64 and ARM64"
 	echo "    --debug         Debug mode"
+    echo "    --os-version=8  Specify the OS version to build for"
 	echo ""
 	echo "For automated builds and installations, you may specify the branch"
 	echo "after one of the above flags. To install the packages, specify 'Y'"
@@ -162,6 +163,9 @@ for i in $*; do
 		--cross)
 			CROSS='true'
 			;;
+        --os-version=*)
+            OS_VERSION="${i#*=}"
+            ;;
 		--help | -h)
 			usage
 			exit 1
@@ -266,8 +270,8 @@ if [ "$dontinstalldeps" != 'true' ]; then
 		echo "Installing dependencies for compilation..."
 		dnf install -y -q $SOFTWARE
 		rpmdev-setuptree
-		if [ ! -d "/var/lib/mock/rocky+epel-9-$(arch)-bootstrap" ]; then
-			mock -r rocky+epel-9-$(arch) --init
+		if [ ! -d "/var/lib/mock/rocky+epel-$OS_VERSION-$(arch)-bootstrap" ]; then
+			mock -r rocky+epel-$OS_VERSION-$(arch) --init
 		fi
 	else
 		# Set package dependencies for compiling
@@ -492,8 +496,8 @@ if [ "$NGINX_B" = true ]; then
 		# Build the package
 		echo Building Nginx RPM
 		rpmbuild -bs ~/rpmbuild/SPECS/vesta-nginx.spec
-		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-nginx-$NGINX_V-*.src.rpm
-		cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
+		mock -r rocky+epel-$OS_VERSION-$(arch) ~/rpmbuild/SRPMS/vesta-nginx-$NGINX_V-*.src.rpm
+		cp /var/lib/mock/rocky+epel-$OS_VERSION-$(arch)/result/*.rpm $RPM_DIR
 		rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 	fi
 fi
@@ -632,8 +636,8 @@ if [ "$PHP_B" = true ]; then
 		# Build RPM package
 		echo Building PHP RPM
 		rpmbuild -bs ~/rpmbuild/SPECS/vesta-php.spec
-		mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-php-$PHP_V-*.src.rpm
-		cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
+		mock -r rocky+epel-$OS_VERSION-$(arch) ~/rpmbuild/SRPMS/vesta-php-$PHP_V-*.src.rpm
+		cp /var/lib/mock/rocky+epel-$OS_VERSION-$(arch)/result/*.rpm $RPM_DIR
 		rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 	fi
 fi
@@ -734,8 +738,8 @@ if [ "$VESTA_B" = true ]; then
 			# Build RPM package
 			echo Building Vesta RPM
 			rpmbuild -bs ~/rpmbuild/SPECS/vesta.spec
-			mock -r rocky+epel-9-$(arch) ~/rpmbuild/SRPMS/vesta-$BUILD_VER-*.src.rpm
-			cp /var/lib/mock/rocky+epel-9-$(arch)/result/*.rpm $RPM_DIR
+			mock -r rocky+epel-$OS_VERSION-$(arch) ~/rpmbuild/SRPMS/vesta-$BUILD_VER-*.src.rpm
+			cp /var/lib/mock/rocky+epel-$OS_VERSION-$(arch)/result/*.rpm $RPM_DIR
 			rm -rf ~/rpmbuild/SPECS/* ~/rpmbuild/SOURCES/* ~/rpmbuild/SRPMS/*
 		fi
 
