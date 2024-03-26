@@ -6,7 +6,7 @@ PartOf=vesta.service
 [Service]
 Type=forking
 PIDFile=/run/vesta-php.pid
-ExecStart=/usr/local/vesta/php/sbin/vesta-php --fpm-config /usr/local/vesta/php/etc/php-fpm.conf
+ExecStart=/usr/local/vesta/php/sbin/php-fpm --fpm-config /usr/local/vesta/php/etc/php-fpm.conf
 ExecReload=/bin/sh -c "/bin/kill -s HUP $(/bin/cat /run/vesta-php.pid)"
 ExecStop=/usr/bin/php -r '$pid=(int)file_get_contents("/run/vesta-php.pid");posix_kill($pid,SIGTERM);while(posix_kill($pid,0)){sleep(0);}'
 ExecStartPre=/bin/bash -c "/bin/systemctl set-environment HOSTNAME=$(/usr/bin/hostname)"

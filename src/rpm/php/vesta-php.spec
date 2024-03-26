@@ -3,7 +3,7 @@
 
 Name:           vesta-php
 Version:        8.2.8
-Release:        1
+Release:        103
 Summary:        Vesta internal PHP
 Group:          System Environment/Base
 URL:            https://www.vestacp.com
@@ -47,39 +47,50 @@ rm -f TSRM/tsrm_win32.h \
 # Disable LTO
 %define _lto_cflags %{nil}
 %endif
-%configure --sysconfdir=%{_prefix}/etc \
-	--with-libdir=lib/$(arch)-linux-gnu \
-	--enable-fpm --with-fpm-user=admin --with-fpm-group=admin \
-	--with-openssl \
-	--with-mysqli \
-	--with-gettext \
-	--with-curl \
-	--with-zip \
-	--with-gmp \
-	--enable-mbstring
-make %{?_smp_mflags}
+%configure --sysconfdir=%{_prefix}%{_sysconfdir} \
+		--with-libdir=lib/$(arch)-linux-gnu \
+		--enable-fpm --with-fpm-user=admin --with-fpm-group=admin \
+        --prefix=%{_prefix} \
+        --bindir=%{_prefix}/bin \
+        --exec-prefix=%{_prefix} \
+		--with-openssl \
+		--with-mysqli \
+		--with-gettext \
+		--with-curl \
+		--with-zip \
+		--with-gmp \
+		--enable-mbstring
+%make_build
 
 %install
 %{__rm} -rf $RPM_BUILD_ROOT
-make install INSTALL_ROOT=$RPM_BUILD_ROOT/usr/local/vesta/php
+mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_prefix}/{etc,lib,var/{log,run}}
+%make_install INSTALL_ROOT=$RPM_BUILD_ROOT
+%{__install} -m644 %{SOURCE1} %{buildroot}%{_unitdir}/vesta-php.service
+cp %{SOURCE2} %{buildroot}%{_prefix}/etc/
+cp %{SOURCE3} %{buildroot}%{_prefix}/lib/
 
-# Create necessary directory structure
-mkdir -p $RPM_BUILD_ROOT%{_prefix}/bin
+%clean
+%{__rm} -rf $RPM_BUILD_ROOT
 
-# Copy PHP executable to the specified location
-cp $RPM_BUILD_ROOT/usr/local/vesta/php/bin/php $RPM_BUILD_ROOT%{_prefix}/bin/
+%pre
 
-# Install configuration files
-install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/vesta-php.service
-install -D -m 644 %{SOURCE2} %{buildroot}%{_prefix}/etc/php-fpm.conf
-install -D -m 644 %{SOURCE3} %{buildroot}%{_prefix}/lib/php.ini
+%post
+%systemd_post vesta-php.service
+
+%preun
+%systemd_preun vesta-php.service
+
+%postun
+%systemd_postun_with_restart vesta-php.service
 
 %files
 %defattr(-,root,root)
-%dir %{_prefix}
-%{_prefix}/bin/php
-%{_prefix}/etc/php-fpm.conf
-%{_prefix}/lib/php.ini
+%attr(755,root,root) /usr/local/vesta/php
+%attr(775,admin,admin) /usr/local/vesta/php/var/log
+%attr(775,admin,admin) /usr/local/vesta/php/var/run
+%config(noreplace) /usr/local/vesta/php/etc/php-fpm.conf
+%config(noreplace) /usr/local/vesta/php/lib/php.ini
 %{_unitdir}/vesta-php.service
 
 %changelog

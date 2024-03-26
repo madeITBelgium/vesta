@@ -8,7 +8,7 @@
 
 Name:           vesta-nginx
 Version:        1.25.1
-Release:        1
+Release:        103
 Summary:        Vesta internal nginx web server
 Group:          System Environment/Base
 URL:            https://www.tpweb.org

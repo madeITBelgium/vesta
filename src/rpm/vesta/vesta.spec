@@ -2,8 +2,8 @@
 %global _hardened_build 1
 
 Name:           vesta
-Version:        0.0.37
-Release:        1
+Version:        0.0.36
+Release:        103
 Summary:        Vesta Control Panel
 Group:          System Environment/Base
 License:        GPLv3
