@@ -1,4 +1,4 @@
-[Vesta Control Panel Fork (CentOS 7 & 8)](http://vestacp.com/)
+[Vesta Control Panel Fork (CentOS 8 & 9)](http://vestacp.com/)
 ==================================================
 
 [![Build Status](https://travis-ci.org/madeITBelgium/vesta.svg?branch=master)](https://travis-ci.org/madeITBelgium/vesta)
@@ -52,17 +52,19 @@ Extra features
 - Plugin support
 - Letsencrypt on maildomains
 - Letsencrypt on vesta CP
+- DNSSEC
+- Exim Mail Rate limit
 
 
-## Upgrade Mysql to 10.4
-Since version 0.0.19 we added a script to upgrade your MySQL Server to MariaDB Version 10.4
+## Upgrade Mysql to 11.5
+Since version 0.0.19 we added a script to upgrade your MySQL Server to MariaDB Version 11.5
 
 ```
 bash /usr/local/vesta/upd/upgrade_mysql.sh
 ```
 
-## Upgrade PHP to 7.4
-Since version 0.0.21 we added a script to upgrade your PHP version to PHP 7.4
+## Upgrade PHP to 8.3
+Since version 0.0.21 we added a script to upgrade your PHP version to PHP 8.3
 
 ```
 bash /usr/local/vesta/upd/upgrade_php.sh
