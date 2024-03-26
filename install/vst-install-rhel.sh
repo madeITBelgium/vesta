@@ -1110,6 +1110,7 @@ if [ "$exim" = 'yes' ]; then
     cp -f $vestacp/exim/ses-domains.conf /etc/exim/
     cp -f $vestacp/exim/ses-senders.conf /etc/exim/
     cp -f $vestacp/exim/ses-settings.conf /etc/exim/
+    cp -f $vestacp/exim/send_limits.conf /etc/exim/
     touch /etc/exim/white-blocks.conf
 
     if [ "$spamd" = 'yes' ]; then

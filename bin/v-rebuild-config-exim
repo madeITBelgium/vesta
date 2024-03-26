@@ -53,6 +53,9 @@ fi
 if [ ! -f "/etc/exim/ses-settings.conf" ]; then
     cp -f $vestacp/exim/ses-settings.conf /etc/exim/ses-settings.conf
 fi
+if [ ! -f "/etc/exim/send_limits.conf" ]; then
+    cp -f $vestacp/exim/send_limits.conf /etc/exim/send_limits.conf
+fi
 
 touch /etc/exim/white-blocks.conf
 

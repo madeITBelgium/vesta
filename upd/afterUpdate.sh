@@ -358,7 +358,9 @@ if [ "$VERSION" = "0.0.36" ]; then
 
     min=$(generate_password '012345' '2')
     hour=$(generate_password '1234567' '1')
-    $VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command" 
+    $VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command"
+
+    $VESTA/bin/v-rebuild-config-exim
 
     sed -i "s/VERSION=.*/VERSION='0.0.37'/g" /usr/local/vesta/conf/vesta.conf
 fi

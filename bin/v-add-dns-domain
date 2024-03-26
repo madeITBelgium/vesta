@@ -171,6 +171,12 @@ chmod 660 $USER_DATA/dns.conf
 # Creating system configs
 build_dns_domain_conf
 
+# Updating zone
+if [[ "$DNS_SYSTEM" =~ named|bind ]]; then
+    # Do full rebuild due DNS SEC
+    rebuild_dns_domain_conf
+fi
+
 # Updating dns-cluster queue
 if [ ! -z "$DNS_CLUSTER" ]; then
     cmd="$BIN/v-add-remote-dns-domain $user $domain yes"
