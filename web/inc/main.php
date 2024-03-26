@@ -281,6 +281,8 @@ function humanize_usage_measure($usage) {
 function get_percentage($used,$total) {
     if (!isset($total)) $total =  0;
     if (!isset($used)) $used =  0;
+    if ($total === 'unlimited') return 0;
+    
     if ( $total == 0 ) {
         $percent = 0;
     } else {
