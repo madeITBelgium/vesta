@@ -1351,6 +1351,12 @@ min=$(gen_pass '012345' '2')
 hour=$(gen_pass '1234567' '1')
 command="sudo $VESTA/bin/v-notify-sys-status > /dev/null"
 $VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command"
+
+min=$(generate_password '012345' '2')
+hour=$(generate_password '1234567' '1')
+command="sudo $VESTA/bin/v-update-dnssec-sign > /dev/null"
+$VESTA/bin/v-add-cron-job 'admin' "$min" "$hour" '*' '*' '*' "$command"
+
 service crond restart
 
 # Building RRD images

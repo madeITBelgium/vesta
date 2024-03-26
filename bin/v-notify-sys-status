@@ -85,13 +85,7 @@ if [ $? -eq 0 ]; then
 fi
 
 # Checking VESTA service
-data="NAME='vestaCP' VALUE='$VERSION'"
-data="$data\nNAME='OS' VALUE='$os'"
-data="$data\nNAME='OS_RELEASE' VALUE='$release'"
-data="$data\nNAME='USERS' VALUE='$(ls -l $VESTA/data/users | tail -n +1 | wc -l)'"
-data="$data\nNAME='DOMAINS' VALUE='$(cat $VESTA/data/users/*/web.conf | wc -l)'"
-data="$data\nNAME='API' VALUE='$api'"
-
+data="vestaCP=$VERSION&OS=$os&RELEASE=$release&API=$api&USERS=$(ls -l $VESTA/data/users | tail -n +1 | wc -l)&DOMAINS=$(cat $VESTA/data/users/*/web.conf | wc -l)"
 curl --silent -d "$data" -X POST https://cp.madeit.be/notify.php > /dev/null
 
 # Listing data
