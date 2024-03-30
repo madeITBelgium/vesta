@@ -32,9 +32,7 @@ $v_ipv6 = $data[$v_domain]['IP6'];
 $v_template = $data[$v_domain]['TPL'];
 $v_aliases = str_replace(',', "\n", $data[$v_domain]['ALIAS']);
 $valiases = explode(",", $data[$v_domain]['ALIAS']);
-$v_tpl = $data[$v_domain]['IP'];
-$v_cgi = $data[$v_domain]['CGI'];
-$v_elog = $data[$v_domain]['ELOG'];
+$v_tpl = $data[$v_domain]['TPL'];
 $v_ssl = $data[$v_domain]['SSL'];
 $v_docroot = $data[$v_domain]['DOCROOT'];
 if (!empty($v_ssl)) {
@@ -66,8 +64,9 @@ $v_ftp_user = $data[$v_domain]['FTP_USER'];
 $v_ftp_path = $data[$v_domain]['FTP_PATH'];
 if (!empty($v_ftp_user)) $v_ftp_password = "";
 $v_ftp_user_prepath = $data[$v_domain]['DOCUMENT_ROOT'];
-$v_ftp_user_prepath = str_replace('/public_html', '', $v_ftp_user_prepath, $occurance = 1);
-$v_ftp_email = $panel[$user]['CONTACT'];
+$occurance = 1;
+$v_ftp_user_prepath = str_replace('/public_html', '', $v_ftp_user_prepath, $occurance);
+$v_ftp_email = $panel[$user]['CONTACT'] ?? '';
 $v_suspended = $data[$v_domain]['SUSPENDED'];
 if ( $v_suspended == 'yes' ) {
     $v_status =  'suspended';
@@ -761,7 +760,7 @@ if (!empty($_POST['save'])) {
 
 
 $v_ftp_users_raw = explode(':', $v_ftp_user);
-$v_ftp_users_paths_raw = explode(':', $data[$v_domain]['FTP_PATH']);
+$v_ftp_users_paths_raw = explode(':', $data[$v_domain]['FTP_PATH'] ?? '');
 $v_ftp_users = array();
 foreach ($v_ftp_users_raw as $v_ftp_user_index => $v_ftp_user_val) {
     if (empty($v_ftp_user_val)) {

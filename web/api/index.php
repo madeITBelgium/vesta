@@ -108,7 +108,7 @@ if (isset($_POST['user']) || isset($_POST['hash'])) {
          $cmdquery = $cmdquery.$arg8." "; }
     if(!empty($arg9)){
          $cmdquery = $cmdquery.$arg9; }
-error_log($cmdquery);
+
     // Check command
     if ($cmd == "'v-make-tmp-file'") {
         // Used in DNS Cluster

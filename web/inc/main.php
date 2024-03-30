@@ -7,6 +7,7 @@ define('VESTA_PLUGIN_CMD', '/usr/bin/sudo /usr/local/vesta/plugin/');
 define('JS_LATEST_UPDATE', '20201007');
 
 $i = 0;
+$panel = [];
 
 require_once(dirname(__FILE__).'/i18n.php');
 
@@ -278,11 +279,10 @@ function humanize_usage_measure($usage) {
 }
 
 
-function get_percentage($used,$total) {
+function get_percentage($used, $total) {
     if (!isset($total)) $total =  0;
     if (!isset($used)) $used =  0;
     if ($total === 'unlimited') return 0;
-    
     if ( $total == 0 ) {
         $percent = 0;
     } else {
@@ -355,11 +355,11 @@ function list_timezones() {
     foreach($timezone_offsets as $timezone => $offset){
         $offset_prefix = $offset < 0 ? '-' : '+';
         $offset_formatted = gmdate( 'H:i', abs($offset) );
-        $pretty_offset = "UTC${offset_prefix}${offset_formatted}";
+        $pretty_offset = "UTC" . $offset_prefix . $offset_formatted;
         $t = new DateTimeZone($timezone);
         $c = new DateTime(null, $t);
         $current_time = $c->format('H:i:s');
-        $timezone_list[$timezone] = "$timezone [ $current_time ] ${pretty_offset}";
+        $timezone_list[$timezone] = "$timezone [ $current_time ] " . $pretty_offset;
     }
     return $timezone_list;
 }
