@@ -30,6 +30,7 @@ $v_domain = $_GET['domain'];
 $v_ip = $data[$v_domain]['IP'];
 if(empty($v_ip)) {
     $v_ip = 'no';
+}
 $v_ipv6 = $data[$v_domain]['IP6'];
 if(empty($v_ipv6)) {
     $v_ipv6 = 'no';
