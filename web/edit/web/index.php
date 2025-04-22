@@ -28,7 +28,13 @@ unset($output);
 $v_username = $user;
 $v_domain = $_GET['domain'];
 $v_ip = $data[$v_domain]['IP'];
+if(empty($v_ip)) {
+    $v_ip = 'no';
 $v_ipv6 = $data[$v_domain]['IP6'];
+if(empty($v_ipv6)) {
+    $v_ipv6 = 'no';
+}
+
 $v_template = $data[$v_domain]['TPL'];
 $v_aliases = str_replace(',', "\n", $data[$v_domain]['ALIAS']);
 $valiases = explode(",", $data[$v_domain]['ALIAS']);
